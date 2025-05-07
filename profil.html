@@ -7,49 +7,49 @@
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
-      background: #f2f6fc;
+      background: #ecf0f3;
       margin: 0;
       padding: 0;
     }
     .container {
       max-width: 600px;
-      margin: 50px auto;
-      background: white;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+      margin: 60px auto;
+      background: #fff;
+      padding: 40px;
+      border-radius: 14px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
     }
     h1 {
       text-align: center;
       color: #2c3e50;
+      margin-bottom: 30px;
     }
     label {
       display: block;
       margin-top: 20px;
-      font-weight: bold;
-      color: #333;
+      font-weight: 600;
     }
     input, select {
       width: 100%;
       padding: 10px;
-      margin-top: 6px;
+      margin-top: 8px;
       border-radius: 8px;
       border: 1px solid #ccc;
       font-size: 15px;
     }
     input[readonly] {
-      background: #eee;
+      background: #f0f0f0;
     }
     button {
       width: 100%;
       margin-top: 30px;
-      padding: 12px;
+      padding: 14px;
       background-color: #3498db;
       color: white;
       font-size: 16px;
       font-weight: bold;
       border: none;
-      border-radius: 8px;
+      border-radius: 10px;
       cursor: pointer;
     }
     button:hover {
@@ -59,8 +59,10 @@
 </head>
 <body>
   <div class="container">
-    <h1>Profil Mahasiswa</h1>
+    <h1>Profil Saya</h1>
     <form id="profilForm" enctype="multipart/form-data">
+      <input type="hidden" id="id" name="id" />
+      
       <label for="nama">Nama Lengkap</label>
       <input type="text" id="nama" name="nama" readonly />
 
@@ -77,9 +79,9 @@
       <select id="fakultas" name="fakultas">
         <option value="">-- Pilih Fakultas --</option>
         <option>Teknik</option>
-        <option>Kedokteran</option>
         <option>Ekonomi</option>
         <option>Hukum</option>
+        <option>Kedokteran</option>
         <option>Pertanian</option>
         <option>Sastra</option>
         <option>Ilmu Sosial dan Politik</option>
@@ -99,16 +101,17 @@
       window.location.href = "login.html";
     }
 
-    // Tampilkan data awal
+    // Isi form dari localStorage
+    document.getElementById("id").value = user._id;
     document.getElementById("nama").value = user.nama || "";
     document.getElementById("username").value = user.username || "";
     if (user.nim) document.getElementById("nim").value = user.nim;
     if (user.fakultas) document.getElementById("fakultas").value = user.fakultas;
 
+    // Submit update profile
     document.getElementById("profilForm").addEventListener("submit", async function(e) {
       e.preventDefault();
       const formData = new FormData(this);
-      formData.append("id", user._id);
 
       const res = await fetch("https://ediska-backend.onrender.com/api/auth/update", {
         method: "POST",
