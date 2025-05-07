@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Profil Mahasiswa - E-DISKA</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f2f6fc;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 600px;
+      margin: 50px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+    }
+    h1 {
+      text-align: center;
+      color: #2c3e50;
+    }
+    label {
+      display: block;
+      margin-top: 20px;
+      font-weight: bold;
+      color: #333;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 6px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 15px;
+    }
+    input[readonly] {
+      background: #eee;
+    }
+    button {
+      width: 100%;
+      margin-top: 30px;
+      padding: 12px;
+      background-color: #3498db;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #2980b9;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Profil Mahasiswa</h1>
+    <form id="profilForm" enctype="multipart/form-data">
+      <label for="nama">Nama Lengkap</label>
+      <input type="text" id="nama" name="nama" readonly />
+
+      <label for="username">Username</label>
+      <input type="text" id="username" name="username" required />
+
+      <label for="password">Password Baru</label>
+      <input type="password" id="password" name="password" placeholder="Kosongkan jika tidak ingin mengubah" />
+
+      <label for="nim">NIM</label>
+      <input type="text" id="nim" name="nim" />
+
+      <label for="fakultas">Fakultas</label>
+      <select id="fakultas" name="fakultas">
+        <option value="">-- Pilih Fakultas --</option>
+        <option>Teknik</option>
+        <option>Kedokteran</option>
+        <option>Ekonomi</option>
+        <option>Hukum</option>
+        <option>Pertanian</option>
+        <option>Sastra</option>
+        <option>Ilmu Sosial dan Politik</option>
+      </select>
+
+      <label for="foto">Foto Profil</label>
+      <input type="file" id="foto" name="foto" accept="image/*" />
+
+      <button type="submit">Simpan Perubahan</button>
+    </form>
+  </div>
+
+  <script>
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (!user) {
+      alert("Silakan login terlebih dahulu.");
+      window.location.href = "login.html";
+    }
+
+    // Tampilkan data awal
+    document.getElementById("nama").value = user.nama || "";
+    document.getElementById("username").value = user.username || "";
+    if (user.nim) document.getElementById("nim").value = user.nim;
+    if (user.fakultas) document.getElementById("fakultas").value = user.fakultas;
+
+    document.getElementById("profilForm").addEventListener("submit", async function(e) {
+      e.preventDefault();
+      const formData = new FormData(this);
+      formData.append("id", user._id);
+
+      const res = await fetch("https://ediska-backend.onrender.com/api/auth/update", {
+        method: "POST",
+        body: formData
+      });
+
+      const result = await res.json();
+      if (result.user) {
+        localStorage.setItem("user", JSON.stringify(result.user));
+        alert("Profil berhasil diperbarui.");
+        window.location.reload();
+      } else {
+        alert(result.error || "Gagal memperbarui profil.");
+      }
+    });
+  </script>
+</body>
+</html>
