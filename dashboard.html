@@ -6,87 +6,37 @@
   <title>Dashboard E-DISKA</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      background: #f4f6f8;
-    }
+    body { font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; display: flex; background: #f4f6f8; }
     .sidebar {
-      width: 220px;
-      background-color: #2c3e50;
-      min-height: 100vh;
-      color: white;
-      display: flex;
-      flex-direction: column;
-      padding-top: 30px;
-      position: fixed;
+      width: 220px; background-color: #2c3e50; min-height: 100vh; color: white;
+      display: flex; flex-direction: column; padding-top: 30px; position: fixed;
     }
-    .sidebar h2 {
-      text-align: center;
-      margin-bottom: 30px;
-      font-size: 22px;
-    }
+    .sidebar h2 { text-align: center; margin-bottom: 30px; font-size: 22px; }
     .sidebar a {
-      color: white;
-      padding: 15px 25px;
-      text-decoration: none;
-      transition: background 0.2s;
+      color: white; padding: 15px 25px; text-decoration: none; transition: background 0.2s;
     }
-    .sidebar a:hover {
-      background-color: #34495e;
-    }
-    .main {
-      margin-left: 220px;
-      padding: 30px;
-      flex-grow: 1;
-    }
+    .sidebar a:hover { background-color: #34495e; }
+    .main { margin-left: 220px; padding: 30px; flex-grow: 1; }
     .profile {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-      margin-bottom: 30px;
-      border-bottom: 1px solid #ddd;
-      padding-bottom: 20px;
+      display: flex; align-items: center; gap: 20px; margin-bottom: 30px;
+      border-bottom: 1px solid #ddd; padding-bottom: 20px;
     }
     .profile img {
-      width: 100px;
-      height: 100px;
-      border-radius: 50%;
-      object-fit: cover;
+      width: 100px; height: 100px; border-radius: 50%; object-fit: cover;
     }
-    .stats {
-      display: flex;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 20px;
-    }
+    .stats { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 20px; }
     .stat-box {
-      flex: 1;
-      min-width: 250px;
-      background-color: #ecf0f1;
-      border-radius: 10px;
-      padding: 20px;
-      text-align: center;
+      flex: 1; min-width: 250px; background-color: #ecf0f1;
+      border-radius: 10px; padding: 20px; text-align: center;
     }
-    .tasks {
-      margin-top: 40px;
-    }
-    .tasks h3 {
-      margin-bottom: 10px;
-    }
+    .tasks { margin-top: 40px; }
     .task-item {
-      background: #f9f9f9;
-      padding: 10px 15px;
-      border: 1px solid #ddd;
-      border-radius: 6px;
-      margin-bottom: 10px;
+      background: #f9f9f9; padding: 10px 15px; border: 1px solid #ddd;
+      border-radius: 6px; margin-bottom: 10px;
     }
   </style>
 </head>
 <body>
-
 <div class="sidebar">
   <h2>E-DISKA</h2>
   <a href="profil.html">👤 Profil</a>
@@ -96,7 +46,6 @@
   <a href="#diskusi">💬 Diskusi</a>
   <a href="#" onclick="logout()">🚪 Logout</a>
 </div>
-
 <div class="main">
   <div class="profile">
     <img src="https://via.placeholder.com/100" alt="Foto Profil" id="fotoProfil">
@@ -105,7 +54,6 @@
       <p><strong>NIM:</strong> <span id="nim">12345678</span></p>
     </div>
   </div>
-
   <div class="stats" id="nilai">
     <div class="stat-box">
       <h3>IPK</h3>
@@ -116,36 +64,26 @@
       <canvas id="chartNilai" height="200"></canvas>
     </div>
   </div>
-
   <div class="tasks" id="tugas">
     <h3>Tugas Belum Dikerjakan</h3>
-    <div class="task-item">Tugas Pemrograman Web - Deadline: 10 Mei 2025</div>
-    <div class="task-item">Proposal TA - Deadline: 12 Mei 2025</div>
-    <div class="task-item">Revisi Laporan Praktikum - Deadline: 15 Mei 2025</div>
-  </div>
-
-  <div class="tasks" id="diskusi">
-    <h3>Diskusi Terbaru</h3>
-    <div class="task-item">Topik: Sistem Informasi - Dosen: Pak Budi</div>
-    <div class="task-item">Topik: Metodologi Penelitian - Dosen: Bu Sari</div>
+    <div class="task-item">Tugas Pemrograman Web</div>
+    <div class="task-item">Proposal TA</div>
+    <div class="task-item">Revisi Laporan Praktikum</div>
   </div>
 </div>
-
 <script>
-  const user = {
-    nama: "Noval Nurimansyah",
-    nim: "2101234567",
-    ipk: 3.82,
-    foto: "https://via.placeholder.com/100"
-  };
-
+  const user = JSON.parse(localStorage.getItem("user"));
+  if (!user) window.location.href = "login.html";
   document.getElementById("nama").textContent = user.nama;
-  document.getElementById("nim").textContent = user.nim;
-  document.getElementById("ipk").textContent = user.ipk;
-  document.getElementById("fotoProfil").src = user.foto;
+  document.getElementById("nim").textContent = user.nim || "";
+  document.getElementById("ipk").textContent = user.ipk || "3.82";
+  const fotoURL = user.foto?.includes("uploads/")
+    ? "https://ediska-backend.onrender.com/" + user.foto
+    : user.foto || "https://via.placeholder.com/100";
+  document.getElementById("fotoProfil").src = fotoURL;
 
   const ctx = document.getElementById('chartNilai').getContext('2d');
-  const chartNilai = new Chart(ctx, {
+  new Chart(ctx, {
     type: 'bar',
     data: {
       labels: ['Semester 1', 'Semester 2', 'Semester 3', 'Semester 4', 'Semester 5', 'Semester 6'],
@@ -155,11 +93,7 @@
         backgroundColor: '#3498db'
       }]
     },
-    options: {
-      scales: {
-        y: { beginAtZero: true, max: 4 }
-      }
-    }
+    options: { scales: { y: { beginAtZero: true, max: 4 } } }
   });
 
   function logout() {
@@ -167,6 +101,5 @@
     window.location.href = "login.html";
   }
 </script>
-
 </body>
 </html>
