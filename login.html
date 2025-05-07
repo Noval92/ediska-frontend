@@ -30,8 +30,14 @@
       border: none; cursor: pointer;
     }
     button:hover { background-color: #2980b9; }
-    .link { text-align: center; margin-top: 20px; }
+    .link, .remember {
+      text-align: center;
+      margin-top: 15px;
+    }
     .link a { color: #3498db; text-decoration: none; }
+    .remember input {
+      margin-right: 6px;
+    }
   </style>
 </head>
 <body>
@@ -41,6 +47,9 @@
     <form id="loginForm">
       <input type="text" id="username" placeholder="Username" required />
       <input type="password" id="password" placeholder="Password" required />
+      <div class="remember">
+        <label><input type="checkbox" id="rememberMe"> Ingat saya</label>
+      </div>
       <button type="submit">Masuk</button>
     </form>
     <div class="link">
@@ -49,22 +58,40 @@
   </div>
 
   <script>
+    // Auto-fill if remembered
+    window.onload = function () {
+      const rememberedUser = localStorage.getItem('rememberedUser');
+      if (rememberedUser) {
+        const creds = JSON.parse(rememberedUser);
+        document.getElementById('username').value = creds.username || "";
+        document.getElementById('password').value = creds.password || "";
+        document.getElementById('rememberMe').checked = true;
+      }
+    };
+
     document.getElementById('loginForm').addEventListener('submit', async function(e) {
       e.preventDefault();
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const remember = document.getElementById('rememberMe').checked;
+
       const res = await fetch('https://ediska-backend.onrender.com/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          username: document.getElementById('username').value,
-          password: document.getElementById('password').value
-        })
+        body: JSON.stringify({ username, password })
       });
 
       const result = await res.json();
-      alert(result.message || result.error);
       if (result.user) {
         localStorage.setItem('user', JSON.stringify(result.user));
+        if (remember) {
+          localStorage.setItem('rememberedUser', JSON.stringify({ username, password }));
+        } else {
+          localStorage.removeItem('rememberedUser');
+        }
         window.location.href = "dashboard.html";
+      } else {
+        alert(result.error || "Login gagal.");
       }
     });
   </script>
