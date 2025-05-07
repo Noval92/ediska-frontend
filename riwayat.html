@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Riwayat Arsip - E-Diska</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f9f9f9;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 800px;
+      margin: 40px auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+    h1 {
+      text-align: center;
+      color: #2c3e50;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    li {
+      margin: 12px 0;
+      padding: 12px;
+      background: #f1f1f1;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    a {
+      text-decoration: none;
+      color: #3498db;
+      font-weight: bold;
+    }
+    button {
+      background-color: #e74c3c;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #c0392b;
+    }
+    .logout {
+      text-align: center;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Riwayat Arsip Saya</h1>
+    <ul id="arsipList">
+      <li>Memuat data...</li>
+    </ul>
+    <div class="logout">
+      <button onclick="logout()">Logout</button>
+    </div>
+  </div>
+
+  <script>
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (!user) {
+      alert("Silakan login terlebih dahulu.");
+      window.location.href = "login.html";
+    }
+
+    async function loadRiwayat() {
+      const res = await fetch("https://ediska-backend.onrender.com/api/students");
+      const data = await res.json();
+
+      const list = document.getElementById("arsipList");
+      list.innerHTML = "";
+
+      if (data.length === 0) {
+        list.innerHTML = "<li>Tidak ada arsip ditemukan.</li>";
+      } else {
+        data.forEach(item => {
+          const li = document.createElement("li");
+          li.innerHTML = `
+            <span>\${item.nama} - Semester \${item.semester}</span>
+            <a href="https://ediska-backend.onrender.com/\${item.dokumenPath}" target="_blank">Lihat PDF</a>
+          `;
+          list.appendChild(li);
+        });
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem("user");
+      window.location.href = "login.html";
+    }
+
+    loadRiwayat();
+  </script>
+</body>
+</html>
