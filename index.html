@@ -1,105 +1,109 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>E-Diska - Arsip Mahasiswa</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Beranda - E-DISKA</title>
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
     body {
-      font-family: Arial, sans-serif;
-      background: #f4f7f8;
-    }
-    .container {
-      max-width: 500px;
-      margin: 60px auto;
-      background: white;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-    }
-    h1 {
-      text-align: center;
-      color: #2c3e50;
-    }
-    label {
-      display: block;
-      margin-top: 15px;
-      font-weight: bold;
-    }
-    input, button {
-      width: 100%;
-      padding: 10px;
-      margin-top: 5px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      font-size: 16px;
-    }
-    button {
-      background-color: #3498db;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #2980b9, #6dd5fa);
       color: white;
-      margin-top: 20px;
-      border: none;
-      cursor: pointer;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
-    button:hover {
-      background-color: #2980b9;
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 60px;
+      background: rgba(0, 0, 0, 0.1);
     }
-    .logout {
+    header h1 {
+      font-size: 28px;
+      color: #fff;
+    }
+    nav a {
+      margin-left: 20px;
+      text-decoration: none;
+      color: #fff;
+      font-weight: 600;
+      border: 2px solid transparent;
+      padding: 8px 16px;
+      border-radius: 8px;
+      transition: 0.3s;
+    }
+    nav a:hover {
+      background: #fff;
+      color: #2980b9;
+      border-color: #fff;
+    }
+    .hero {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
       text-align: center;
-      margin-top: 20px;
+      padding: 40px 20px;
     }
-    .logout button {
-      background-color: #e74c3c;
+    .hero h2 {
+      font-size: 48px;
+      margin-bottom: 20px;
+      font-weight: 700;
     }
-    .logout button:hover {
-      background-color: #c0392b;
+    .hero p {
+      font-size: 20px;
+      max-width: 600px;
+      margin-bottom: 30px;
+    }
+    .button-group a {
+      padding: 12px 24px;
+      background-color: #fff;
+      color: #2980b9;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      margin: 0 10px;
+      transition: 0.3s;
+    }
+    .button-group a:hover {
+      background-color: #ecf0f1;
+    }
+    footer {
+      text-align: center;
+      padding: 10px 0;
+      background: rgba(0, 0, 0, 0.1);
+      font-size: 14px;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>E-Diska</h1>
-    <p id="welcomeText"></p>
-    <form id="arsipForm" enctype="multipart/form-data">
-      <label for="nim">NIM</label>
-      <input type="text" name="nim" required />
-      <label for="nama">Nama</label>
-      <input type="text" name="nama" required />
-      <label for="semester">Semester</label>
-      <input type="number" name="semester" required />
-      <label for="dokumen">Upload Dokumen (PDF)</label>
-      <input type="file" name="dokumen" accept="application/pdf" required />
-      <button type="submit">Kirim Arsip</button>
-    </form>
-    <div class="logout">
-      <button onclick="logout()">Logout</button>
+  <header>
+    <h1>E-DISKA</h1>
+    <nav>
+      <a href="login.html">Login</a>
+      <a href="signup.html">Daftar</a>
+    </nav>
+  </header>
+
+  <div class="hero">
+    <h2>Selamat Datang di E-DISKA</h2>
+    <p>Platform digital modern untuk mengarsipkan hasil belajar mahasiswa, mendukung pencapaian akademik yang lebih terstruktur dan rapi.</p>
+    <div class="button-group">
+      <a href="login.html">Masuk</a>
+      <a href="signup.html">Daftar</a>
     </div>
   </div>
 
-  <script>
-    const user = JSON.parse(localStorage.getItem('user'));
-    if (!user) {
-      alert("Silakan login terlebih dahulu.");
-      window.location.href = "login.html";
-    } else {
-      document.getElementById('welcomeText').innerText = "Selamat datang, " + user.nama;
-    }
-
-    document.getElementById("arsipForm").addEventListener("submit", async function(e) {
-      e.preventDefault();
-      const formData = new FormData(this);
-      const res = await fetch("https://ediska-backend.onrender.com/api/students", {
-        method: "POST",
-        body: formData,
-      });
-      const result = await res.json();
-      alert(result.message || "Upload berhasil!");
-    });
-
-    function logout() {
-      localStorage.removeItem('user');
-      window.location.href = "login.html";
-    }
-  </script>
+  <footer>
+    &copy; 2025 E-DISKA - Capstone Project Kelompok 1
+  </footer>
 </body>
 </html>
