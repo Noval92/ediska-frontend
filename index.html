@@ -6,110 +6,72 @@
   <title>Beranda E-DISKA</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
+
     body {
       font-family: 'Segoe UI', sans-serif;
-      background: #eef3f8;
+      background: linear-gradient(to right, #e3f2fd, #ffffff);
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
-      padding: 20px;
+      padding: 30px 15px;
+      min-height: 100vh;
     }
+
     .container {
-      display: flex;
-      max-width: 1000px;
+      max-width: 600px;
+      width: 100%;
       background: white;
       border-radius: 16px;
-      overflow: hidden;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
-      flex-wrap: wrap;
-      position: relative;
+      padding: 40px 30px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      text-align: center;
     }
-    .logo {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
+
     .logo img {
-      width: 40px;
-      height: 40px;
+      width: 60px;
+      height: 60px;
     }
+
     .logo span {
-      font-size: 20px;
+      display: block;
+      font-size: 24px;
       font-weight: bold;
       color: #2c3e50;
+      margin-top: 10px;
     }
-    .left {
-      flex: 1;
-      min-width: 300px;
-      background: #f0f6fc;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-    .left img {
-      width: 100%;
-      max-width: 400px;
-      height: auto;
-    }
-    .right {
-      flex: 1;
-      min-width: 300px;
-      padding: 60px 30px 40px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-    .right h1 {
-      font-size: 28px;
-      margin-bottom: 16px;
+
+    h1 {
+      margin-top: 30px;
+      font-size: 26px;
       color: #2c3e50;
     }
-    .right p {
+
+    p {
+      margin: 20px 0 30px;
       font-size: 16px;
       color: #555;
-      margin-bottom: 24px;
+      line-height: 1.6;
     }
+
     .button-group {
       display: flex;
       gap: 15px;
+      justify-content: center;
       flex-wrap: wrap;
     }
+
     .button-group a {
-      flex: 1;
-      text-align: center;
       background-color: #3498db;
       color: white;
-      padding: 12px;
+      padding: 12px 24px;
       border-radius: 8px;
       text-decoration: none;
       font-weight: bold;
       transition: 0.3s;
     }
+
     .button-group a:hover {
       background-color: #2980b9;
-    }
-
-    @media (max-width: 768px) {
-      .container {
-        flex-direction: column;
-      }
-      .left, .right {
-        padding: 20px;
-        text-align: center;
-      }
-      .button-group {
-        flex-direction: column;
-      }
-      .logo {
-        position: relative;
-        justify-content: center;
-        margin-bottom: 10px;
-      }
     }
   </style>
 </head>
@@ -119,16 +81,12 @@
       <img src="https://cdn-icons-png.flaticon.com/512/201/201818.png" alt="Logo E-DISKA">
       <span>E-DISKA</span>
     </div>
-    <div class="left">
-      <img src="https://cdn-icons-png.flaticon.com/512/201/201818.png" alt="Ilustrasi Mahasiswa">
-    </div>
-    <div class="right">
-      <h1>Selamat Datang di E-DISKA</h1>
-      <p>Platform Digital E-Arsip, mendukung pencapaian akademik yang lebih terstruktur dan rapi. Kelola nilai, tugas, dan arsip belajar Anda di satu tempat yang efisien.</p>
-      <div class="button-group">
-        <a href="login.html">Login</a>
-        <a href="signup.html">Daftar</a>
-      </div>
+    <h1>Selamat Datang di
+        E-DISKA</h1>
+    <p>Platform Digital E-Arsip, mendukung pencapaian akademik yang lebih terstruktur dan rapi. Kelola nilai, tugas, dan arsip belajar Anda di satu tempat yang efisien.</p>
+    <div class="button-group">
+      <a href="login.html">Login</a>
+      <a href="signup.html">Daftar</a>
     </div>
   </div>
 </body>
