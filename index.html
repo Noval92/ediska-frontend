@@ -8,107 +8,96 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to bottom right, #ecf0f3, #dce4ee);
+      background: #eef3f8;
       display: flex;
-      flex-direction: column;
-      min-height: 100vh;
       justify-content: center;
       align-items: center;
+      height: 100vh;
       padding: 20px;
     }
-    .card {
+    .container {
+      display: flex;
+      max-width: 1000px;
       background: white;
       border-radius: 16px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-      max-width: 960px;
-      width: 100%;
-      display: flex;
-      flex-direction: row;
       overflow: hidden;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
       flex-wrap: wrap;
     }
     .left {
       flex: 1;
-      background: #3498db;
-      color: white;
-      padding: 30px;
+      min-width: 300px;
+      background: #f0f6fc;
       display: flex;
-      flex-direction: column;
+      align-items: center;
       justify-content: center;
-      align-items: flex-start;
+      padding: 20px;
     }
-    .left h1 {
-      font-size: 28px;
-      margin-bottom: 20px;
-    }
-    .left p {
-      font-size: 16px;
+    .left img {
+      width: 100%;
       max-width: 400px;
+      height: auto;
     }
     .right {
       flex: 1;
+      min-width: 300px;
       padding: 40px 30px;
       display: flex;
       flex-direction: column;
       justify-content: center;
-      background: #fff;
     }
-    .right h2 {
-      font-size: 24px;
+    .right h1 {
+      font-size: 28px;
+      margin-bottom: 16px;
       color: #2c3e50;
-      margin-bottom: 20px;
     }
-    .form-group {
-      margin-bottom: 15px;
-    }
-    input {
-      width: 100%;
-      padding: 10px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      font-size: 15px;
+    .right p {
+      font-size: 16px;
+      color: #555;
+      margin-bottom: 24px;
     }
     .button-group {
       display: flex;
-      gap: 10px;
+      gap: 15px;
       flex-wrap: wrap;
     }
     .button-group a {
       flex: 1;
       text-align: center;
+      background-color: #3498db;
+      color: white;
       padding: 12px;
       border-radius: 8px;
       text-decoration: none;
-      background-color: #3498db;
-      color: white;
       font-weight: bold;
+      transition: 0.3s;
     }
     .button-group a:hover {
       background-color: #2980b9;
     }
+
     @media (max-width: 768px) {
-      .card {
+      .container {
         flex-direction: column;
       }
       .left, .right {
         padding: 20px;
         text-align: center;
-        align-items: center;
       }
-      .left h1 {
-        font-size: 24px;
+      .button-group {
+        flex-direction: column;
       }
     }
   </style>
 </head>
 <body>
-  <div class="card">
+  <div class="container">
     <div class="left">
-      <h1>Selamat Datang di E-DISKA</h1>
-      <p>Platform Digital E-Arsip, mendukung pencapaian akademik yang lebih terstruktur dan rapi. Kelola nilai, tugas, dan arsip belajar Anda di satu tempat yang efisien.</p>
+      <img src="https://cdn-icons-png.flaticon.com/512/201/201818.png" alt="Ilustrasi Mahasiswa">
     </div>
     <div class="right">
-      <h2>Masuk / Daftar</h2>
+      <h1>Selamat Datang di E-DISKA</h1>
+      <p>Platform Digital E-Arsip, mendukung pencapaian akademik yang lebih terstruktur dan rapi. Kelola nilai, tugas, dan arsip belajar Anda di satu tempat yang efisien.</p>
       <div class="button-group">
         <a href="login.html">Login</a>
         <a href="signup.html">Daftar</a>
