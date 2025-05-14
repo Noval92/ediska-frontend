@@ -1,147 +1,49 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Isi Mata Kuliah - E-DISKA</title>
+  <meta charset="UTF-8" />
+  <title>Input Mata Kuliah</title>
   <style>
-    body {
-      font-family: 'Poppins', sans-serif;
-      background: #f4f6f9;
-      padding: 20px;
-    }
-    .container {
-      max-width: 720px;
-      margin: auto;
-      background: white;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }
-    label {
-      display: block;
-      margin-top: 15px;
-      font-weight: bold;
-    }
-    input, select, button {
-      width: 100%;
-      padding: 10px;
-      margin-top: 5px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-    }
-    embed {
-      width: 100%;
-      height: 200px;
-      margin-top: 10px;
-    }
+    body { font-family: Arial; background: #f2f2f2; padding: 20px; }
+    .container { background: white; padding: 20px; max-width: 600px; margin: auto; border-radius: 10px; }
+    label { display: block; margin-top: 10px; font-weight: bold; }
+    input { width: 100%; padding: 10px; margin-top: 5px; border-radius: 6px; border: 1px solid #ccc; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Isi Mata Kuliah</h1>
-    <form id="mkForm">
-      <label for="nama">Nama Mata Kuliah</label>
-      <select id="nama" required>
-        <option value="">-- Pilih --</option>
-        <option value="PENGANTAR MATEMATIKA">PENGANTAR MATEMATIKA</option>
-<option value="KALKULUS I">KALKULUS I</option>
-<option value="PENDIDIKAN AGAMA ISLAM">PENDIDIKAN AGAMA ISLAM</option>
-<option value="BAHASA INDONESIA">BAHASA INDONESIA</option>
-<option value="PENDIDIKAN KEWARGANEGARAAN">PENDIDIKAN KEWARGANEGARAAN</option>
-<option value="SISTEM OPERASI">SISTEM OPERASI</option>
-<option value="REKAYASA PERANGKAT LUNAK">REKAYASA PERANGKAT LUNAK</option>
-<option value="TUGAS AKHIR PROGRAM">TUGAS AKHIR PROGRAM</option>
-      </select>
+<div class="container">
+  <h2>Form Mata Kuliah</h2>
+  <label for="nama">Nama Mata Kuliah</label>
+  <input list="namaList" id="nama" name="nama" autocomplete="off" />
+  <datalist id="namaList">
+    <option value="PENGANTAR MATEMATIKA">
+<option value="KALKULUS I">
+<option value="PENDIDIKAN AGAMA ISLAM">
+<option value="SISTEM OPERASI">
+<option value="TUGAS AKHIR PROGRAM">
+  </datalist>
 
-      <label for="kode">Kode Mata Kuliah</label>
-      <input type="text" id="kode" required readonly />
+  <label for="kode">Kode Mata Kuliah</label>
+  <input type="text" id="kode" name="kode" />
 
-      <label for="sks">Jumlah SKS</label>
-      <input type="number" id="sks" required readonly />
-
-      <label for="sesi">Pilih Sesi</label>
-      <select id="sesi" required>
-        <option value="">-- Pilih Sesi --</option>
-        <option value="1">Sesi 1</option><option value="2">Sesi 2</option><option value="3">Sesi 3</option><option value="4">Sesi 4</option><option value="5">Sesi 5</option><option value="6">Sesi 6</option><option value="7">Sesi 7</option><option value="8">Sesi 8</option><option value="9">Sesi 9</option><option value="10">Sesi 10</option><option value="11">Sesi 11</option><option value="12">Sesi 12</option><option value="13">Sesi 13</option><option value="14">Sesi 14</option><option value="15">Sesi 15</option><option value="16">Sesi 16</option><option value="17">Sesi 17</option><option value="18">Sesi 18</option><option value="19">Sesi 19</option><option value="20">Sesi 20</option><option value="21">Sesi 21</option><option value="22">Sesi 22</option><option value="23">Sesi 23</option><option value="24">Sesi 24</option><option value="25">Sesi 25</option><option value="26">Sesi 26</option><option value="27">Sesi 27</option><option value="28">Sesi 28</option><option value="29">Sesi 29</option><option value="30">Sesi 30</option><option value="31">Sesi 31</option><option value="32">Sesi 32</option><option value="33">Sesi 33</option><option value="34">Sesi 34</option><option value="35">Sesi 35</option><option value="36">Sesi 36</option><option value="37">Sesi 37</option><option value="38">Sesi 38</option><option value="39">Sesi 39</option><option value="40">Sesi 40</option><option value="41">Sesi 41</option><option value="42">Sesi 42</option><option value="43">Sesi 43</option><option value="44">Sesi 44</option><option value="45">Sesi 45</option><option value="46">Sesi 46</option><option value="47">Sesi 47</option><option value="48">Sesi 48</option><option value="49">Sesi 49</option><option value="50">Sesi 50</option>
-      </select>
-
-      <label>Materi Inisiasi (PDF)</label>
-      <input type="file" id="materi" accept="application/pdf" required>
-      <embed id="previewMateri"/>
-
-      <label>Kuis (PDF)</label>
-      <input type="file" id="kuis" accept="application/pdf" required>
-      <embed id="previewKuis"/>
-
-      <label>Diskusi (PDF)</label>
-      <input type="file" id="diskusi" accept="application/pdf" required>
-      <embed id="previewDiskusi"/>
-
-      <label>Tugas (PDF)</label>
-      <input type="file" id="tugas" accept="application/pdf" required>
-      <embed id="previewTugas"/>
-
-      <button type="submit">Simpan</button>
-    </form>
-  </div>
+  <label for="sks">Jumlah SKS</label>
+  <input type="number" id="sks" name="sks" min="1" max="6" />
+</div>
 
 <script>
 const matkulList = [
   { kode: 'MATA4101', nama: 'PENGANTAR MATEMATIKA', sks: 3 },
   { kode: 'MATA4110', nama: 'KALKULUS I', sks: 3 },
   { kode: 'MKWU4101', nama: 'PENDIDIKAN AGAMA ISLAM', sks: 3 },
-  { kode: 'MKWU4108', nama: 'BAHASA INDONESIA', sks: 3 },
-  { kode: 'MKWU4109', nama: 'PENDIDIKAN KEWARGANEGARAAN', sks: 3 },
   { kode: 'MSIM4201', nama: 'SISTEM OPERASI', sks: 3 },
-  { kode: 'MSIM4303', nama: 'REKAYASA PERANGKAT LUNAK', sks: 3 },
   { kode: 'MSIM4500', nama: 'TUGAS AKHIR PROGRAM', sks: 6 }
 ];
 
-const namaSelect = document.getElementById('nama');
-const kodeInput = document.getElementById('kode');
-const sksInput = document.getElementById('sks');
-
-namaSelect.addEventListener('change', () => {
-  const selected = matkulList.find(m => m.nama === namaSelect.value);
+document.getElementById('nama').addEventListener('input', function() {
+  const selected = matkulList.find(m => m.nama === this.value);
   if (selected) {
-    kodeInput.value = selected.kode;
-    sksInput.value = selected.sks;
-  }
-});
-
-['materi','kuis','diskusi','tugas'].forEach(id => {
-  document.getElementById(id).addEventListener('change', e => {
-    const file = e.target.files[0];
-    if (file) {
-      document.getElementById('preview' + id.charAt(0).toUpperCase() + id.slice(1)).src = URL.createObjectURL(file);
-    }
-  });
-});
-
-document.getElementById('mkForm').addEventListener('submit', async function(e) {
-  e.preventDefault();
-  const semesterId = new URLSearchParams(window.location.search).get('semesterId');
-  const formData = new FormData();
-  formData.append('semesterId', semesterId);
-  formData.append('nama', namaSelect.value);
-  formData.append('kode', kodeInput.value);
-  formData.append('sks', sksInput.value);
-  formData.append('sesi', document.getElementById('sesi').value);
-  ['materi','kuis','diskusi','tugas'].forEach(id => {
-    formData.append(id, document.getElementById(id).files[0]);
-  });
-
-  const res = await fetch('/api/matakuliah/upload', {
-    method: 'POST',
-    body: formData
-  });
-
-  try {
-    const result = await res.json();
-    alert('Berhasil disimpan!');
-  } catch (err) {
-    alert('Gagal parsing respon. Pastikan server backend aktif.');
+    document.getElementById('kode').value = selected.kode;
+    document.getElementById('sks').value = selected.sks;
   }
 });
 </script>
