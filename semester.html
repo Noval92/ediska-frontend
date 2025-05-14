@@ -1,241 +1,92 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Semester - E-DISKA</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <title>Semester</title>
   <style>
-    body {
-      font-family: 'Poppins', sans-serif;
-      background: #f0f4f8;
-      padding: 20px;
-      color: #2c3e50;
+    body { font-family: Arial; background: #f4f6f9; padding: 20px; }
+    .container { max-width: 800px; margin: auto; background: white; padding: 30px;
+      border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+    .semester-box {
+      border: 2px solid #ccc;
+      border-left-width: 10px;
+      padding: 15px;
+      margin-bottom: 15px;
+      border-radius: 6px;
     }
-    .container {
-      max-width: 600px;
-      margin: auto;
-      background: white;
-      padding: 30px;
-      border-radius: 16px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-    }
-    h1 {
-      text-align: center;
-      margin-bottom: 25px;
-    }
-    label {
-      display: block;
-      margin: 15px 0 5px;
-      font-weight: 600;
-    }
-    input, select, button {
-      width: 100%;
-      padding: 12px;
-      margin-top: 5px;
-      font-size: 15px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-    }
-    button {
-      background-color: #3498db;
-      color: white;
-      border: none;
-      margin-top: 20px;
-      font-weight: bold;
-    }
-    button:hover {
-      background-color: #2980b9;
-    }
-    .list {
-      margin-top: 30px;
-    }
-    .semester-item {
-      background: #f9f9f9;
-      padding: 12px;
-      margin-bottom: 10px;
-      border-radius: 10px;
-      border-left: 4px solid #3498db;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .semester-item span {
-      flex: 1;
-    }
-    .actions button {
-      background: #e74c3c;
-      margin-left: 8px;
-      padding: 6px 10px;
-      font-size: 12px;
-    }
-    .actions .edit {
-      background: #f39c12;
-    }
+    .green { border-left-color: green; background: #e6ffe6; }
+    .red { border-left-color: red; background: #ffe6e6; }
+    .actions button { margin-right: 5px; }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>Input Semester</h1>
-    <form id="semesterForm">
-      <input type="hidden" id="editId" />
-      <label for="semester">Semester</label>
-      <select id="semester" required>
-        <option value="">-- Pilih Semester --</option>
-<option value="1">1</option>
-<option value="2">2</option>
-<option value="3">3</option>
-<option value="4">4</option>
-<option value="5">5</option>
-<option value="6">6</option>
-<option value="7">7</option>
-<option value="8">8</option>
-<option value="9">9</option>
-<option value="10">10</option>
-<option value="11">11</option>
-<option value="12">12</option>
-<option value="13">13</option>
-<option value="14">14</option>
-      </select>
-      <label for="sks">Jumlah SKS</label>
-      <input type="number" id="sks" required min="1" placeholder="Contoh: 20" />
-      <label for="periode">Tahun & Bulan</label>
-      <input type="month" id="periode" required />
-      <button type="submit">Simpan</button>
-    </form>
-
-    <div class="list">
-      <h2>Riwayat Semester</h2>
-      <div id="semesterList"></div>
-    </div>
+    <h2>Riwayat Semester</h2>
+    <div id="semesterContainer"></div>
   </div>
 
-  <script>
-    const user = JSON.parse(localStorage.getItem('user'));
-    if (!user || !user._id) {
-      alert('Silakan login terlebih dahulu');
-      location.href = 'login.html';
-    }
+<script>
+const semesterData = [
+  {{ semester: 1, sks: 0, tahun: '', bulan: '', ganjilGenap: '' }},
+  {{ semester: 2, sks: 0, tahun: '', bulan: '', ganjilGenap: '' }},
+  {{ semester: 3, sks: 0, tahun: '', bulan: '', ganjilGenap: '' }},
+  {{ semester: 4, sks: 0, tahun: '', bulan: '', ganjilGenap: '' }},
+  {{ semester: 5, sks: 0, tahun: '', bulan: '', ganjilGenap: '' }},
+  {{ semester: 6, sks: 0, tahun: '', bulan: '', ganjilGenap: '' }},
+  {{ semester: 7, sks: 0, tahun: '', bulan: '', ganjilGenap: '' }},
+  {{ semester: 8, sks: 0, tahun: '', bulan: '', ganjilGenap: '' }}
+];
 
-    const form = document.getElementById('semesterForm');
-    const semesterList = document.getElementById('semesterList');
-const semesterSelect = document.getElementById('semester');
+function renderSemesters() {
+  const container = document.getElementById("semesterContainer");
+  container.innerHTML = "";
+  semesterData.forEach(data => {
+    const isFilled = data.sks > 0;
+    const div = document.createElement("div");
+    div.className = "semester-box " + (isFilled ? "green" : "red");
+    div.innerHTML = `
+      <strong>Semester ${data.semester}</strong><br>
+      Jumlah SKS: ${data.sks}<br>
+      Periode: ${data.bulan || '-'} ${data.tahun || '-'}<br>
+      Ganjil/Genap: ${data.ganjilGenap === '1' ? 'Ganjil' : data.ganjilGenap === '2' ? 'Genap' : '-'}<br>
+      <div class="actions">
+        <button onclick="editSemester(${data.semester})">Edit</button>
+        <button onclick="resetSemester(${data.semester})">Reset</button>
+        <button onclick="isiMatkul(${data.semester})">Isi Mata Kuliah</button>
+        <button onclick="lihatMatkul(${data.semester})">Lihat Mata Kuliah</button>
+      </div>
+    `;
+    container.appendChild(div);
+  });
+}
 
-    const API = 'https://ediska-backend.onrender.com/api/semester';
-
-    async function loadSemester() {
-      const res = await fetch(`${API}/${user._id}`);
-      const data = await res.json();
-      semesterList.innerHTML = data.map(item => `
-        <div class="semester-item">
-          <span>Semester: <strong>${item.semester}</strong> – SKS: ${item.sks} – Periode: ${item.periode}</span>
-          <div class="actions">
-            <button class="edit" onclick="editSemester('${item._id}', '${item.semester}', '${item.sks}', '${item.periode}')">Edit</button>
-            <button onclick="deleteSemester('${item._id}')">Hapus</button>
-          </div>
-         – 
-          <button onclick="isiMK('${item._id}', '${item.semester}')">Isi Mata Kuliah</button>
-        </div>
-      `).join('');
-
-    }
-
-    form.addEventListener('submit', async function(e) {
-      e.preventDefault();
-      const id = document.getElementById('editId').value;
-      const semester = document.getElementById('semester').value;
-      const sks = document.getElementById('sks').value;
-      const periode = document.getElementById('periode').value;
-      
-      if (+sks > 24) {
-        alert('Maksimal SKS per semester adalah 24.');
-        return;
-      }
-
-      const payload = { userId: user._id, semester, sks, periode };
-    
-
-      const method = id ? 'PUT' : 'POST';
-      const url = id ? `${API}/${id}` : API;
-
-      const res = await fetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-      const result = await res.json();
-      if (result.error) return alert(result.error);
-
-      form.reset();
-      loadSemester();
-
-function renderSemesterOptions(existing) {
-  semesterSelect.innerHTML = '<option value="">-- Pilih Semester --</option>';
-  for (let i = 1; i <= 14; i++) {
-    if (!existing.includes(i) || (form.dataset.editingSemester == i)) {
-      semesterSelect.innerHTML += `<option value="${i}">${i}</option>`;
-    }
+function editSemester(semester) {
+  const tahun = prompt("Masukkan Tahun:");
+  const bulan = prompt("Masukkan Bulan:");
+  const ganjilGenap = prompt("Ganjil = 1, Genap = 2:");
+  const sks = parseInt(prompt("Masukkan Jumlah SKS (1–24):"));
+  if (!isNaN(sks)) {
+    const index = semesterData.findIndex(d => d.semester === semester);
+    semesterData[index] = { semester, tahun, bulan, ganjilGenap, sks };
+    renderSemesters();
   }
 }
 
-function isiMK(id, semester) {
-  
-  window.location.href = `mata-kuliah.html?semesterId=${id}&semester=${semester}`;
+function resetSemester(semester) {
+  const index = semesterData.findIndex(d => d.semester === semester);
+  semesterData[index] = { semester, sks: 0, tahun: '', bulan: '', ganjilGenap: '' };
+  renderSemesters();
 }
 
-    });
-
-    function editSemester(id, semester, sks, periode) {
-      form.dataset.editingSemester = semester;
-      renderSemesterOptions([...document.querySelectorAll('.semester-item')].map(div => {
-        const text = div.querySelector('strong').textContent;
-        return +text;
-      }));
-
-      document.getElementById('editId').value = id;
-      document.getElementById('semester').value = semester;
-      document.getElementById('sks').value = sks;
-      document.getElementById('periode').value = periode;
-      document.querySelector('button[type=submit]').textContent = 'Update';
-    }
-
-    async function deleteSemester(id) {
-      if (!confirm('Yakin ingin menghapus data ini?')) return;
-      await fetch(`${API}/${id}`, { method: 'DELETE' });
-      loadSemester();
-
-function renderSemesterOptions(existing) {
-  semesterSelect.innerHTML = '<option value="">-- Pilih Semester --</option>';
-  for (let i = 1; i <= 14; i++) {
-    if (!existing.includes(i) || (form.dataset.editingSemester == i)) {
-      semesterSelect.innerHTML += `<option value="${i}">${i}</option>`;
-    }
-  }
+function isiMatkul(semester) {
+  alert("Arahkan ke halaman input mata kuliah untuk semester " + semester);
 }
 
-function isiMK(id, semester) {
-  
-  window.location.href = `mata-kuliah.html?semesterId=${id}&semester=${semester}`;
+function lihatMatkul(semester) {
+  alert("Lihat mata kuliah semester " + semester);
 }
 
-    }
-
-    loadSemester();
-
-function renderSemesterOptions(existing) {
-  semesterSelect.innerHTML = '<option value="">-- Pilih Semester --</option>';
-  for (let i = 1; i <= 14; i++) {
-    if (!existing.includes(i) || (form.dataset.editingSemester == i)) {
-      semesterSelect.innerHTML += `<option value="${i}">${i}</option>`;
-    }
-  }
-}
-
-function isiMK(id, semester) {
-  
-  window.location.href = `mata-kuliah.html?semesterId=${id}&semester=${semester}`;
-}
-
-  </script>
+renderSemesters();
+</script>
 </body>
 </html>
