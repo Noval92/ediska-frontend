@@ -4,9 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Login E-Diska</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
+      font-family: 'Poppins', sans-serif;
       background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
       margin: 0; padding: 0;
     }
@@ -58,7 +59,7 @@
   </div>
 
   <script>
-    // Auto-fill if remembered
+    // Auto-fill jika user diingat
     window.onload = function () {
       const rememberedUser = localStorage.getItem('rememberedUser');
       if (rememberedUser) {
@@ -75,23 +76,30 @@
       const password = document.getElementById('password').value;
       const remember = document.getElementById('rememberMe').checked;
 
-      const res = await fetch('https://ediska-backend.onrender.com/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
-      });
+      try {
+        const res = await fetch('https://ediska-backend.onrender.com/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
 
-      const result = await res.json();
-      if (result.user) {
-        localStorage.setItem('user', JSON.stringify(result.user));
-        if (remember) {
-          localStorage.setItem('rememberedUser', JSON.stringify({ username, password }));
+        const result = await res.json();
+        console.log('Login response:', result); // log debugging
+
+        if (result.user) {
+          localStorage.setItem('user', JSON.stringify(result.user));
+          if (remember) {
+            localStorage.setItem('rememberedUser', JSON.stringify({ username, password }));
+          } else {
+            localStorage.removeItem('rememberedUser');
+          }
+          window.location.href = "dashboard.html";
         } else {
-          localStorage.removeItem('rememberedUser');
+          alert(result.error || "Login gagal.");
         }
-        window.location.href = "dashboard.html";
-      } else {
-        alert(result.error || "Login gagal.");
+      } catch (err) {
+        console.error("Login error:", err);
+        alert("Gagal login: koneksi bermasalah?");
       }
     });
   </script>
