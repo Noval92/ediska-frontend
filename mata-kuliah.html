@@ -1,51 +1,70 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <title>Input Mata Kuliah</title>
+  <meta charset="UTF-8">
+  <title>Form Mata Kuliah + Multi Sesi</title>
   <style>
-    body { font-family: Arial; background: #f2f2f2; padding: 20px; }
-    .container { background: white; padding: 20px; max-width: 600px; margin: auto; border-radius: 10px; }
+    body { font-family: Arial; background: #f4f6f9; padding: 20px; }
+    .container { max-width: 720px; margin: auto; background: white; padding: 30px;
+      border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
     label { display: block; margin-top: 10px; font-weight: bold; }
-    input { width: 100%; padding: 10px; margin-top: 5px; border-radius: 6px; border: 1px solid #ccc; }
+    input, select, button { width: 100%; padding: 10px; margin-top: 5px;
+      border: 1px solid #ccc; border-radius: 6px; }
+    .sesi-block {
+      margin-top: 20px; padding: 15px; background: #f9f9f9;
+      border-radius: 10px; border: 1px solid #ccc;
+    }
+    embed { width: 100%; height: 200px; margin-top: 10px; }
   </style>
 </head>
 <body>
 <div class="container">
-  <h2>Form Mata Kuliah</h2>
+  <h2>Input Mata Kuliah + Sesi</h2>
+
   <label for="nama">Nama Mata Kuliah</label>
-  <input list="namaList" id="nama" name="nama" autocomplete="off" />
-  <datalist id="namaList">
-    <option value="PENGANTAR MATEMATIKA">
-<option value="KALKULUS I">
-<option value="PENDIDIKAN AGAMA ISLAM">
-<option value="SISTEM OPERASI">
-<option value="TUGAS AKHIR PROGRAM">
-  </datalist>
+  <input id="nama" type="text" />
 
   <label for="kode">Kode Mata Kuliah</label>
-  <input type="text" id="kode" name="kode" />
+  <input id="kode" type="text" />
 
   <label for="sks">Jumlah SKS</label>
-  <input type="number" id="sks" name="sks" min="1" max="6" />
+  <input id="sks" type="number" min="1" max="6" />
+
+  <button id="addSesi" type="button">Tambah Sesi</button>
+  <div id="sesiContainer"></div>
+
+  <button id="submitBtn" type="submit">Simpan</button>
 </div>
 
 <script>
-const matkulList = [
-  { kode: 'MATA4101', nama: 'PENGANTAR MATEMATIKA', sks: 3 },
-  { kode: 'MATA4110', nama: 'KALKULUS I', sks: 3 },
-  { kode: 'MKWU4101', nama: 'PENDIDIKAN AGAMA ISLAM', sks: 3 },
-  { kode: 'MSIM4201', nama: 'SISTEM OPERASI', sks: 3 },
-  { kode: 'MSIM4500', nama: 'TUGAS AKHIR PROGRAM', sks: 6 }
-];
+let sesiIndex = 0;
 
-document.getElementById('nama').addEventListener('input', function() {
-  const selected = matkulList.find(m => m.nama === this.value);
-  if (selected) {
-    document.getElementById('kode').value = selected.kode;
-    document.getElementById('sks').value = selected.sks;
-  }
+function createSesiBlock(index) {
+  const div = document.createElement('div');
+  div.className = 'sesi-block';
+  div.innerHTML = `
+    <h3>Sesi ${index}</h3>
+    <label>Materi Inisiasi (PDF)</label>
+    <input type="file" name="materi${index}" accept="application/pdf" />
+    <label>Kuis (PDF)</label>
+    <input type="file" name="kuis${index}" accept="application/pdf" />
+    <label>Diskusi (PDF)</label>
+    <input type="file" name="diskusi${index}" accept="application/pdf" />
+    <label>Tugas (PDF)</label>
+    <input type="file" name="tugas${index}" accept="application/pdf" />
+  `;
+  return div;
+}
+
+document.getElementById('addSesi').addEventListener('click', () => {
+  sesiIndex++;
+  const sesiContainer = document.getElementById('sesiContainer');
+  const block = createSesiBlock(sesiIndex);
+  sesiContainer.appendChild(block);
 });
+
+// auto add sesi 1 by default
+document.getElementById('addSesi').click();
 </script>
 </body>
 </html>
