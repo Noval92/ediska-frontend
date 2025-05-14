@@ -7,21 +7,17 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: 'Poppins', sans-serif;
       background: #f5f7fa;
       color: #2c3e50;
+      margin: 0;
+      padding: 0;
     }
     header {
       background: white;
       box-shadow: 0 2px 8px rgba(0,0,0,0.05);
       padding: 15px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .profile-header {
       display: flex;
       align-items: center;
       gap: 12px;
@@ -33,9 +29,6 @@
     }
     .card-section {
       padding: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
     }
     .card {
       background: rgba(255, 255, 255, 0.75);
@@ -43,6 +36,7 @@
       border-radius: 16px;
       padding: 20px;
       box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+      margin-bottom: 20px;
     }
     .chart-container {
       display: flex;
@@ -61,31 +55,24 @@
       transform: translate(-50%, -50%);
       font-size: 18px;
       font-weight: bold;
-      color: #2c3e50;
-    }
-    .chart-info {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
     }
     .chart-info h2 {
-      font-size: 24px;
       margin: 0;
     }
-    .recommend-section {
+    .grid-section {
       padding: 0 20px 20px;
     }
-    .recommend-title {
+    .grid-title {
       font-size: 18px;
       font-weight: 600;
       margin-bottom: 10px;
     }
-    .recommend-grid {
+    .grid-menu {
       display: flex;
       overflow-x: auto;
       gap: 15px;
     }
-    .recommend-card {
+    .grid-card {
       background: white;
       border-radius: 16px;
       padding: 16px;
@@ -93,17 +80,16 @@
       box-shadow: 0 4px 10px rgba(0,0,0,0.06);
       text-align: center;
     }
-    .recommend-card img {
+    .grid-card img {
       width: 80px;
       height: 80px;
       object-fit: contain;
       margin-bottom: 10px;
     }
-    .recommend-card h4 {
-      font-size: 14px;
+    .grid-card h4 {
       margin: 5px 0;
     }
-    .recommend-card button {
+    .grid-card a button {
       margin-top: 10px;
       width: 100%;
       padding: 8px;
@@ -134,13 +120,11 @@
 </head>
 <body>
 
-  <header>
-    <div class="profile-header">
-      <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="Profil" />
-      <div>
-        <span style="font-weight:600;">Noval</span><br/>
-        <small>2102030119</small>
-      </div>
+  <header class="profile-header">
+    <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="Profil" />
+    <div>
+      <span style="font-weight:600;">Noval</span><br/>
+      <small>2102030119</small>
     </div>
   </header>
 
@@ -160,25 +144,25 @@
     </div>
   </div>
 
-  <div class="recommend-section">
-    <div class="recommend-title">Menu</div>
-    <div class="recommend-grid">
-      <div class="recommend-card">
+  <div class="grid-section">
+    <div class="grid-title">Menu</div>
+    <div class="grid-menu">
+      <div class="grid-card">
         <img src="Semester.png" alt="Semester">
         <h4>Semester</h4>
-        <button>Lihat</button>
+        <a href="semester.html"><button>Lihat</button></a>
       </div>
-      <div class="recommend-card">
+      <div class="grid-card">
         <img src="Arsip.png" alt="Arsip">
         <h4>Arsip</h4>
         <button>Lihat</button>
       </div>
-      <div class="recommend-card">
+      <div class="grid-card">
         <img src="Profil.png" alt="Profil">
         <h4>Profil</h4>
         <button>Lihat</button>
       </div>
-      <div class="recommend-card">
+      <div class="grid-card">
         <img src="Tambah Teman.png" alt="Tambah Teman">
         <h4>Tambah Teman</h4>
         <button>Lihat</button>
