@@ -119,6 +119,8 @@
 
     const form = document.getElementById('semesterForm');
     const semesterList = document.getElementById('semesterList');
+const semesterSelect = document.getElementById('semester');
+
     const API = 'https://ediska-backend.onrender.com/api/semester';
 
     async function loadSemester() {
@@ -144,7 +146,14 @@
       const semester = document.getElementById('semester').value;
       const sks = document.getElementById('sks').value;
       const periode = document.getElementById('periode').value;
+      
+      if (+sks > 24) {
+        alert('Maksimal SKS per semester adalah 24.');
+        return;
+      }
+
       const payload = { userId: user._id, semester, sks, periode };
+    
 
       const method = id ? 'PUT' : 'POST';
       const url = id ? `${API}/${id}` : API;
@@ -160,6 +169,15 @@
       form.reset();
       loadSemester();
 
+function renderSemesterOptions(existing) {
+  semesterSelect.innerHTML = '<option value="">-- Pilih Semester --</option>';
+  for (let i = 1; i <= 14; i++) {
+    if (!existing.includes(i) || (form.dataset.editingSemester == i)) {
+      semesterSelect.innerHTML += `<option value="${i}">${i}</option>`;
+    }
+  }
+}
+
 function isiMK(id, semester) {
   alert('Arahkan ke halaman mata kuliah untuk semester ' + semester + ' (ID: ' + id + ')');
   // Misal nanti: window.location.href = `mata-kuliah.html?semesterId=${id}`;
@@ -168,6 +186,12 @@ function isiMK(id, semester) {
     });
 
     function editSemester(id, semester, sks, periode) {
+      form.dataset.editingSemester = semester;
+      renderSemesterOptions([...document.querySelectorAll('.semester-item')].map(div => {
+        const text = div.querySelector('strong').textContent;
+        return +text;
+      }));
+
       document.getElementById('editId').value = id;
       document.getElementById('semester').value = semester;
       document.getElementById('sks').value = sks;
@@ -180,6 +204,15 @@ function isiMK(id, semester) {
       await fetch(`${API}/${id}`, { method: 'DELETE' });
       loadSemester();
 
+function renderSemesterOptions(existing) {
+  semesterSelect.innerHTML = '<option value="">-- Pilih Semester --</option>';
+  for (let i = 1; i <= 14; i++) {
+    if (!existing.includes(i) || (form.dataset.editingSemester == i)) {
+      semesterSelect.innerHTML += `<option value="${i}">${i}</option>`;
+    }
+  }
+}
+
 function isiMK(id, semester) {
   alert('Arahkan ke halaman mata kuliah untuk semester ' + semester + ' (ID: ' + id + ')');
   // Misal nanti: window.location.href = `mata-kuliah.html?semesterId=${id}`;
@@ -188,6 +221,15 @@ function isiMK(id, semester) {
     }
 
     loadSemester();
+
+function renderSemesterOptions(existing) {
+  semesterSelect.innerHTML = '<option value="">-- Pilih Semester --</option>';
+  for (let i = 1; i <= 14; i++) {
+    if (!existing.includes(i) || (form.dataset.editingSemester == i)) {
+      semesterSelect.innerHTML += `<option value="${i}">${i}</option>`;
+    }
+  }
+}
 
 function isiMK(id, semester) {
   alert('Arahkan ke halaman mata kuliah untuk semester ' + semester + ' (ID: ' + id + ')');
