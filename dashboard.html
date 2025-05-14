@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Dashboard E-DISKA</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -13,156 +14,111 @@
       color: #2c3e50;
     }
     header {
+      background: white;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      padding: 15px 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 20px 20px 10px;
-      background: white;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      flex-wrap: wrap;
     }
-    .user-info {
+    .menu-bar {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .menu-bar a {
+      text-decoration: none;
+      color: #3498db;
+      font-weight: 600;
+    }
+    .profile-header {
       display: flex;
       align-items: center;
       gap: 12px;
     }
-    .user-info img {
+    .profile-header img {
       width: 42px;
       height: 42px;
       border-radius: 50%;
     }
-    .user-info div {
-      display: flex;
-      flex-direction: column;
-    }
-    .user-info span.name {
-      font-weight: 600;
-    }
-    .user-info span.level {
-      font-size: 13px;
-      color: #666;
-    }
-    .nav-icons {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-    .nav-icons img {
-      width: 24px;
-      height: 24px;
-    }
-
-    .feature-grid {
-      display: flex;
-      overflow-x: auto;
-      gap: 20px;
-      padding: 20px;
-      background: white;
-    }
-
-    .feature-grid div {
-      text-align: center;
-      flex: 0 0 auto;
-    }
-
-    .feature-grid img {
-      width: 40px;
-      height: 40px;
-      margin-bottom: 6px;
-    }
-
     .card-section {
-      margin-top: 10px;
       padding: 20px;
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
     }
-
     .card {
       background: white;
       border-radius: 12px;
       padding: 20px;
-      margin-bottom: 20px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      flex: 1;
+      min-width: 280px;
     }
-
-    .card h3 {
-      font-size: 16px;
-      margin-bottom: 10px;
-    }
-
-    .bottom-nav {
-      position: fixed;
-      bottom: 0;
-      width: 100%;
-      background: white;
+    .chart-container {
       display: flex;
-      justify-content: space-around;
-      padding: 10px 0;
-      box-shadow: 0 -1px 6px rgba(0,0,0,0.05);
-    }
-
-    .bottom-nav a {
-      text-decoration: none;
-      color: #333;
-      font-size: 13px;
-      display: flex;
-      flex-direction: column;
       align-items: center;
+      justify-content: space-between;
+      gap: 30px;
+      flex-wrap: wrap;
     }
-
-    .bottom-nav img {
-      width: 24px;
-      height: 24px;
-      margin-bottom: 4px;
-    }
-
-    @media (min-width: 768px) {
-      .feature-grid {
-        justify-content: center;
-        overflow-x: hidden;
-      }
+    .chart-label {
+      font-size: 18px;
     }
   </style>
 </head>
 <body>
 
   <header>
-    <div class="user-info">
+    <div class="menu-bar">
+      <a href="#">Profil</a>
+      <a href="#">Arsip</a>
+      <a href="#">Nilai</a>
+      <a href="#">Semester</a>
+      <a href="#">Logout</a>
+    </div>
+    <div class="profile-header">
       <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="Profil" />
       <div>
-        <span class="name">Noval</span>
-        <span class="level">Mahasiswa - 2102030119</span>
+        <span style="font-weight:600;">Noval</span><br/>
+        <small>2102030119</small>
       </div>
     </div>
-    <div class="nav-icons">
-      <img src="https://cdn-icons-png.flaticon.com/512/54/54481.png" alt="Search" />
-      <img src="https://cdn-icons-png.flaticon.com/512/1827/1827392.png" alt="Notif" />
-    </div>
   </header>
-
-  <div class="feature-grid">
-    <div><img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png"/><div>Profil</div></div>
-    <div><img src="https://cdn-icons-png.flaticon.com/512/2991/2991139.png"/><div>Nilai</div></div>
-    <div><img src="https://cdn-icons-png.flaticon.com/512/847/847969.png"/><div>Tugas</div></div>
-    <div><img src="https://cdn-icons-png.flaticon.com/512/1240/1240822.png"/><div>Diskusi</div></div>
-    <div><img src="https://cdn-icons-png.flaticon.com/512/1828/1828490.png"/><div>Logout</div></div>
-  </div>
 
   <div class="card-section">
     <div class="card">
       <h3>IPK Saat Ini</h3>
-      <p style="font-size: 24px; font-weight: bold;">3.95</p>
-    </div>
-    <div class="card">
-      <h3>Grafik Nilai per Semester</h3>
-      <img src="https://cdn.dribbble.com/users/174981/screenshots/11682095/media/933bfa52b9cd9432c85e0a928b5fe949.png" alt="Chart Dummy" style="width: 100%; border-radius: 8px;">
+      <div class="chart-container">
+        <canvas id="ipkChart" width="120" height="120"></canvas>
+        <div class="chart-label">
+          <p>Semester Saat Ini:</p>
+          <h2>6</h2>
+        </div>
+      </div>
     </div>
   </div>
 
-  <nav class="bottom-nav">
-    <a href="#"><img src="https://cdn-icons-png.flaticon.com/512/25/25694.png" />Beranda</a>
-    <a href="#"><img src="https://cdn-icons-png.flaticon.com/512/2838/2838912.png" />Tugas</a>
-    <a href="#"><img src="https://cdn-icons-png.flaticon.com/512/1865/1865269.png" />Progress</a>
-    <a href="#"><img src="https://cdn-icons-png.flaticon.com/512/747/747376.png" />Diskusi</a>
-  </nav>
-
+  <script>
+    const ctx = document.getElementById('ipkChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: ['IPK', 'Sisa'],
+        datasets: [{
+          data: [3.95, 0.05],
+          backgroundColor: ['#2c80d3', '#ecf0f1'],
+          borderWidth: 0
+        }]
+      },
+      options: {
+        cutout: '70%',
+        plugins: {
+          legend: { display: false }
+        }
+      }
+    });
+  </script>
 </body>
 </html>
