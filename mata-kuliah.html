@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>Form Mata Kuliah + Multi Sesi</title>
+  <title>Mata Kuliah Multi Sesi</title>
   <style>
     body { font-family: Arial; background: #f4f6f9; padding: 20px; }
     .container { max-width: 720px; margin: auto; background: white; padding: 30px;
@@ -14,12 +14,12 @@
       margin-top: 20px; padding: 15px; background: #f9f9f9;
       border-radius: 10px; border: 1px solid #ccc;
     }
-    embed { width: 100%; height: 200px; margin-top: 10px; }
+    .riwayat { margin-top: 30px; background: #eef; padding: 15px; border-radius: 10px; }
   </style>
 </head>
 <body>
 <div class="container">
-  <h2>Input Mata Kuliah + Sesi</h2>
+  <h2>Input Mata Kuliah</h2>
 
   <label for="nama">Nama Mata Kuliah</label>
   <input id="nama" type="text" />
@@ -30,14 +30,19 @@
   <label for="sks">Jumlah SKS</label>
   <input id="sks" type="number" min="1" max="6" />
 
-  <button id="addSesi" type="button">Tambah Sesi</button>
   <div id="sesiContainer"></div>
 
-  <button id="submitBtn" type="submit">Simpan</button>
+  <button id="addSesi" type="button" disabled>Tambah Sesi</button>
+
+  <div class="riwayat">
+    <h3>Riwayat Sesi</h3>
+    <ul id="riwayatList"></ul>
+  </div>
 </div>
 
 <script>
-let sesiIndex = 0;
+let sesiIndex = 1;
+let riwayat = [];
 
 function createSesiBlock(index) {
   const div = document.createElement('div');
@@ -52,19 +57,36 @@ function createSesiBlock(index) {
     <input type="file" name="diskusi${index}" accept="application/pdf" />
     <label>Tugas (PDF)</label>
     <input type="file" name="tugas${index}" accept="application/pdf" />
+    <button type="button" onclick="simpanSesi(${index}, this)">Simpan Sesi ${index}</button>
   `;
   return div;
 }
 
+function simpanSesi(index, button) {
+  if (riwayat.includes(index)) {
+    alert("Sesi ini sudah disimpan.");
+    return;
+  }
+
+  riwayat.push(index);
+  const list = document.getElementById('riwayatList');
+  const item = document.createElement('li');
+  item.textContent = `Sesi ${index} disimpan`;
+  list.appendChild(item);
+  button.disabled = true;
+
+  document.getElementById('addSesi').disabled = false;
+}
+
 document.getElementById('addSesi').addEventListener('click', () => {
   sesiIndex++;
-  const sesiContainer = document.getElementById('sesiContainer');
+  document.getElementById('addSesi').disabled = true;
   const block = createSesiBlock(sesiIndex);
-  sesiContainer.appendChild(block);
+  document.getElementById('sesiContainer').appendChild(block);
 });
 
-// auto add sesi 1 by default
-document.getElementById('addSesi').click();
+// Muat sesi 1 langsung
+document.getElementById('sesiContainer').appendChild(createSesiBlock(1));
 </script>
 </body>
 </html>
