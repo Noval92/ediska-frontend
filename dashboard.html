@@ -72,18 +72,66 @@
       font-size: 24px;
       margin: 0;
     }
-    .grid-menu {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 20px;
+    .recommend-section {
       padding: 0 20px 20px;
-      text-align: center;
     }
-    .grid-menu div {
+    .recommend-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+    .recommend-grid {
+      display: flex;
+      overflow-x: auto;
+      gap: 15px;
+    }
+    .recommend-card {
       background: white;
+      border-radius: 16px;
+      padding: 16px;
+      min-width: 180px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+    }
+    .recommend-card img {
+      width: 100%;
       border-radius: 12px;
-      padding: 12px 0;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+      margin-bottom: 10px;
+    }
+    .recommend-card h4 {
+      font-size: 14px;
+      margin: 5px 0;
+    }
+    .recommend-card p {
+      font-size: 13px;
+      margin: 0;
+      color: #777;
+    }
+    .recommend-card button {
+      margin-top: 10px;
+      width: 100%;
+      padding: 8px;
+      background: #e74c3c;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    footer {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      background: white;
+      box-shadow: 0 -1px 6px rgba(0,0,0,0.05);
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 0;
+    }
+    footer a {
+      text-decoration: none;
+      color: #555;
+      font-size: 13px;
+      text-align: center;
     }
   </style>
 </head>
@@ -113,14 +161,40 @@
         </div>
       </div>
     </div>
+  </div>
 
-    <div class="grid-menu">
-      <div>Semester</div>
-      <div>Arsip</div>
-      <div>Profil</div>
-      <div>Tambah Teman</div>
+  <div class="recommend-section">
+    <div class="recommend-title">Menu</div>
+    <div class="recommend-grid">
+      <div class="recommend-card">
+        <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="Semester">
+        <h4>Semester</h4>
+        <button>Lihat</button>
+      </div>
+      <div class="recommend-card">
+        <img src="https://cdn-icons-png.flaticon.com/512/2991/2991139.png" alt="Arsip">
+        <h4>Arsip</h4>
+        <button>Lihat</button>
+      </div>
+      <div class="recommend-card">
+        <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Profil">
+        <h4>Profil</h4>
+        <button>Lihat</button>
+      </div>
+      <div class="recommend-card">
+        <img src="https://cdn-icons-png.flaticon.com/512/1828/1828911.png" alt="Tambah Teman">
+        <h4>Tambah Teman</h4>
+        <button>Lihat</button>
+      </div>
     </div>
   </div>
+
+  <footer>
+    <a href="#">🏠<br>Beranda</a>
+    <a href="#">📚<br>Nilai</a>
+    <a href="#">📝<br>Tugas</a>
+    <a href="#">💬<br>Diskusi</a>
+  </footer>
 
   <script>
     const ctx = document.getElementById('ipkChart').getContext('2d');
