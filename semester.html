@@ -2,21 +2,25 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>Semester</title>
+  <title>Semester E-DISKA</title>
   <style>
-    body { font-family: Arial; background: #f4f6f9; padding: 20px; }
-    .container { max-width: 800px; margin: auto; background: white; padding: 30px;
-      border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-    .semester-box {
-      border: 2px solid #ccc;
-      border-left-width: 10px;
-      padding: 15px;
-      margin-bottom: 15px;
-      border-radius: 6px;
+    body { font-family: Arial, sans-serif; background: #f4f6f9; margin: 0; padding: 20px; }
+    .container { max-width: 900px; margin: auto; }
+    .semester-box { 
+      border: 2px solid #ccc; border-left-width: 10px; 
+      padding: 20px; margin-bottom: 15px; border-radius: 6px;
+      background: white;
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      grid-gap: 10px; align-items: center;
     }
-    .green { border-left-color: green; background: #e6ffe6; }
-    .red { border-left-color: red; background: #ffe6e6; }
-    .actions button { margin-right: 5px; }
+    .semester-box.green { border-left-color: green; }
+    .semester-box.red { border-left-color: red; }
+    .semester-box.red { background: #ffe6e6; }
+    .semester-box.green { background: #e6ffe6; }
+    .semester-box label { display: block; font-weight: bold; margin-bottom: 5px; }
+    .actions { grid-column: 1 / -1; }
+    .actions button { margin-right: 8px; padding: 8px 12px; }
+    input, select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
   </style>
 </head>
 <body>
@@ -26,64 +30,75 @@
   </div>
 
 <script>
-const semesterData = [
-  {{ semester: 1, sks: 0, tahun: '', bulan: '', ganjilGenap: '' }},
-  {{ semester: 2, sks: 0, tahun: '', bulan: '', ganjilGenap: '' }},
-  {{ semester: 3, sks: 0, tahun: '', bulan: '', ganjilGenap: '' }},
-  {{ semester: 4, sks: 0, tahun: '', bulan: '', ganjilGenap: '' }},
-  {{ semester: 5, sks: 0, tahun: '', bulan: '', ganjilGenap: '' }},
-  {{ semester: 6, sks: 0, tahun: '', bulan: '', ganjilGenap: '' }},
-  {{ semester: 7, sks: 0, tahun: '', bulan: '', ganjilGenap: '' }},
-  {{ semester: 8, sks: 0, tahun: '', bulan: '', ganjilGenap: '' }}
-];
+const semesterData = Array.from({length:8}, (_, i) => ({
+  semester: i+1,
+  sks: 0,
+  tahun: '',
+  parity: ''
+}));
 
 function renderSemesters() {
-  const container = document.getElementById("semesterContainer");
-  container.innerHTML = "";
+  const container = document.getElementById('semesterContainer');
+  container.innerHTML = '';
   semesterData.forEach(data => {
-    const isFilled = data.sks > 0;
-    const div = document.createElement("div");
-    div.className = "semester-box " + (isFilled ? "green" : "red");
-    div.innerHTML = `
-      <strong>Semester ${data.semester}</strong><br>
-      Jumlah SKS: ${data.sks}<br>
-      Periode: ${data.bulan || '-'} ${data.tahun || '-'}<br>
-      Ganjil/Genap: ${data.ganjilGenap === '1' ? 'Ganjil' : data.ganjilGenap === '2' ? 'Genap' : '-'}<br>
+    const filled = data.sks > 0 && data.tahun !== '' && data.parity !== '';
+    const box = document.createElement('div');
+    box.className = 'semester-box ' + (filled ? 'green' : 'red');
+    box.innerHTML = `
+      <div>
+        <label>Semester</label>
+        <input type="text" value="${data.semester}" readonly>
+      </div>
+      <div>
+        <label>Jumlah SKS</label>
+        <input id="sks${data.semester}" type="number" min="0" max="24" value="${data.sks}">
+      </div>
+      <div>
+        <label>Tahun</label>
+        <input id="tahun${data.semester}" type="number" value="${data.tahun}" placeholder="e.g. 2025">
+      </div>
+      <div>
+        <label>Ganjil / Genap</label>
+        <select id="parity${data.semester}">
+          <option value="">--Pilih--</option>
+          <option value="1" ${data.parity==='1'?'selected':''}>Ganjil</option>
+          <option value="2" ${data.parity==='2'?'selected':''}>Genap</option>
+        </select>
+      </div>
       <div class="actions">
-        <button onclick="editSemester(${data.semester})">Edit</button>
+        <button onclick="saveSemester(${data.semester})">Save</button>
         <button onclick="resetSemester(${data.semester})">Reset</button>
         <button onclick="isiMatkul(${data.semester})">Isi Mata Kuliah</button>
         <button onclick="lihatMatkul(${data.semester})">Lihat Mata Kuliah</button>
       </div>
     `;
-    container.appendChild(div);
+    container.appendChild(box);
   });
 }
 
-function editSemester(semester) {
-  const tahun = prompt("Masukkan Tahun:");
-  const bulan = prompt("Masukkan Bulan:");
-  const ganjilGenap = prompt("Ganjil = 1, Genap = 2:");
-  const sks = parseInt(prompt("Masukkan Jumlah SKS (1–24):"));
-  if (!isNaN(sks)) {
-    const index = semesterData.findIndex(d => d.semester === semester);
-    semesterData[index] = { semester, tahun, bulan, ganjilGenap, sks };
-    renderSemesters();
-  }
-}
-
-function resetSemester(semester) {
-  const index = semesterData.findIndex(d => d.semester === semester);
-  semesterData[index] = { semester, sks: 0, tahun: '', bulan: '', ganjilGenap: '' };
+function saveSemester(sem) {
+  const idx = sem - 1;
+  const sksEl = document.getElementById('sks'+sem);
+  const tahunEl = document.getElementById('tahun'+sem);
+  const parityEl = document.getElementById('parity'+sem);
+  semesterData[idx].sks = parseInt(sksEl.value) || 0;
+  semesterData[idx].tahun = tahunEl.value;
+  semesterData[idx].parity = parityEl.value;
   renderSemesters();
 }
 
-function isiMatkul(semester) {
-  alert("Arahkan ke halaman input mata kuliah untuk semester " + semester);
+function resetSemester(sem) {
+  const idx = sem - 1;
+  semesterData[idx] = { semester: sem, sks: 0, tahun: '', parity: '' };
+  renderSemesters();
 }
 
-function lihatMatkul(semester) {
-  alert("Lihat mata kuliah semester " + semester);
+function isiMatkul(sem) {
+  window.location.href = 'mata-kuliah.html?semester='+sem;
+}
+
+function lihatMatkul(sem) {
+  window.location.href = 'riwayat-matakuliah.html?semester='+sem;
 }
 
 renderSemesters();
