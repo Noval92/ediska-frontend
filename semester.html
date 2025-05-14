@@ -4,23 +4,95 @@
   <meta charset="UTF-8">
   <title>Semester E-DISKA</title>
   <style>
-    body { font-family: Arial, sans-serif; background: #f4f6f9; margin: 0; padding: 20px; }
-    .container { max-width: 900px; margin: auto; }
-    .semester-box { 
-      border: 2px solid #ccc; border-left-width: 10px; 
-      padding: 20px; margin-bottom: 15px; border-radius: 6px;
-      background: white;
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      grid-gap: 10px; align-items: center;
+    body {
+      font-family: 'Poppins', Arial, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+      margin: 0; padding: 0;
     }
-    .semester-box.green { border-left-color: green; }
-    .semester-box.red { border-left-color: red; }
-    .semester-box.red { background: #ffe6e6; }
-    .semester-box.green { background: #e6ffe6; }
-    .semester-box label { display: block; font-weight: bold; margin-bottom: 5px; }
-    .actions { grid-column: 1 / -1; }
-    .actions button { margin-right: 8px; padding: 8px 12px; }
-    input, select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+    .container {
+      max-width: 960px;
+      margin: 40px auto;
+      padding: 32px;
+      border-radius: 22px;
+      box-shadow: 0 8px 36px rgba(0,0,0,0.12), 0 1.5px 4px rgba(0,0,0,0.06);
+      background: rgba(255,255,255,0.45);
+      backdrop-filter: blur(10px);
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 36px;
+      font-weight: 700;
+      color: #223;
+    }
+    .semester-box {
+      padding: 28px 20px 18px 20px;
+      margin-bottom: 20px;
+      border-radius: 18px;
+      box-shadow: 0 2px 14px rgba(40, 40, 65, 0.07);
+      background: rgba(255,255,255,0.37);
+      border: 2.5px solid rgba(140,160,240,0.18);
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 18px 16px;
+      align-items: center;
+      transition: border-left-color 0.4s;
+    }
+    .semester-box.green {
+      border-left: 8px solid #45df73;
+      background: rgba(210,255,215,0.28);
+    }
+    .semester-box.red {
+      border-left: 8px solid #ff5c5c;
+      background: rgba(255,200,200,0.25);
+    }
+    label {
+      font-size: 1em;
+      color: #2b3648;
+      font-weight: 600;
+      margin-bottom: 5px;
+      letter-spacing: 0.03em;
+      display: block;
+    }
+    input, select {
+      width: 100%;
+      padding: 8px 9px;
+      margin-top: 4px;
+      border: 1px solid #b7bbcf;
+      border-radius: 7px;
+      font-size: 1em;
+      outline: none;
+      background: rgba(255,255,255,0.66);
+      font-family: inherit;
+    }
+    input[readonly] {
+      background: rgba(230,230,230,0.18);
+      color: #9fa4b8;
+      font-weight: bold;
+    }
+    .actions {
+      grid-column: 1 / -1;
+      text-align: right;
+      margin-top: 5px;
+    }
+    .actions button {
+      margin-right: 6px;
+      margin-top: 4px;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 15px;
+      font-size: 1em;
+      font-weight: 500;
+      background: #5379fa;
+      color: #fff;
+      box-shadow: 0 1.5px 4px rgba(70,100,240,0.10);
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .actions button:last-child {margin-right:0;}
+    .actions button:hover {
+      background: #3656b7;
+    }
   </style>
 </head>
 <body>
@@ -28,7 +100,6 @@
     <h2>Riwayat Semester</h2>
     <div id="semesterContainer"></div>
   </div>
-
 <script>
 const semesterData = Array.from({length:8}, (_, i) => ({
   semester: i+1,
