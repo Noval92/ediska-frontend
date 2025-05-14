@@ -20,7 +20,12 @@
       background: rgba(255,255,255,0.45);
       backdrop-filter: blur(10px);
     }
-    .header { display: flex; align-items: center; margin-bottom: 24px; }
+    .header { 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      margin-bottom: 24px; 
+    }
     .header img { width: 40px; margin-right: 12px; }
     .semester-box {
       padding: 20px; margin-bottom: 15px;
@@ -29,6 +34,7 @@
       border-left: 8px solid red;
       display: grid; gap: 16px;
       grid-template-columns: repeat(auto-fit,minmax(180px,1fr));
+      position: relative;
     }
     .semester-box.green { border-left-color: #4caf50; }
     label { font-weight: 600; margin-bottom: 6px; }
@@ -44,7 +50,12 @@
       border: none; background: #5379fa; color: #fff;
       cursor: pointer; margin-left: 6px;
     }
-    .actions button:hover { background: #3656b7; }
+    .hapus-semester {
+      position: absolute; top: 8px; right: 10px; 
+      background: #ff6b6b; color: white; border: none;
+      border-radius: 50%; width: 30px; height: 30px; 
+      cursor: pointer; font-weight: bold;
+    }
     #tambahSemester {
       padding: 12px 20px; margin-top: 10px;
       background: #32c787; color: white; border-radius: 8px;
@@ -63,7 +74,7 @@
 <div class="container">
   <div class="header">
     <img src="logo-ediska.png" alt="E-DISKA Logo">
-    <h2>Semester</h2>
+    <h2>SEMESTER</h2>
   </div>
   <div id="semesterContainer"></div>
   <button id="tambahSemester">Tambah Semester</button>
@@ -88,6 +99,7 @@ function renderSemesters() {
     const box=document.createElement('div');
     box.className='semester-box '+(filled?'green':'red');
     box.innerHTML=`
+      ${data.semester > 8 ? `<button class="hapus-semester" onclick="hapusSemester(${data.semester})">X</button>`:''}
       <div>
         <label>Semester</label>
         <input type="text" value="${data.semester}" readonly>
@@ -119,7 +131,7 @@ function renderSemesters() {
 }
 
 function save(sem) {
-  const idx=sem-1;
+  const idx=semesterData.findIndex(d=>d.semester===sem);
   semesterData[idx]={
     semester: sem,
     sks: parseInt(document.getElementById(`sks${sem}`).value)||0,
@@ -130,15 +142,20 @@ function save(sem) {
 }
 
 function reset(sem) {
-  semesterData[sem-1]={semester:sem,sks:0,tahun:'',parity:''};
+  const idx=semesterData.findIndex(d=>d.semester===sem);
+  semesterData[idx]={semester:sem,sks:0,tahun:'',parity:''};
   renderSemesters();
 }
 
 function isi(sem){location.href=`mata-kuliah.html?semester=${sem}`;}
 function lihat(sem){location.href=`riwayat-matakuliah.html?semester=${sem}`;}
+function hapusSemester(sem){
+  semesterData=semesterData.filter(d=>d.semester!==sem);
+  renderSemesters();
+}
 
 document.getElementById('tambahSemester').onclick=()=>{
-  const newSem=semesterData.length+1;
+  const newSem=semesterData.length?Math.max(...semesterData.map(s=>s.semester))+1:9;
   semesterData.push({semester:newSem,sks:0,tahun:'',parity:''});
   renderSemesters();
 };
