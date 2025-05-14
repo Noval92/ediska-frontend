@@ -49,12 +49,12 @@
   <div class="container">
     <h1>Isi Mata Kuliah</h1>
     <form id="mkForm">
-      <label for="kode">Kode Mata Kuliah</label>
-      <input list="kodeList" id="kode" name="kode" required />
-      <datalist id="kodeList"></datalist>
-
       <label for="nama">Nama Mata Kuliah</label>
-      <input type="text" id="nama" required />
+      <input list="namaList" id="nama" name="nama" required />
+      <datalist id="namaList"></datalist>
+
+      <label for="kode">Kode Mata Kuliah</label>
+      <input type="text" id="kode" required />
 
       <label for="sks">Jumlah SKS</label>
       <input type="number" id="sks" min="1" max="6" required />
@@ -135,37 +135,28 @@
 const matkulList = [
   { kode: 'MATA4101', nama: 'PENGANTAR MATEMATIKA', sks: 3 },
   { kode: 'MATA4110', nama: 'KALKULUS I', sks: 3 },
-  { kode: 'MKWU4101', nama: 'PENDIDIKAN AGAMA ISLAM', sks: 3 },
-  { kode: 'MKWU4108', nama: 'BAHASA INDONESIA', sks: 3 },
-  { kode: 'MKWU4109', nama: 'PENDIDIKAN KEWARGANEGARAAN', sks: 3 },
-  { kode: 'MSIM4101', nama: 'PENGANTAR SISTEM INFORMASI', sks: 3 },
-  { kode: 'EKMA4111', nama: 'PENGANTAR BISNIS', sks: 3 },
-  { kode: 'EKMA4116', nama: 'MANAJEMEN', sks: 4 },
-  { kode: 'MATA4112', nama: 'ALJABAR LINEAR ELEMENTER I', sks: 2 },
-  { kode: 'MKWI4201', nama: 'BAHASA INGGRIS', sks: 3 },
   { kode: 'MSIM4201', nama: 'SISTEM OPERASI', sks: 3 },
-  { kode: 'MSIM4308', nama: 'ADMINISTRASI SERVER', sks: 3 },
-  { kode: 'MSIM4500', nama: 'TUGAS AKHIR PROGRAM', sks: 6 }
-  // Tambahkan data lain sesuai daftar kamu
+  { kode: 'MSIM4500', nama: 'TUGAS AKHIR PROGRAM', sks: 6 },
+  { kode: 'MSIM4315', nama: 'DATA WAREHOUSE', sks: 3 }
 ];
 
-const kodeInput = document.getElementById('kode');
 const namaInput = document.getElementById('nama');
+const kodeInput = document.getElementById('kode');
 const sksInput = document.getElementById('sks');
-const kodeList = document.getElementById('kodeList');
+const namaList = document.getElementById('namaList');
 
-// Isi datalist kode
+// Isi datalist nama
 matkulList.forEach(item => {
   const opt = document.createElement('option');
-  opt.value = item.kode;
-  kodeList.appendChild(opt);
+  opt.value = item.nama;
+  namaList.appendChild(opt);
 });
 
-// Update nama dan sks otomatis saat pilih kode
-kodeInput.addEventListener('input', () => {
-  const selected = matkulList.find(item => item.kode === kodeInput.value);
+// Update kode dan sks otomatis saat pilih nama
+namaInput.addEventListener('input', () => {
+  const selected = matkulList.find(item => item.nama === namaInput.value);
   if (selected) {
-    namaInput.value = selected.nama;
+    kodeInput.value = selected.kode;
     sksInput.value = selected.sks;
   }
 });
