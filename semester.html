@@ -3,119 +3,91 @@
 <head>
   <meta charset="UTF-8">
   <title>Semester E-DISKA</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700">
   <style>
     body {
-      font-family: 'Poppins', Arial, sans-serif;
+      font-family: 'Poppins', sans-serif;
       background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
       min-height: 100vh;
-      margin: 0; padding: 0;
+      margin: 0; padding-bottom: 80px;
     }
     .container {
       max-width: 960px;
       margin: 40px auto;
       padding: 32px;
       border-radius: 22px;
-      box-shadow: 0 8px 36px rgba(0,0,0,0.12), 0 1.5px 4px rgba(0,0,0,0.06);
+      box-shadow: 0 8px 36px rgba(0,0,0,0.12);
       background: rgba(255,255,255,0.45);
       backdrop-filter: blur(10px);
     }
-    h2 {
-      text-align: center;
-      margin-bottom: 36px;
-      font-weight: 700;
-      color: #223;
-    }
+    .header { display: flex; align-items: center; margin-bottom: 24px; }
+    .header img { width: 40px; margin-right: 12px; }
     .semester-box {
-      padding: 28px 20px 18px 20px;
-      margin-bottom: 20px;
-      border-radius: 18px;
-      box-shadow: 0 2px 14px rgba(40, 40, 65, 0.07);
-      background: rgba(255,255,255,0.37);
-      border: 2.5px solid rgba(140,160,240,0.18);
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 18px 16px;
-      align-items: center;
-      transition: border-left-color 0.4s;
+      padding: 20px; margin-bottom: 15px;
+      border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      background: rgba(255,255,255,0.5);
+      border-left: 8px solid red;
+      display: grid; gap: 16px;
+      grid-template-columns: repeat(auto-fit,minmax(180px,1fr));
     }
-    .semester-box.green {
-      border-left: 8px solid #45df73;
-      background: rgba(210,255,215,0.28);
-    }
-    .semester-box.red {
-      border-left: 8px solid #ff5c5c;
-      background: rgba(255,200,200,0.25);
-    }
-    label {
-      font-size: 1em;
-      color: #2b3648;
-      font-weight: 600;
-      margin-bottom: 5px;
-      letter-spacing: 0.03em;
-      display: block;
-    }
+    .semester-box.green { border-left-color: #4caf50; }
+    label { font-weight: 600; margin-bottom: 6px; }
     input, select {
-      width: 100%;
-      padding: 8px 9px;
-      margin-top: 4px;
-      border: 1px solid #b7bbcf;
-      border-radius: 7px;
-      font-size: 1em;
-      outline: none;
-      background: rgba(255,255,255,0.66);
-      font-family: inherit;
-    }
-    input[readonly] {
-      background: rgba(230,230,230,0.18);
-      color: #9fa4b8;
-      font-weight: bold;
+      width: 100%; padding: 8px; border-radius: 6px;
+      border: 1px solid #ddd; background: #fff;
     }
     .actions {
-      grid-column: 1 / -1;
-      text-align: right;
-      margin-top: 5px;
+      grid-column: 1/-1; text-align: right;
     }
     .actions button {
-      margin-right: 6px;
-      margin-top: 4px;
-      border: none;
-      border-radius: 6px;
-      padding: 8px 15px;
-      font-size: 1em;
-      font-weight: 500;
-      background: #5379fa;
-      color: #fff;
-      box-shadow: 0 1.5px 4px rgba(70,100,240,0.10);
-      cursor: pointer;
-      transition: background 0.2s;
+      padding: 8px 12px; border-radius: 6px;
+      border: none; background: #5379fa; color: #fff;
+      cursor: pointer; margin-left: 6px;
     }
-    .actions button:last-child {margin-right:0;}
-    .actions button:hover {
-      background: #3656b7;
+    .actions button:hover { background: #3656b7; }
+    #tambahSemester {
+      padding: 12px 20px; margin-top: 10px;
+      background: #32c787; color: white; border-radius: 8px;
+      cursor: pointer; border: none; width: 100%;
     }
+    nav {
+      position: fixed; bottom: 0; left: 0; width: 100%;
+      background: rgba(255,255,255,0.95); padding: 10px 0;
+      display: flex; justify-content: space-around;
+      box-shadow: 0 -2px 8px rgba(0,0,0,0.06);
+    }
+    nav a { color: #333; text-decoration: none; font-size: 14px; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h2>Riwayat Semester</h2>
-    <div id="semesterContainer"></div>
+<div class="container">
+  <div class="header">
+    <img src="logo-ediska.png" alt="E-DISKA Logo">
+    <h2>Semester</h2>
   </div>
+  <div id="semesterContainer"></div>
+  <button id="tambahSemester">Tambah Semester</button>
+</div>
+
+<nav>
+  <a href="dashboard.html">Dashboard</a>
+  <a href="profil.html">Profil</a>
+  <a href="semester.html">Semester</a>
+  <a href="mata-kuliah.html">Mata Kuliah</a>
+  <a href="logout.html">Logout</a>
+</nav>
+
 <script>
-const semesterData = Array.from({length:8}, (_, i) => ({
-  semester: i+1,
-  sks: 0,
-  tahun: '',
-  parity: ''
-}));
+let semesterData = Array.from({length:8}, (_,i)=>({semester:i+1,sks:0,tahun:'',parity:''}));
 
 function renderSemesters() {
-  const container = document.getElementById('semesterContainer');
-  container.innerHTML = '';
-  semesterData.forEach(data => {
-    const filled = data.sks > 0 && data.tahun !== '' && data.parity !== '';
-    const box = document.createElement('div');
-    box.className = 'semester-box ' + (filled ? 'green' : 'red');
-    box.innerHTML = `
+  const container=document.getElementById('semesterContainer');
+  container.innerHTML='';
+  semesterData.forEach(data=>{
+    const filled=data.sks>0&&data.tahun!==''&&data.parity!=='';
+    const box=document.createElement('div');
+    box.className='semester-box '+(filled?'green':'red');
+    box.innerHTML=`
       <div>
         <label>Semester</label>
         <input type="text" value="${data.semester}" readonly>
@@ -126,10 +98,10 @@ function renderSemesters() {
       </div>
       <div>
         <label>Tahun</label>
-        <input id="tahun${data.semester}" type="number" value="${data.tahun}" placeholder="e.g. 2025">
+        <input id="tahun${data.semester}" type="number" value="${data.tahun}">
       </div>
       <div>
-        <label>Ganjil / Genap</label>
+        <label>Ganjil/Genap</label>
         <select id="parity${data.semester}">
           <option value="">--Pilih--</option>
           <option value="1" ${data.parity==='1'?'selected':''}>Ganjil</option>
@@ -137,40 +109,39 @@ function renderSemesters() {
         </select>
       </div>
       <div class="actions">
-        <button onclick="saveSemester(${data.semester})">Save</button>
-        <button onclick="resetSemester(${data.semester})">Reset</button>
-        <button onclick="isiMatkul(${data.semester})">Isi Mata Kuliah</button>
-        <button onclick="lihatMatkul(${data.semester})">Lihat Mata Kuliah</button>
-      </div>
-    `;
+        <button onclick="save(${data.semester})">Save</button>
+        <button onclick="reset(${data.semester})">Reset</button>
+        <button onclick="isi(${data.semester})">Isi Mata Kuliah</button>
+        <button onclick="lihat(${data.semester})">Lihat Mata Kuliah</button>
+      </div>`;
     container.appendChild(box);
   });
 }
 
-function saveSemester(sem) {
-  const idx = sem - 1;
-  const sksEl = document.getElementById('sks'+sem);
-  const tahunEl = document.getElementById('tahun'+sem);
-  const parityEl = document.getElementById('parity'+sem);
-  semesterData[idx].sks = parseInt(sksEl.value) || 0;
-  semesterData[idx].tahun = tahunEl.value;
-  semesterData[idx].parity = parityEl.value;
+function save(sem) {
+  const idx=sem-1;
+  semesterData[idx]={
+    semester: sem,
+    sks: parseInt(document.getElementById(`sks${sem}`).value)||0,
+    tahun: document.getElementById(`tahun${sem}`).value,
+    parity: document.getElementById(`parity${sem}`).value
+  };
   renderSemesters();
 }
 
-function resetSemester(sem) {
-  const idx = sem - 1;
-  semesterData[idx] = { semester: sem, sks: 0, tahun: '', parity: '' };
+function reset(sem) {
+  semesterData[sem-1]={semester:sem,sks:0,tahun:'',parity:''};
   renderSemesters();
 }
 
-function isiMatkul(sem) {
-  window.location.href = 'mata-kuliah.html?semester='+sem;
-}
+function isi(sem){location.href=`mata-kuliah.html?semester=${sem}`;}
+function lihat(sem){location.href=`riwayat-matakuliah.html?semester=${sem}`;}
 
-function lihatMatkul(sem) {
-  window.location.href = 'riwayat-matakuliah.html?semester='+sem;
-}
+document.getElementById('tambahSemester').onclick=()=>{
+  const newSem=semesterData.length+1;
+  semesterData.push({semester:newSem,sks:0,tahun:'',parity:''});
+  renderSemesters();
+};
 
 renderSemesters();
 </script>
