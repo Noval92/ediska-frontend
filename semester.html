@@ -23,7 +23,6 @@
     h1 {
       text-align: center;
       margin-bottom: 25px;
-      font-size: 22px;
     }
     label {
       display: block;
@@ -51,16 +50,27 @@
     .list {
       margin-top: 30px;
     }
-    .list h2 {
-      font-size: 18px;
-      margin-bottom: 10px;
-    }
     .semester-item {
       background: #f9f9f9;
       padding: 12px;
       margin-bottom: 10px;
       border-radius: 10px;
       border-left: 4px solid #3498db;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .semester-item span {
+      flex: 1;
+    }
+    .actions button {
+      background: #e74c3c;
+      margin-left: 8px;
+      padding: 6px 10px;
+      font-size: 12px;
+    }
+    .actions .edit {
+      background: #f39c12;
     }
   </style>
 </head>
@@ -68,10 +78,11 @@
   <div class="container">
     <h1>Input Semester</h1>
     <form id="semesterForm">
+      <input type="hidden" id="editId" />
       <label for="semester">Semester</label>
       <select id="semester" required>
         <option value="">-- Pilih Semester --</option>
-        <option value="1">1</option>
+<option value="1">1</option>
 <option value="2">2</option>
 <option value="3">3</option>
 <option value="4">4</option>
@@ -86,13 +97,10 @@
 <option value="13">13</option>
 <option value="14">14</option>
       </select>
-
       <label for="sks">Jumlah SKS</label>
       <input type="number" id="sks" required min="1" placeholder="Contoh: 20" />
-
       <label for="periode">Tahun & Bulan</label>
       <input type="month" id="periode" required />
-
       <button type="submit">Simpan</button>
     </form>
 
@@ -109,46 +117,83 @@
       location.href = 'login.html';
     }
 
-    const semesterList = document.getElementById('semesterList');
     const form = document.getElementById('semesterForm');
+    const semesterList = document.getElementById('semesterList');
     const API = 'https://ediska-backend.onrender.com/api/semester';
-
-    function renderList(data) {
-      semesterList.innerHTML = data.map(item => `
-        <div class="semester-item">
-          Semester: <strong>${item.semester}</strong> – SKS: ${item.sks} – Periode: ${item.periode}
-        </div>
-      `).join('');
-    }
 
     async function loadSemester() {
       const res = await fetch(`${API}/${user._id}`);
       const data = await res.json();
-      renderList(data);
+      semesterList.innerHTML = data.map(item => `
+        <div class="semester-item">
+          <span>Semester: <strong>${item.semester}</strong> – SKS: ${item.sks} – Periode: ${item.periode}</span>
+          <div class="actions">
+            <button class="edit" onclick="editSemester('${item._id}', '${item.semester}', '${item.sks}', '${item.periode}')">Edit</button>
+            <button onclick="deleteSemester('${item._id}')">Hapus</button>
+          </div>
+         – 
+          <button onclick="isiMK('${item._id}', '${item.semester}')">Isi Mata Kuliah</button>
+        </div>
+      `).join('');
+
     }
 
     form.addEventListener('submit', async function(e) {
       e.preventDefault();
+      const id = document.getElementById('editId').value;
       const semester = document.getElementById('semester').value;
       const sks = document.getElementById('sks').value;
       const periode = document.getElementById('periode').value;
-
       const payload = { userId: user._id, semester, sks, periode };
 
-      const res = await fetch(API, {
-        method: 'POST',
+      const method = id ? 'PUT' : 'POST';
+      const url = id ? `${API}/${id}` : API;
+
+      const res = await fetch(url, {
+        method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
-
       const result = await res.json();
       if (result.error) return alert(result.error);
 
-      loadSemester();
       form.reset();
+      loadSemester();
+
+function isiMK(id, semester) {
+  alert('Arahkan ke halaman mata kuliah untuk semester ' + semester + ' (ID: ' + id + ')');
+  // Misal nanti: window.location.href = `mata-kuliah.html?semesterId=${id}`;
+}
+
     });
 
+    function editSemester(id, semester, sks, periode) {
+      document.getElementById('editId').value = id;
+      document.getElementById('semester').value = semester;
+      document.getElementById('sks').value = sks;
+      document.getElementById('periode').value = periode;
+      document.querySelector('button[type=submit]').textContent = 'Update';
+    }
+
+    async function deleteSemester(id) {
+      if (!confirm('Yakin ingin menghapus data ini?')) return;
+      await fetch(`${API}/${id}`, { method: 'DELETE' });
+      loadSemester();
+
+function isiMK(id, semester) {
+  alert('Arahkan ke halaman mata kuliah untuk semester ' + semester + ' (ID: ' + id + ')');
+  // Misal nanti: window.location.href = `mata-kuliah.html?semesterId=${id}`;
+}
+
+    }
+
     loadSemester();
+
+function isiMK(id, semester) {
+  alert('Arahkan ke halaman mata kuliah untuk semester ' + semester + ' (ID: ' + id + ')');
+  // Misal nanti: window.location.href = `mata-kuliah.html?semesterId=${id}`;
+}
+
   </script>
 </body>
 </html>
