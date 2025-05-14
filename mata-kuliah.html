@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>Form Dinamis Sesi Mata Kuliah</title>
+  <title>Form Mata Kuliah + Sesi</title>
   <style>
     body { font-family: Arial; background: #f4f6f9; padding: 20px; }
     .container { max-width: 720px; margin: auto; background: white; padding: 30px;
@@ -18,16 +18,27 @@
 </head>
 <body>
 <div class="container">
-  <h2>Form Sesi Mata Kuliah</h2>
+  <h2>Input Mata Kuliah</h2>
+
+  <label for="nama">Nama Mata Kuliah</label>
+  <input id="nama" type="text" />
+
+  <label for="kode">Kode Mata Kuliah</label>
+  <input id="kode" type="text" />
+
+  <label for="sks">Jumlah SKS</label>
+  <input id="sks" type="number" min="1" max="6" />
+
+  <button id="addSesi" type="button" disabled>Tambah Sesi</button>
 
   <div id="sesiContainer"></div>
-  <button id="addSesi" disabled>Tambah Sesi</button>
 
   <div class="riwayat">
     <h3>Riwayat Sesi</h3>
     <ul id="riwayatList"></ul>
   </div>
 </div>
+
 <script>
 let sesiIndex = 1;
 let riwayat = [];
@@ -36,6 +47,7 @@ function createSesiBlock(index) {
   const div = document.createElement('div');
   div.className = 'sesi-block';
   div.id = `sesi${index}`;
+
   div.innerHTML = `
     <h3>Sesi ${index} - Nama Matkulnya apa?</h3>
     <label>1. Hal apa yang dipelajari?</label>
@@ -71,6 +83,7 @@ function createSesiBlock(index) {
 
     <button type="button" onclick="simpanSesi(${index}, this)">Simpan Sesi ${index}</button>
   `;
+
   return div;
 }
 
