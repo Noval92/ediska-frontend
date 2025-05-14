@@ -43,6 +43,12 @@
       border-radius: 10px;
       border: 1px solid #ccc;
     }
+    embed {
+      width: 100%;
+      height: 200px;
+      margin-top: 10px;
+      border: 1px solid #ddd;
+    }
   </style>
 </head>
 <body>
@@ -50,8 +56,7 @@
     <h1>Isi Mata Kuliah</h1>
     <form id="mkForm">
       <label for="nama">Nama Mata Kuliah</label>
-      <input list="namaList" id="nama" name="nama" required />
-      <datalist id="namaList"></datalist>
+      <input type="text" id="nama" required />
 
       <label for="kode">Kode Mata Kuliah</label>
       <input type="text" id="kode" required />
@@ -59,14 +64,10 @@
       <label for="sks">Jumlah SKS</label>
       <input type="number" id="sks" min="1" max="6" required />
 
-      <button type="submit">Simpan Mata Kuliah</button>
-    </form>
-
-    <div class="sesi">
       <label for="sesi">Pilih Sesi</label>
-      <select id="sesi">
+      <select id="sesi" required>
         <option value="">-- Pilih Sesi --</option>
-        <option value="1">Sesi 1</option>
+<option value="1">Sesi 1</option>
 <option value="2">Sesi 2</option>
 <option value="3">Sesi 3</option>
 <option value="4">Sesi 4</option>
@@ -118,103 +119,72 @@
 <option value="50">Sesi 50</option>
       </select>
 
-      <div id="sesiForm" style="display:none; margin-top:20px;">
+      <div class="sesi">
         <label>Materi Inisiasi (PDF)</label>
-        <input type="file" accept="application/pdf">
+        <input type="file" id="materi" accept="application/pdf" required>
+        <embed id="previewMateri">
+
         <label>Kuis (PDF)</label>
-        <input type="file" accept="application/pdf">
+        <input type="file" id="kuis" accept="application/pdf" required>
+        <embed id="previewKuis">
+
         <label>Diskusi (PDF)</label>
-        <input type="file" accept="application/pdf">
+        <input type="file" id="diskusi" accept="application/pdf" required>
+        <embed id="previewDiskusi">
+
         <label>Tugas (PDF)</label>
-        <input type="file" accept="application/pdf">
+        <input type="file" id="tugas" accept="application/pdf" required>
+        <embed id="previewTugas">
       </div>
-    </div>
+
+      <button type="submit">Simpan</button>
+    </form>
   </div>
 
 <script>
-const matkulList = [
-  { kode: 'MATA4101', nama: 'PENGANTAR MATEMATIKA', sks: 3 },
-  { kode: 'MATA4110', nama: 'KALKULUS I', sks: 3 },
-  { kode: 'MKWU4101', nama: 'PENDIDIKAN AGAMA ISLAM', sks: 3 },
-  { kode: 'MKWU4108', nama: 'BAHASA INDONESIA', sks: 3 },
-  { kode: 'MKWU4109', nama: 'PENDIDIKAN KEWARGANEGARAAN', sks: 3 },
-  { kode: 'MSIM4101', nama: 'PENGANTAR SISTEM INFORMASI', sks: 3 },
-  { kode: 'EKMA4111', nama: 'PENGANTAR BISNIS', sks: 3 },
-  { kode: 'EKMA4116', nama: 'MANAJEMEN', sks: 4 },
-  { kode: 'MATA4112', nama: 'ALJABAR LINEAR ELEMENTER I', sks: 2 },
-  { kode: 'MKWI4201', nama: 'BAHASA INGGRIS', sks: 3 },
-  { kode: 'MSIM4103', nama: 'LOGIKA INFORMATIKA', sks: 3 },
-  { kode: 'SATS4111', nama: 'KOMPUTER I', sks: 3 },
-  { kode: 'ADPU4341', nama: 'TEORI ORGANISASI', sks: 3 },
-  { kode: 'BING4102', nama: 'READING I', sks: 3 },
-  { kode: 'EKMA4158', nama: 'PERILAKU ORGANISASI', sks: 3 },
-  { kode: 'MSIM4201', nama: 'SISTEM OPERASI', sks: 3 },
-  { kode: 'MSIM4202', nama: 'STRUKTUR DATA', sks: 3 },
-  { kode: 'SATS4121', nama: 'METODE STATISTIK I', sks: 3 },
-  { kode: 'MKWI4202', nama: 'BELAJAR DI ERA DIGITAL', sks: 3 },
-  { kode: 'MSIM4203', nama: 'ALGORITMA DAN PEMROGRAMAN', sks: 3 },
-  { kode: 'MSIM4204', nama: 'JARINGAN KOMPUTER', sks: 3 },
-  { kode: 'MSIM4205', nama: 'PROSES BISNIS', sks: 2 },
-  { kode: 'MSIM4206', nama: 'BASIS DATA', sks: 3 },
-  { kode: 'MSIM4207', nama: 'SISTEM INFORMASI MANAJEMEN', sks: 3 },
-  { kode: 'MSIM4208', nama: 'INTERAKSI MANUSIA DAN KOMPUTER', sks: 3 },
-  { kode: 'MSIM4301', nama: 'PEMROGRAMAN BERBASIS DESKTOP', sks: 3 },
-  { kode: 'MSIM4302', nama: 'ANALISIS DAN PERANCANGAN SISTEM', sks: 3 },
-  { kode: 'MSIM4303', nama: 'REKAYASA PERANGKAT LUNAK', sks: 3 },
-  { kode: 'MSIM4304', nama: 'DASAR INFRASTRUKTUR TI', sks: 2 },
-  { kode: 'MSIM4305', nama: 'MANAJEMEN RESIKO DAN AUDIT SISTEM INFORMASI', sks: 3 },
-  { kode: 'MSIM4306', nama: 'KOMUNIKASI BISNIS DAN TEKNIS', sks: 2 },
-  { kode: 'MSIM4307', nama: 'SISTEM PENDUKUNG KEPUTUSAN', sks: 3 },
-  { kode: 'MSIM4308', nama: 'ADMINISTRASI SERVER', sks: 3 },
-  { kode: 'LUHT4353', nama: 'TEKNIK PENULISAN ILMIAH', sks: 2 },
-  { kode: 'MSIM4309', nama: 'PEMROGRAMAN BERBASIS WEB', sks: 3 },
-  { kode: 'MSIM4310', nama: 'ANALISIS DAN VISUALISASI DATA', sks: 2 },
-  { kode: 'MSIM4311', nama: 'ARSITEKTUR DAN PERANCANGAN SISTEM ENTERPRISE', sks: 3 },
-  { kode: 'MSIM4312', nama: 'METODOLOGI PENELITIAN', sks: 3 },
-  { kode: 'MSIM4315', nama: 'DATA WAREHOUSE', sks: 3 },
-  { kode: 'MSIM4316', nama: 'ADMINISTRASI JARINGAN', sks: 3 },
-  { kode: 'STSI4401', nama: 'Capstone Project', sks: 4 },
-  { kode: 'MKWI4203', nama: 'KEWIRAUSAHAAN DI ERA DIGITAL', sks: 3 },
-  { kode: 'MSIM4401', nama: 'PEMROGRAMAN BERBASIS PERANGKAT BERGERAK', sks: 3 },
-  { kode: 'MSIM4402', nama: 'TATA KELOLA TEKNOLOGI INFORMASI', sks: 2 },
-  { kode: 'MSIM4403', nama: 'DATA MINING', sks: 3 },
-  { kode: 'MSIM4404', nama: 'KEAMANAN JARINGAN', sks: 3 },
-  { kode: 'MSIM4500', nama: 'TUGAS AKHIR PROGRAM', sks: 6 },
-  { kode: 'MSIM4560', nama: 'KARYA ILMIAH', sks: 0 },
-  { kode: 'EKMA4483', nama: 'E-Business', sks: 3 },
-  { kode: 'MKWU4110', nama: 'PANCASILA', sks: 3 },
-  { kode: 'MSIM4405', nama: 'KEAMANAN SISTEM INFORMASI', sks: 2 },
-  { kode: 'MSIM4406', nama: 'MANAJEMEN PROYEK SISTEM INFORMASI', sks: 2 },
-  { kode: 'MSIM4407', nama: 'MANAJEMEN LAYANAN TEKNOLOGI INFORMASI', sks: 3 },
-  { kode: 'MSIM4408', nama: 'ETIKA PROFESI', sks: 2 }
-];
+const semesterId = new URLSearchParams(window.location.search).get('semesterId');
 
-const namaInput = document.getElementById('nama');
-const kodeInput = document.getElementById('kode');
-const sksInput = document.getElementById('sks');
-const namaList = document.getElementById('namaList');
+function previewPDF(inputId, previewId) {
+  const input = document.getElementById(inputId);
+  const preview = document.getElementById(previewId);
+  input.addEventListener('change', () => {
+    const file = input.files[0];
+    if (file && file.type === 'application/pdf') {
+      preview.src = URL.createObjectURL(file);
+    }
+  });
+}
 
-matkulList.forEach(item => {
-  const opt = document.createElement('option');
-  opt.value = item.nama;
-  namaList.appendChild(opt);
+['materi', 'kuis', 'diskusi', 'tugas'].forEach(name => {
+  previewPDF(name, 'preview' + name.charAt(0).toUpperCase() + name.slice(1));
 });
 
-namaInput.addEventListener('input', () => {
-  const selected = matkulList.find(item => item.nama === namaInput.value);
-  if (selected) {
-    kodeInput.value = selected.kode;
-    sksInput.value = selected.sks;
-  }
-});
-
-document.getElementById("mkForm").addEventListener("submit", function(e) {
+document.getElementById('mkForm').addEventListener('submit', async function(e) {
   e.preventDefault();
-  alert("Data mata kuliah berhasil disimpan (simulasi)");
-});
+  const formData = new FormData();
+  formData.append('semesterId', semesterId);
+  formData.append('nama', document.getElementById('nama').value);
+  formData.append('kode', document.getElementById('kode').value);
+  formData.append('sks', document.getElementById('sks').value);
+  formData.append('sesi', document.getElementById('sesi').value);
 
-document.getElementById("sesi").addEventListener("change", function () {
-  document.getElementById("sesiForm").style.display = this.value ? "block" : "none";
+  ['materi', 'kuis', 'diskusi', 'tugas'].forEach(name => {
+    const file = document.getElementById(name).files[0];
+    if (file) formData.append(name, file);
+  });
+
+  const res = await fetch('https://ediska-backend.onrender.com/api/matakuliah/upload', {
+    method: 'POST',
+    body: formData
+  });
+
+  const result = await res.json();
+  if (result.error) {
+    alert('Gagal simpan: ' + result.error);
+  } else {
+    alert('Berhasil disimpan!');
+    document.getElementById('mkForm').reset();
+  }
 });
 </script>
 </body>
