@@ -20,17 +20,6 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      flex-wrap: wrap;
-    }
-    .menu-bar {
-      display: flex;
-      gap: 20px;
-      flex-wrap: wrap;
-    }
-    .menu-bar a {
-      text-decoration: none;
-      color: #3498db;
-      font-weight: 600;
     }
     .profile-header {
       display: flex;
@@ -45,8 +34,8 @@
     .card-section {
       padding: 20px;
       display: flex;
+      flex-direction: column;
       gap: 20px;
-      flex-wrap: wrap;
     }
     .card {
       background: rgba(255, 255, 255, 0.75);
@@ -54,8 +43,6 @@
       border-radius: 16px;
       padding: 20px;
       box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-      flex: 1;
-      min-width: 280px;
     }
     .chart-container {
       display: flex;
@@ -85,35 +72,24 @@
       font-size: 24px;
       margin: 0;
     }
-    footer {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      background: white;
-      box-shadow: 0 -1px 6px rgba(0,0,0,0.05);
-      display: flex;
-      justify-content: space-around;
-      padding: 10px 0;
-    }
-    footer a {
-      text-decoration: none;
-      color: #555;
-      font-size: 14px;
+    .grid-menu {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      padding: 0 20px 20px;
       text-align: center;
+    }
+    .grid-menu div {
+      background: white;
+      border-radius: 12px;
+      padding: 12px 0;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
     }
   </style>
 </head>
 <body>
 
   <header>
-    <div class="menu-bar">
-      <a href="#">Profil</a>
-      <a href="#">Arsip</a>
-      <a href="#">Nilai</a>
-      <a href="#">Semester</a>
-      <a href="#">Logout</a>
-    </div>
     <div class="profile-header">
       <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="Profil" />
       <div>
@@ -137,14 +113,14 @@
         </div>
       </div>
     </div>
-  </div>
 
-  <footer>
-    <a href="#">🏠<br>Beranda</a>
-    <a href="#">📚<br>Nilai</a>
-    <a href="#">📝<br>Tugas</a>
-    <a href="#">💬<br>Diskusi</a>
-  </footer>
+    <div class="grid-menu">
+      <div>Semester</div>
+      <div>Arsip</div>
+      <div>Profil</div>
+      <div>Tambah Teman</div>
+    </div>
+  </div>
 
   <script>
     const ctx = document.getElementById('ipkChart').getContext('2d');
