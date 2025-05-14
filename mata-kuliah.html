@@ -1,54 +1,25 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Isi Mata Kuliah - E-DISKA</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    body {
-      font-family: 'Poppins', sans-serif;
-      background: #f4f6f9;
-      padding: 20px;
-      color: #2c3e50;
-    }
+    body { font-family: 'Poppins', sans-serif; background: #f4f6f9; padding: 20px; color: #2c3e50; }
     .container {
-      max-width: 700px;
-      margin: auto;
-      background: white;
-      padding: 30px;
-      border-radius: 16px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+      max-width: 700px; margin: auto; background: white;
+      padding: 30px; border-radius: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.08);
     }
-    h1 {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    label {
-      font-weight: 600;
-      margin-top: 15px;
-      display: block;
-    }
+    h1 { text-align: center; margin-bottom: 20px; }
+    label { font-weight: 600; margin-top: 15px; display: block; }
     input, select, button, datalist {
-      width: 100%;
-      padding: 10px;
-      margin-top: 5px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
+      width: 100%; padding: 10px; margin-top: 5px;
+      border-radius: 8px; border: 1px solid #ccc;
     }
-    .sesi {
-      margin-top: 20px;
-      padding: 15px;
-      background: #f9f9f9;
-      border-radius: 10px;
-      border: 1px solid #ccc;
-    }
-    embed {
-      width: 100%;
-      height: 200px;
-      margin-top: 10px;
-      border: 1px solid #ddd;
-    }
+    .sesi { margin-top: 20px; padding: 15px; background: #f9f9f9;
+      border-radius: 10px; border: 1px solid #ccc; }
+    embed { width: 100%; height: 200px; margin-top: 10px; border: 1px solid #ddd; }
   </style>
 </head>
 <body>
@@ -56,7 +27,8 @@
     <h1>Isi Mata Kuliah</h1>
     <form id="mkForm">
       <label for="nama">Nama Mata Kuliah</label>
-      <input type="text" id="nama" required />
+      <input list="namaList" id="nama" name="nama" required />
+      <datalist id="namaList"></datalist>
 
       <label for="kode">Kode Mata Kuliah</label>
       <input type="text" id="kode" required />
@@ -121,20 +93,20 @@
 
       <div class="sesi">
         <label>Materi Inisiasi (PDF)</label>
-        <input type="file" id="materi" accept="application/pdf" required>
-        <embed id="previewMateri">
+        <input type="file" id="materi" accept="application/pdf">
+        <embed id="previewMateri" />
 
         <label>Kuis (PDF)</label>
-        <input type="file" id="kuis" accept="application/pdf" required>
-        <embed id="previewKuis">
+        <input type="file" id="kuis" accept="application/pdf">
+        <embed id="previewKuis" />
 
         <label>Diskusi (PDF)</label>
-        <input type="file" id="diskusi" accept="application/pdf" required>
-        <embed id="previewDiskusi">
+        <input type="file" id="diskusi" accept="application/pdf">
+        <embed id="previewDiskusi" />
 
         <label>Tugas (PDF)</label>
-        <input type="file" id="tugas" accept="application/pdf" required>
-        <embed id="previewTugas">
+        <input type="file" id="tugas" accept="application/pdf">
+        <embed id="previewTugas" />
       </div>
 
       <button type="submit">Simpan</button>
@@ -144,8 +116,36 @@
 <script>
 const semesterId = new URLSearchParams(window.location.search).get('semesterId');
 
-function previewPDF(inputId, previewId) {
-  const input = document.getElementById(inputId);
+const matkulList = [
+  { kode: 'MATA4101', nama: 'PENGANTAR MATEMATIKA', sks: 3 },
+  { kode: 'MATA4110', nama: 'KALKULUS I', sks: 3 },
+  { kode: 'MKWU4101', nama: 'PENDIDIKAN AGAMA ISLAM', sks: 3 },
+  { kode: 'MSIM4201', nama: 'SISTEM OPERASI', sks: 3 },
+  { kode: 'MSIM4500', nama: 'TUGAS AKHIR PROGRAM', sks: 6 }
+  // Lengkapi sesuai kebutuhan
+];
+
+const namaInput = document.getElementById('nama');
+const kodeInput = document.getElementById('kode');
+const sksInput = document.getElementById('sks');
+const namaList = document.getElementById('namaList');
+
+matkulList.forEach(item => {
+  const opt = document.createElement('option');
+  opt.value = item.nama;
+  namaList.appendChild(opt);
+});
+
+namaInput.addEventListener('input', () => {
+  const selected = matkulList.find(item => item.nama === namaInput.value);
+  if (selected) {
+    kodeInput.value = selected.kode;
+    sksInput.value = selected.sks;
+  }
+});
+
+function previewPDF(fileInputId, previewId) {
+  const input = document.getElementById(fileInputId);
   const preview = document.getElementById(previewId);
   input.addEventListener('change', () => {
     const file = input.files[0];
@@ -155,35 +155,34 @@ function previewPDF(inputId, previewId) {
   });
 }
 
-['materi', 'kuis', 'diskusi', 'tugas'].forEach(name => {
-  previewPDF(name, 'preview' + name.charAt(0).toUpperCase() + name.slice(1));
-});
+['materi', 'kuis', 'diskusi', 'tugas'].forEach(name =>
+  previewPDF(name, 'preview' + name.charAt(0).toUpperCase() + name.slice(1))
+);
 
 document.getElementById('mkForm').addEventListener('submit', async function(e) {
   e.preventDefault();
   const formData = new FormData();
   formData.append('semesterId', semesterId);
-  formData.append('nama', document.getElementById('nama').value);
-  formData.append('kode', document.getElementById('kode').value);
-  formData.append('sks', document.getElementById('sks').value);
+  formData.append('nama', namaInput.value);
+  formData.append('kode', kodeInput.value);
+  formData.append('sks', sksInput.value);
   formData.append('sesi', document.getElementById('sesi').value);
-
   ['materi', 'kuis', 'diskusi', 'tugas'].forEach(name => {
     const file = document.getElementById(name).files[0];
     if (file) formData.append(name, file);
   });
 
-  const res = await fetch('https://ediska-backend.onrender.com/api/matakuliah/upload', {
+  const res = await fetch('/api/matakuliah/upload', {
     method: 'POST',
     body: formData
   });
 
-  const result = await res.json();
-  if (result.error) {
-    alert('Gagal simpan: ' + result.error);
-  } else {
-    alert('Berhasil disimpan!');
-    document.getElementById('mkForm').reset();
+  try {
+    const result = await res.json();
+    if (result.error) alert('Gagal simpan: ' + result.error);
+    else alert('Berhasil disimpan!');
+  } catch {
+    alert('Gagal parsing respon. Cek server.');
   }
 });
 </script>
