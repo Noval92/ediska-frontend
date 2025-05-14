@@ -4,62 +4,66 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Beranda E-DISKA</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-
     body {
-      font-family: 'Segoe UI', sans-serif;
+      font-family: 'Poppins', sans-serif;
       background: linear-gradient(to right, #e3f2fd, #ffffff);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 30px 15px;
       min-height: 100vh;
-    }
-
-    .container {
-      max-width: 600px;
-      width: 100%;
-      background: white;
-      border-radius: 16px;
-      padding: 40px 30px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-      text-align: center;
-    }
-
-    .logo img {
-      width: 60px;
-      height: 60px;
-    }
-
-    .logo span {
-      display: block;
-      font-size: 24px;
-      font-weight: bold;
-      color: #2c3e50;
-      margin-top: 10px;
-    }
-
-    h1 {
-      margin-top: 30px;
-      font-size: 26px;
-      color: #2c3e50;
-    }
-
-    p {
-      margin: 20px 0 30px;
-      font-size: 16px;
-      color: #555;
-      line-height: 1.6;
-    }
-
-    .button-group {
       display: flex;
-      gap: 15px;
-      justify-content: center;
-      flex-wrap: wrap;
+      flex-direction: column;
     }
-
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 40px;
+      background-color: white;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .logo img {
+      width: 40px;
+      height: 40px;
+    }
+    .logo span {
+      font-size: 20px;
+      font-weight: 600;
+      color: #2c3e50;
+    }
+    nav a {
+      margin-left: 20px;
+      text-decoration: none;
+      color: #3498db;
+      font-weight: 600;
+    }
+    .hero {
+      flex: 1;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 20px;
+      gap: 40px;
+    }
+    .hero-text {
+      max-width: 500px;
+    }
+    .hero-text h1 {
+      font-size: 36px;
+      color: #2c3e50;
+      margin-bottom: 20px;
+    }
+    .hero-text p {
+      font-size: 18px;
+      color: #555;
+      margin-bottom: 30px;
+    }
     .button-group a {
       background-color: #3498db;
       color: white;
@@ -67,27 +71,52 @@
       border-radius: 8px;
       text-decoration: none;
       font-weight: bold;
-      transition: 0.3s;
+      margin-right: 15px;
+      transition: background 0.3s;
     }
-
     .button-group a:hover {
       background-color: #2980b9;
+    }
+    .hero-image img {
+      width: 100%;
+      max-width: 380px;
+      border-radius: 16px;
+    }
+    @media (max-width: 768px) {
+      .hero {
+        flex-direction: column;
+        text-align: center;
+      }
+      .button-group a {
+        margin: 10px 5px;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="container">
+  <header>
     <div class="logo">
-      <img src="https://cdn-icons-png.flaticon.com/512/201/201818.png" alt="Logo E-DISKA">
+      <img src="logo-ediska.png" alt="Logo E-DISKA">
       <span>E-DISKA</span>
     </div>
-    <h1>Selamat Datang di
-        E-DISKA</h1>
-    <p>Platform Digital E-Arsip, mendukung pencapaian akademik yang lebih terstruktur dan rapi. Kelola nilai, tugas, dan arsip belajar Anda di satu tempat yang efisien.</p>
-    <div class="button-group">
+    <nav>
       <a href="login.html">Login</a>
       <a href="signup.html">Daftar</a>
+    </nav>
+  </header>
+
+  <main class="hero">
+    <div class="hero-text">
+      <h1>Platform Digital E-Arsip</h1>
+      <p>Mendukung pencapaian akademik yang lebih terstruktur dan rapi. Kelola nilai, tugas, dan arsip belajar Anda di satu tempat yang efisien.</p>
+      <div class="button-group">
+        <a href="login.html">Login</a>
+        <a href="signup.html">Daftar</a>
+      </div>
     </div>
-  </div>
+    <div class="hero-image">
+      <img src="ilustrasi-dashboard.png" alt="Ilustrasi Dashboard IPK">
+    </div>
+  </main>
 </body>
 </html>
