@@ -2,44 +2,32 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>Mata Kuliah Multi Sesi</title>
+  <title>Form Dinamis Sesi Mata Kuliah</title>
   <style>
     body { font-family: Arial; background: #f4f6f9; padding: 20px; }
     .container { max-width: 720px; margin: auto; background: white; padding: 30px;
       border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-    label { display: block; margin-top: 10px; font-weight: bold; }
-    input, select, button { width: 100%; padding: 10px; margin-top: 5px;
-      border: 1px solid #ccc; border-radius: 6px; }
-    .sesi-block {
-      margin-top: 20px; padding: 15px; background: #f9f9f9;
-      border-radius: 10px; border: 1px solid #ccc;
-    }
+    .sesi-block { border: 1px solid #ccc; padding: 20px; margin-top: 20px;
+      border-radius: 8px; background: #f9f9f9; }
+    .hidden { display: none; }
+    label { font-weight: bold; margin-top: 10px; display: block; }
+    input, select, textarea, button { width: 100%; padding: 10px; margin-top: 5px;
+      border-radius: 6px; border: 1px solid #ccc; }
     .riwayat { margin-top: 30px; background: #eef; padding: 15px; border-radius: 10px; }
   </style>
 </head>
 <body>
 <div class="container">
-  <h2>Input Mata Kuliah</h2>
-
-  <label for="nama">Nama Mata Kuliah</label>
-  <input id="nama" type="text" />
-
-  <label for="kode">Kode Mata Kuliah</label>
-  <input id="kode" type="text" />
-
-  <label for="sks">Jumlah SKS</label>
-  <input id="sks" type="number" min="1" max="6" />
+  <h2>Form Sesi Mata Kuliah</h2>
 
   <div id="sesiContainer"></div>
-
-  <button id="addSesi" type="button" disabled>Tambah Sesi</button>
+  <button id="addSesi" disabled>Tambah Sesi</button>
 
   <div class="riwayat">
     <h3>Riwayat Sesi</h3>
     <ul id="riwayatList"></ul>
   </div>
 </div>
-
 <script>
 let sesiIndex = 1;
 let riwayat = [];
@@ -47,16 +35,40 @@ let riwayat = [];
 function createSesiBlock(index) {
   const div = document.createElement('div');
   div.className = 'sesi-block';
+  div.id = `sesi${index}`;
   div.innerHTML = `
-    <h3>Sesi ${index}</h3>
-    <label>Materi Inisiasi (PDF)</label>
-    <input type="file" name="materi${index}" accept="application/pdf" />
-    <label>Kuis (PDF)</label>
-    <input type="file" name="kuis${index}" accept="application/pdf" />
-    <label>Diskusi (PDF)</label>
-    <input type="file" name="diskusi${index}" accept="application/pdf" />
-    <label>Tugas (PDF)</label>
-    <input type="file" name="tugas${index}" accept="application/pdf" />
+    <h3>Sesi ${index} - Nama Matkulnya apa?</h3>
+    <label>1. Hal apa yang dipelajari?</label>
+    <textarea id="belajar${index}" required></textarea>
+
+    <label>2. Apakah ada materi yang mau diupload?</label>
+    <select id="materiSelect${index}">
+      <option value="tidak">Tidak</option>
+      <option value="ya">Ya</option>
+    </select>
+    <input type="file" id="materi${index}" class="hidden" accept="application/pdf,image/*">
+
+    <label>3. Apakah ada file lain yang mau diupload?</label>
+    <select id="lainSelect${index}">
+      <option value="tidak">Tidak</option>
+      <option value="ya">Ya</option>
+    </select>
+    <div id="lainFile${index}" class="hidden">
+      <label>Upload Ringkasan</label>
+      <input type="file" id="ringkasan${index}" accept="application/pdf,image/*">
+      <label>Upload Soal Diskusi dan Jawaban</label>
+      <input type="file" id="diskusi${index}" accept="application/pdf,image/*">
+      <label>Upload Tugas</label>
+      <input type="file" id="tugas${index}" accept="application/pdf,image/*">
+    </div>
+
+    <label>4. Apakah sudah ada nilai?</label>
+    <select id="nilaiSelect${index}">
+      <option value="tidak">Tidak</option>
+      <option value="ya">Ya</option>
+    </select>
+    <input type="number" id="nilai${index}" class="hidden" min="0" max="100">
+
     <button type="button" onclick="simpanSesi(${index}, this)">Simpan Sesi ${index}</button>
   `;
   return div;
@@ -67,26 +79,36 @@ function simpanSesi(index, button) {
     alert("Sesi ini sudah disimpan.");
     return;
   }
-
   riwayat.push(index);
-  const list = document.getElementById('riwayatList');
-  const item = document.createElement('li');
-  item.textContent = `Sesi ${index} disimpan`;
-  list.appendChild(item);
+  document.getElementById('riwayatList').innerHTML += `<li>Sesi ${index} disimpan</li>`;
   button.disabled = true;
-
   document.getElementById('addSesi').disabled = false;
 }
 
 document.getElementById('addSesi').addEventListener('click', () => {
   sesiIndex++;
   document.getElementById('addSesi').disabled = true;
-  const block = createSesiBlock(sesiIndex);
-  document.getElementById('sesiContainer').appendChild(block);
+  const sesiDiv = createSesiBlock(sesiIndex);
+  document.getElementById('sesiContainer').appendChild(sesiDiv);
+  attachHandlers(sesiIndex);
 });
 
-// Muat sesi 1 langsung
-document.getElementById('sesiContainer').appendChild(createSesiBlock(1));
+function attachHandlers(index) {
+  document.getElementById(`materiSelect${index}`).addEventListener('change', e => {
+    document.getElementById(`materi${index}`).classList.toggle('hidden', e.target.value === 'tidak');
+  });
+  document.getElementById(`lainSelect${index}`).addEventListener('change', e => {
+    document.getElementById(`lainFile${index}`).classList.toggle('hidden', e.target.value === 'tidak');
+  });
+  document.getElementById(`nilaiSelect${index}`).addEventListener('change', e => {
+    document.getElementById(`nilai${index}`).classList.toggle('hidden', e.target.value === 'tidak');
+  });
+}
+
+// Load sesi 1 by default
+const sesi1 = createSesiBlock(1);
+document.getElementById('sesiContainer').appendChild(sesi1);
+attachHandlers(1);
 </script>
 </body>
 </html>
