@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Isi Mata Kuliah - E-DISKA</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
@@ -13,7 +13,7 @@
       color: #2c3e50;
     }
     .container {
-      max-width: 800px;
+      max-width: 700px;
       margin: auto;
       background: white;
       padding: 30px;
@@ -29,7 +29,7 @@
       margin-top: 15px;
       display: block;
     }
-    input, select, button {
+    input, select, button, datalist {
       width: 100%;
       padding: 10px;
       margin-top: 5px;
@@ -49,11 +49,12 @@
   <div class="container">
     <h1>Isi Mata Kuliah</h1>
     <form id="mkForm">
+      <label for="kode">Kode Mata Kuliah</label>
+      <input list="kodeList" id="kode" name="kode" required />
+      <datalist id="kodeList"></datalist>
+
       <label for="nama">Nama Mata Kuliah</label>
       <input type="text" id="nama" required />
-
-      <label for="kode">Kode Mata Kuliah</label>
-      <input type="text" id="kode" required />
 
       <label for="sks">Jumlah SKS</label>
       <input type="number" id="sks" min="1" max="6" required />
@@ -65,7 +66,7 @@
       <label for="sesi">Pilih Sesi</label>
       <select id="sesi">
         <option value="">-- Pilih Sesi --</option>
-        <option value="1">Sesi 1</option>
+<option value="1">Sesi 1</option>
 <option value="2">Sesi 2</option>
 <option value="3">Sesi 3</option>
 <option value="4">Sesi 4</option>
@@ -130,33 +131,53 @@
     </div>
   </div>
 
-  <script>
-    const url = new URLSearchParams(window.location.search);
-    const semesterId = url.get("semesterId");
-    const semesterNum = url.get("semester");
+<script>
+const matkulList = [
+  { kode: 'MATA4101', nama: 'PENGANTAR MATEMATIKA', sks: 3 },
+  { kode: 'MATA4110', nama: 'KALKULUS I', sks: 3 },
+  { kode: 'MKWU4101', nama: 'PENDIDIKAN AGAMA ISLAM', sks: 3 },
+  { kode: 'MKWU4108', nama: 'BAHASA INDONESIA', sks: 3 },
+  { kode: 'MKWU4109', nama: 'PENDIDIKAN KEWARGANEGARAAN', sks: 3 },
+  { kode: 'MSIM4101', nama: 'PENGANTAR SISTEM INFORMASI', sks: 3 },
+  { kode: 'EKMA4111', nama: 'PENGANTAR BISNIS', sks: 3 },
+  { kode: 'EKMA4116', nama: 'MANAJEMEN', sks: 4 },
+  { kode: 'MATA4112', nama: 'ALJABAR LINEAR ELEMENTER I', sks: 2 },
+  { kode: 'MKWI4201', nama: 'BAHASA INGGRIS', sks: 3 },
+  { kode: 'MSIM4201', nama: 'SISTEM OPERASI', sks: 3 },
+  { kode: 'MSIM4308', nama: 'ADMINISTRASI SERVER', sks: 3 },
+  { kode: 'MSIM4500', nama: 'TUGAS AKHIR PROGRAM', sks: 6 }
+  // Tambahkan data lain sesuai daftar kamu
+];
 
-    if (!semesterId) {
-      alert("Semester ID tidak ditemukan.");
-      location.href = "semester.html";
-    } else {
-      document.querySelector("h1").textContent += ` (Semester ${semesterNum})`;
-    }
+const kodeInput = document.getElementById('kode');
+const namaInput = document.getElementById('nama');
+const sksInput = document.getElementById('sks');
+const kodeList = document.getElementById('kodeList');
 
-    const sesiSelect = document.getElementById("sesi");
-    const sesiForm = document.getElementById("sesiForm");
+// Isi datalist kode
+matkulList.forEach(item => {
+  const opt = document.createElement('option');
+  opt.value = item.kode;
+  kodeList.appendChild(opt);
+});
 
-    sesiSelect.addEventListener("change", function () {
-      if (this.value) {
-        sesiForm.style.display = "block";
-      } else {
-        sesiForm.style.display = "none";
-      }
-    });
+// Update nama dan sks otomatis saat pilih kode
+kodeInput.addEventListener('input', () => {
+  const selected = matkulList.find(item => item.kode === kodeInput.value);
+  if (selected) {
+    namaInput.value = selected.nama;
+    sksInput.value = selected.sks;
+  }
+});
 
-    document.getElementById("mkForm").addEventListener("submit", function(e) {
-      e.preventDefault();
-      alert("Data mata kuliah berhasil disimpan (simulasi)");
-    });
-  </script>
+document.getElementById("mkForm").addEventListener("submit", function(e) {
+  e.preventDefault();
+  alert("Data mata kuliah berhasil disimpan (simulasi)");
+});
+
+document.getElementById("sesi").addEventListener("change", function () {
+  document.getElementById("sesiForm").style.display = this.value ? "block" : "none";
+});
+</script>
 </body>
 </html>
