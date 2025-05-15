@@ -65,8 +65,6 @@
           semesterInfo.textContent = sem.semester;
           sksMaxEl.textContent = sksMax;
           sksSisaEl.textContent = sksSisa;
-        } else {
-          console.warn('Semester tidak ditemukan.');
         }
       } catch (error) {
         console.error('Gagal memuat data semester:', error);
@@ -80,18 +78,15 @@
         const used = list.reduce((sum, m) => sum + m.sks, 0);
         sksSisa = sksMax - used;
         sksSisaEl.textContent = sksSisa;
-        if (list.length === 0) {
-          mkRows.innerHTML = '<div style="color:#777;font-style:italic">Belum ada mata kuliah.</div>';
-        } else {
-          mkRows.innerHTML = list.map(m => `
-            <div class="mk-row">
-              <div>${m.nama} (${m.kode}) - ${m.sks} SKS</div>
-              <div class="actions">
-                <button onclick="deleteMatkul('${m._id}', ${m.sks})">Hapus</button>
-              </div>
-            </div>
-          `).join('');
-        }
+        mkRows.innerHTML = list.length === 0
+          ? '<div style="color:#777;font-style:italic">Belum ada mata kuliah.</div>'
+          : list.map(m => `
+              <div class="mk-row">
+                <div>${m.nama} (${m.kode}) - ${m.sks} SKS</div>
+                <div class="actions">
+                  <button onclick="deleteMatkul('${m._id}', ${m.sks})">Hapus</button>
+                </div>
+              </div>`).join('');
       } catch (error) {
         console.error('Gagal memuat daftar matkul:', error);
       }
@@ -117,7 +112,7 @@
       }
     };
 
-    window.deleteMatkul = async (id, sks) => {
+    window.deleteMatkul = async (id) => {
       if (!confirm('Yakin hapus matkul ini?')) return;
       try {
         await fetch(`https://ediska-backend.onrender.com/api/matakuliah/${id}`, { method: 'DELETE' });
