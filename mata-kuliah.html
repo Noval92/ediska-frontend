@@ -39,7 +39,7 @@
 
   <script>
     const user = JSON.parse(localStorage.getItem('user'));
-    if (!user || !user._id) return window.location = 'login.html';
+    if (!user || !user._id) window.location = 'login.html';
 
     const semesterParam = parseInt(new URLSearchParams(location.search).get('semester'), 10);
     const semesterInfo = document.getElementById('semesterInfo');
@@ -58,6 +58,7 @@
       try {
         const res = await fetch(`https://ediska-backend.onrender.com/api/semester/${user._id}`);
         const semesters = await res.json();
+        // Hati-hati: backend bisa string atau number
         const sem = semesters.find(s => Number(s.semester) === semesterParam);
         if (sem) {
           sksMax = sem.sks || 0;
@@ -84,7 +85,7 @@
               <div class="mk-row">
                 <div>${m.nama} (${m.kode}) - ${m.sks} SKS</div>
                 <div class="actions">
-                  <button onclick="deleteMatkul('${m._id}', ${m.sks})">Hapus</button>
+                  <button onclick="deleteMatkul('${m._id}')">Hapus</button>
                 </div>
               </div>`).join('');
       } catch (error) {
