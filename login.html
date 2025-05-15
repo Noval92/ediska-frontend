@@ -34,8 +34,8 @@
     button:hover { background: #2980b9; }
     .link { text-align: center; margin-top: 16px; }
     .link a { color: #3498db; text-decoration: none; }
-    .remember { display: flex; align-items: center; }
-    .remember input { margin-right: 6px; }
+    .remember { display: flex; align-items: center; margin-bottom: 16px; }
+    .remember input { margin-right: 8px; }
   </style>
 </head>
 <body>
@@ -46,6 +46,7 @@
       <input
         type="text"
         id="username"
+        name="username"
         placeholder="Username"
         required
         autocomplete="username"
@@ -53,12 +54,14 @@
       <input
         type="password"
         id="password"
+        name="password"
         placeholder="Password"
         required
         autocomplete="current-password"
       />
       <div class="remember">
-        <label><input type="checkbox" id="rememberMe" /> Ingat saya</label>
+        <input type="checkbox" id="rememberMe" />
+        <label for="rememberMe">Ingat saya</label>
       </div>
       <button type="submit">Masuk</button>
     </form>
@@ -75,18 +78,13 @@
       const password = document.getElementById('password').value;
       const remember = document.getElementById('rememberMe').checked;
 
-      console.log('Attempt login:', { username });
-
       try {
         const res = await fetch('https://ediska-backend.onrender.com/api/auth/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ username, password })
         });
-        console.log('Response status:', res.status);
-
         const result = await res.json();
-        console.log('Response body:', result);
 
         if (res.ok && result.user) {
           localStorage.setItem('user', JSON.stringify(result.user));
@@ -95,7 +93,6 @@
           } else {
             localStorage.removeItem('rememberedUser');
           }
-          // Redirect to dashboard
           window.location.href = 'dashboard.html';
         } else {
           alert('Gagal login: ' + (result.error || 'Periksa username & password'));
@@ -106,7 +103,6 @@
       }
     });
 
-    // Auto-fill jika pernah ingat
     window.addEventListener('load', () => {
       const creds = localStorage.getItem('rememberedUser');
       if (creds) {
