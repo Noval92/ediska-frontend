@@ -1,51 +1,50 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Dashboard E-DISKA</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     body {
       font-family: 'Poppins', sans-serif;
-      background: #f5f7fa;
-      color: #2c3e50;
+      background-color: #f3f7fa;
       margin: 0;
-      padding: 0;
+      padding-bottom: 70px;
     }
     header {
-      background: white;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-      padding: 15px 20px;
       display: flex;
       align-items: center;
-      gap: 12px;
+      padding: 20px;
+      background-color: white;
+      border-bottom-left-radius: 20px;
+      border-bottom-right-radius: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
     }
-    .profile-header img {
-      width: 42px;
-      height: 42px;
+    header img {
       border-radius: 50%;
+      width: 50px;
+      height: 50px;
+    }
+    header div {
+      margin-left: 10px;
     }
     .card-section {
       padding: 20px;
     }
     .card {
-      background: rgba(255, 255, 255, 0.75);
-      backdrop-filter: blur(6px);
-      border-radius: 16px;
+      background-color: white;
       padding: 20px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-      margin-bottom: 20px;
-    }
-    .chart-container {
+      border-radius: 18px;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.06);
       display: flex;
       align-items: center;
-      gap: 30px;
+      gap: 20px;
     }
     .chart-box {
-      width: 120px;
-      height: 120px;
+      width: 100px;
+      height: 100px;
       position: relative;
     }
     .chart-center-text {
@@ -53,150 +52,121 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      font-size: 18px;
-      font-weight: bold;
-    }
-    .chart-info h2 {
-      margin: 0;
-    }
-    .grid-section {
-      padding: 0 20px 20px;
-    }
-    .grid-title {
-      font-size: 18px;
       font-weight: 600;
-      margin-bottom: 10px;
+      color: #333;
     }
-    .grid-menu {
+    .menu-section {
+      padding: 20px;
+    }
+    .menu-grid {
       display: flex;
       overflow-x: auto;
       gap: 15px;
+      padding-bottom: 10px;
     }
-    .grid-card {
-      background: white;
+    .menu-item {
+      flex: 0 0 auto;
+      width: 140px;
+      background-color: white;
       border-radius: 16px;
-      padding: 16px;
-      min-width: 180px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
       text-align: center;
+      padding: 15px;
     }
-    .grid-card img {
-      width: 80px;
-      height: 80px;
-      object-fit: contain;
+    .menu-item img {
+      width: 60px;
+      height: 60px;
       margin-bottom: 10px;
-    }
-    .grid-card h4 {
-      margin: 5px 0;
-    }
-    .grid-card a button {
-      margin-top: 10px;
-      width: 100%;
-      padding: 8px;
-      background: #3498db;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-weight: bold;
-      cursor: pointer;
     }
     footer {
       position: fixed;
       bottom: 0;
       width: 100%;
-      background: white;
-      box-shadow: 0 -1px 6px rgba(0,0,0,0.05);
+      background-color: white;
       display: flex;
       justify-content: space-around;
       padding: 10px 0;
+      border-top-left-radius: 18px;
+      border-top-right-radius: 18px;
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.08);
     }
     footer a {
+      color: #333;
       text-decoration: none;
-      color: #555;
-      font-size: 13px;
+      font-size: 14px;
       text-align: center;
     }
   </style>
 </head>
 <body>
 
-  <header class="profile-header">
-    <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="Profil" />
+<header>
+  <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="Profil">
+  <div>
+    <strong>Noval</strong><br>
+    <small>2102030119</small>
+  </div>
+</header>
+
+<div class="card-section">
+  <div class="card">
+    <div class="chart-box">
+      <canvas id="ipkChart"></canvas>
+      <div class="chart-center-text">3.95</div>
+    </div>
     <div>
-      <span style="font-weight:600;">Noval</span><br/>
-      <small>2102030119</small>
-    </div>
-  </header>
-
-  <div class="card-section">
-    <div class="card">
-      <h3>IPK & Semester</h3>
-      <div class="chart-container">
-        <div class="chart-box">
-          <canvas id="ipkChart"></canvas>
-          <div class="chart-center-text">3.95</div>
-        </div>
-        <div class="chart-info">
-          <p>Semester:</p>
-          <h2>6</h2>
-        </div>
-      </div>
+      <div style="color:#555;">Semester Saat Ini</div>
+      <h2 style="margin:5px 0;">6</h2>
     </div>
   </div>
+</div>
 
-  <div class="grid-section">
-    <div class="grid-title">Menu</div>
-    <div class="grid-menu">
-      <div class="grid-card">
-        <img src="Semester.png" alt="Semester">
-        <h4>Semester</h4>
-        <a href="semester.html"><button>Lihat</button></a>
-      </div>
-      <div class="grid-card">
-        <img src="Arsip.png" alt="Arsip">
-        <h4>Arsip</h4>
-        <button>Lihat</button>
-      </div>
-      <div class="grid-card">
-        <img src="Profil.png" alt="Profil">
-        <h4>Profil</h4>
-        <button>Lihat</button>
-      </div>
-      <div class="grid-card">
-        <img src="Tambah Teman.png" alt="Tambah Teman">
-        <h4>Tambah Teman</h4>
-        <button>Lihat</button>
-      </div>
+<div class="menu-section">
+  <div class="menu-grid">
+    <div class="menu-item">
+      <img src="Semester.png">
+      <h4>Semester</h4>
+    </div>
+    <div class="menu-item">
+      <img src="Arsip.png">
+      <h4>Arsip</h4>
+    </div>
+    <div class="menu-item">
+      <img src="Profil.png">
+      <h4>Profil</h4>
+    </div>
+    <div class="menu-item">
+      <img src="Tambah Teman.png">
+      <h4>Tambah Teman</h4>
     </div>
   </div>
+</div>
 
-  <footer>
-    <a href="#">🏠<br>Beranda</a>
-    <a href="#">📚<br>Nilai</a>
-    <a href="#">📝<br>Tugas</a>
-    <a href="#">💬<br>Diskusi</a>
-  </footer>
+<footer>
+  <a href="#">🏠<br>Beranda</a>
+  <a href="#">📚<br>Nilai</a>
+  <a href="#">📝<br>Tugas</a>
+  <a href="#">💬<br>Diskusi</a>
+</footer>
 
-  <script>
-    const ctx = document.getElementById('ipkChart').getContext('2d');
-    new Chart(ctx, {
-      type: 'doughnut',
-      data: {
-        labels: ['IPK', 'Sisa'],
-        datasets: [{
-          data: [3.95, 0.05],
-          backgroundColor: ['#2c80d3', '#ecf0f1'],
-          borderWidth: 0
-        }]
-      },
-      options: {
-        cutout: '75%',
-        plugins: {
-          legend: { display: false },
-          tooltip: { enabled: false }
-        }
-      }
-    });
-  </script>
+<script>
+const ctx = document.getElementById('ipkChart').getContext('2d');
+new Chart(ctx, {
+  type: 'doughnut',
+  data: {
+    labels: ['IPK', 'Sisa'],
+    datasets: [{
+      data: [3.95, 0.05],
+      backgroundColor: ['#3498db', '#ecf0f1'],
+      borderWidth: 0
+    }]
+  },
+  options: {
+    cutout: '80%',
+    plugins: { legend: { display: false }, tooltip: { enabled: false } }
+  }
+});
+</script>
+
 </body>
 </html>
