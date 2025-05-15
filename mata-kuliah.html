@@ -3,74 +3,67 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Mata Kuliah - E-DISKA</title>
+  <title>Isi Mata Kuliah – E-DISKA</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     body {
       font-family: 'Poppins', sans-serif;
       background: #f3f7fa;
-      margin: 0;
-      padding-bottom: 80px;
+      margin: 0; padding-bottom: 80px;
     }
     .container {
       max-width: 700px;
-      margin: 40px auto 0 auto;
-      padding: 0 10px;
+      margin: 40px auto;
+      padding: 0 16px;
     }
     .header {
       background: #3498db;
-      color: #fff;
-      border-radius: 12px 12px 0 0;
+      color: white;
+      border-radius: 8px 8px 0 0;
+      padding: 20px;
       text-align: center;
-      font-size: 26px;
-      font-weight: 700;
-      padding: 18px 0 12px 0;
-      margin-bottom: 0;
-      letter-spacing: 1px;
+      font-size: 24px;
+      font-weight: 600;
     }
     .info-sks {
       background: #e8f6fc;
-      padding: 16px;
-      border-radius: 0 0 12px 12px;
-      font-size: 16px;
-      font-weight: 500;
-      color: #1576b1;
-      margin-bottom: 16px;
+      padding: 12px 20px;
+      border-radius: 0 0 8px 8px;
       display: flex;
       justify-content: space-between;
-    }
-    .mk-form, .wizard-container, .mk-list, .riwayat-container {
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-      padding: 32px 26px 24px 26px;
-      margin-bottom: 24px;
-    }
-    .mk-form label, .wizard-step-title, .wizard-container label {
       font-weight: 500;
-      margin-bottom: 6px;
+      color: #1576b1;
+    }
+    .mk-form, .mk-list {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+      padding: 24px 20px;
+      margin: 24px 0;
+    }
+    .mk-form label {
       display: block;
+      margin: 12px 0 4px;
+      font-weight: 500;
+    }
+    .mk-form input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 15px;
+      box-sizing: border-box;
+    }
+    .mk-form .btn {
+      margin-top: 16px;
+      background: #3498db;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 6px;
+      cursor: pointer;
       font-size: 16px;
     }
-    .mk-form input, .wizard-container input, .wizard-container select, .wizard-container textarea {
-      width: 100%; padding: 10px; border:1px solid #ccc;
-      border-radius:6px; font-family: inherit; font-size: 15px;
-      box-sizing: border-box; margin-bottom: 14px;
-    }
-    .btn {
-      display: inline-block;
-      padding: 10px 18px;
-      border:none; border-radius:6px;
-      background: #3498db; color: #fff;
-      font-size: 16px; cursor: pointer;
-      font-weight: 500;
-      transition: background 0.18s;
-    }
-    .btn:disabled {
-      background: #aaa; cursor: not-allowed;
-    }
-    .btn:hover { background: #2176b9; }
-    .hidden { display: none !important; }
     .mk-list-title {
       font-size: 18px;
       font-weight: 600;
@@ -79,119 +72,66 @@
     }
     .mk-row {
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      border-bottom: 1px solid #f1f1f1;
-      padding: 10px 0;
-      font-size: 16px;
+      padding: 8px 0;
+      border-bottom: 1px solid #eee;
     }
     .mk-row:last-child { border-bottom: none; }
-    .mk-row .mk-info {
-      flex: 1;
-    }
-    .mk-actions button {
+    .mk-row .actions button {
       margin-left: 8px;
       background: #ff5252;
-      font-size: 14px;
-      padding: 4px 12px;
+      border: none;
+      color: white;
       border-radius: 4px;
+      padding: 4px 10px;
+      cursor: pointer;
+      font-size: 13px;
     }
-    .mk-actions .edit-btn {
+    .mk-row .actions .edit {
       background: #32c787;
-      color: #fff;
-    }
-    .wizard-header {
-      background: #3498db;
-      color: #fff;
-      border-radius: 8px 8px 0 0;
-      padding: 13px 0 8px 20px;
-      font-size: 20px;
-      font-weight: 600;
-      letter-spacing: 1px;
-      margin: -32px -26px 22px -26px;
-      text-align: left;
-    }
-    .wizard-step-title {
-      font-weight: 600;
-      font-size: 17px;
-      margin-bottom: 12px;
-      color: #444;
-    }
-    .wizard-actions {
-      text-align: right;
-      margin-top: 16px;
-    }
-    .wizard-actions .btn {
-      margin-left: 10px;
-      min-width: 120px;
-    }
-    .session-record {
-      background: #e8f6fc;
-      padding: 13px;
-      border-radius: 8px;
-      margin-bottom: 10px;
-      border-left: 5px solid #3498db;
-      font-size: 15px;
-      color: #222;
     }
     nav {
       position: fixed;
       bottom: 0; left: 0; width: 100%;
       background: white;
       box-shadow: 0 -2px 8px rgba(0,0,0,0.05);
-      display: flex;
-      justify-content: space-around;
-      padding: 10px 0;
-      z-index: 99;
+      display: flex; justify-content: space-around;
+      padding: 10px 0; font-size: 14px;
     }
-    nav a {
-      text-decoration: none;
-      color: #555;
-      font-size: 15px;
-      text-align: center;
-    }
+    nav a { text-decoration: none; color: #555; text-align: center; }
     nav a:active, nav a:focus { color: #3498db; }
   </style>
 </head>
 <body>
   <div class="container">
-    <div class="header">
-      ISI MATA KULIAH
+    <div class="header">ISI MATA KULIAH</div>
+    <div class="info-sks">
+      <div>Semester: <span id="semesterInfo">–</span></div>
+      <div>Jumlah SKS: <span id="sksMax">0</span></div>
+      <div>Sisa SKS: <span id="sksSisa">0</span></div>
     </div>
-    <div id="infoSks" class="info-sks">
-      Semester: <span id="semesterInfo"></span> | Jumlah SKS: <span id="sksMax"></span> | Sisa SKS: <span id="sksSisa"></span>
-    </div>
-    <!-- Form Input Mata Kuliah -->
-    <div id="mkForm" class="mk-form">
-      <label>Nama Mata Kuliah</label>
+
+    <!-- Form Tambah Matkul -->
+    <div class="mk-form" id="mkForm">
+      <label for="namaMatkul">Nama Mata Kuliah</label>
       <input id="namaMatkul" type="text" placeholder="Nama Mata Kuliah">
-      <label>Kode Mata Kuliah</label>
+      <label for="kodeMatkul">Kode Mata Kuliah</label>
       <input id="kodeMatkul" type="text" placeholder="Kode Mata Kuliah">
-      <label>Jumlah SKS</label>
-      <input id="sksMatkul" type="number" placeholder="Jumlah SKS" min="1">
-      <button id="saveMkBtn" class="btn" style="margin-top: 12px;">Simpan Mata Kuliah</button>
+      <label for="sksMatkul">Jumlah SKS</label>
+      <input id="sksMatkul" type="number" min="1" placeholder="Jumlah SKS">
+      <button class="btn" id="saveMkBtn">Simpan Mata Kuliah</button>
     </div>
-    <!-- List Mata Kuliah -->
-    <div id="mkList" class="mk-list">
+
+    <!-- Daftar Matkul -->
+    <div class="mk-list">
       <div class="mk-list-title">Daftar Mata Kuliah Semester Ini</div>
-      <div id="mkRows"></div>
-    </div>
-    <!-- Wizard Step -->
-    <div id="wizard" class="wizard-container hidden">
-      <div class="wizard-header" id="wizardHeader">Sesi 1</div>
-      <div id="stepTitle" class="wizard-step-title"></div>
-      <div id="stepContent"></div>
-      <div class="wizard-actions">
-        <button id="prevBtn" class="btn hidden">Sebelumnya</button>
-        <button id="nextBtn" class="btn">Selanjutnya</button>
+      <div id="mkRows">
+        <!-- akan diisi lewat JavaScript -->
       </div>
     </div>
-    <!-- Riwayat sesi -->
-    <div id="riwayat" class="riwayat-container hidden">
-      <h2 style="margin-bottom:14px;font-size:19px;font-weight:600;color:#3498db">Riwayat Sesi</h2>
-      <div id="riwayatList"></div>
-    </div>
   </div>
+
+  <!-- Navigation -->
   <nav>
     <a href="dashboard.html">🏠<br>Beranda</a>
     <a href="profil.html">👤<br>Profil</a>
@@ -199,10 +139,105 @@
     <a href="mata-kuliah.html">📚<br>MK</a>
     <a href="logout.html">🚪<br>Logout</a>
   </nav>
-<!-- ==== Mulai Script ==== -->
-<script>
-// ... <<== KODE JAVASCRIPT SAMA PERSIS DENGAN VERSI [isi-mata-kuliah.html] DI ATAS ==>> ...
-// (biar tidak terlalu panjang di sini, bisa langsung copy JS dari jawaban sebelumnya!)
-</script>
+
+  <script>
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (!user || !user._id) { window.location = 'login.html'; }
+
+    let sksMax = 0, sksSisa = 0;
+    const semesterParam = parseInt(new URLSearchParams(location.search).get('semester'), 10);
+
+    // Elemen
+    const semesterInfo = document.getElementById('semesterInfo');
+    const sksMaxEl     = document.getElementById('sksMax');
+    const sksSisaEl    = document.getElementById('sksSisa');
+    const mkRows       = document.getElementById('mkRows');
+    const saveBtn      = document.getElementById('saveMkBtn');
+    const namaInput    = document.getElementById('namaMatkul');
+    const kodeInput    = document.getElementById('kodeMatkul');
+    const sksInput     = document.getElementById('sksMatkul');
+
+    // Muat data semester
+    async function loadSemesterData() {
+      const res = await fetch(`https://ediska-backend.onrender.com/api/semester/${user._id}`);
+      const sems = await res.json();
+      const sem = sems.find(s => s.semester === semesterParam);
+      sems && sem && (
+        sksMax = sem.sks,
+        sksSisa = sem.sks,
+        semesterInfo.textContent = sem.semester,
+        sksMaxEl.textContent = sem.sks
+      );
+    }
+
+    // Muat daftar matkul & hitung sisa SKS
+    async function loadMatkulList() {
+      const res = await fetch(`https://ediska-backend.onrender.com/api/matakuliah?userId=${user._id}&semester=${semesterParam}`);
+      const list = await res.json();
+      let used = list.reduce((t,m) => t + m.sks, 0);
+      sksSisa = sksMax - used;
+      sksSisaEl.textContent = sksSisa;
+
+      mkRows.innerHTML = list.length
+        ? list.map(m => `
+            <div class="mk-row">
+              <div>${m.nama} (${m.kode}) – ${m.sks} SKS</div>
+              <div class="actions">
+                <button class="edit" onclick="editMatkul('${m._id}','${m.nama}','${m.kode}',${m.sks})">Edit</button>
+                <button onclick="deleteMatkul('${m._id}',${m.sks})">Hapus</button>
+              </div>
+            </div>
+          `).join('')
+        : `<div style="color:#999;font-style:italic;">Belum ada mata kuliah.</div>`;
+    }
+
+    // Simpan atau Update matkul
+    saveBtn.onclick = async () => {
+      const nama = namaInput.value.trim();
+      const kode = kodeInput.value.trim();
+      const sks  = parseInt(sksInput.value,10);
+      if (!nama || !kode || !sks || sks > sksSisa) {
+        return alert('Periksa kembali input (SKS harus ≤ sisa).');
+      }
+      await fetch('https://ediska-backend.onrender.com/api/matakuliah', {
+        method: 'POST',
+        headers: { 'Content-Type':'application/json' },
+        body: JSON.stringify({ userId: user._id, semester: semesterParam, nama, kode, sks })
+      });
+      namaInput.value = kodeInput.value = sksInput.value = '';
+      loadMatkulList();
+    };
+
+    // Hapus matkul
+    window.deleteMatkul = async (id,sks) => {
+      if (!confirm('Yakin hapus matkul ini?')) return;
+      await fetch(`https://ediska-backend.onrender.com/api/matakuliah/${id}`, { method:'DELETE' });
+      loadMatkulList();
+    };
+
+    // Edit matkul (pre-fill form)
+    window.editMatkul = (id,nama,kode,sks) => {
+      namaInput.value = nama;
+      kodeInput.value = kode;
+      sksInput.value  = sks;
+      saveBtn.textContent = 'Update Mata Kuliah';
+      saveBtn.onclick = async () => {
+        await fetch(`https://ediska-backend.onrender.com/api/matakuliah/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type':'application/json' },
+          body: JSON.stringify({ nama, kode, sks })
+        });
+        saveBtn.textContent = 'Simpan Mata Kuliah';
+        namaInput.value = kodeInput.value = sksInput.value = '';
+        loadMatkulList();
+      };
+    };
+
+    // Inisialisasi
+    (async () => {
+      await loadSemesterData();
+      await loadMatkulList();
+    })();
+  </script>
 </body>
 </html>
