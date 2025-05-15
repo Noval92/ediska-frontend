@@ -2,262 +2,224 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>Form Mata Kuliah + Autocomplete + Sesi</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Input Mata Kuliah - E-DISKA</n  >
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
-    body { font-family: Arial; background: #f4f6f9; padding: 20px; }
-    .container { max-width: 720px; margin: auto; background: white; padding: 30px;
-      border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-    label { font-weight: bold; margin-top: 10px; display: block; }
-    input, select, textarea, button { width: 100%; padding: 10px; margin-top: 5px;
-      border-radius: 6px; border: 1px solid #ccc; box-sizing: border-box; }
-
-    /* autocomplete styles */
-    .autocomplete { position: relative; }
-    .autocomplete-items {
-      position: absolute;
-      border: 1px solid #d4d4d4;
-      border-top: none;
-      z-index: 99;
-      top: 100%;
-      left: 0; right: 0;
-      background: #fff;
-    }
-    .autocomplete-items div {
-      padding: 10px;
-      cursor: pointer;
-    }
-    .autocomplete-items div:hover,
-    .autocomplete-active {
-      background: #e9e9e9;
-    }
-
-    /* sesi styles */
-    .sesi-block { border: 1px solid #ccc; padding: 20px; margin-top: 20px;
-      border-radius: 8px; background: #f9f9f9; }
-    .hidden { display: none; }
-    .riwayat { margin-top: 30px; background: #eef; padding: 15px; border-radius: 10px; }
+    body { font-family:'Poppins', sans-serif; background:#f3f7fa; margin:0; padding:20px; }
+    .container { max-width:800px; margin:0 auto; background:#fff; padding:20px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.05); }
+    h1 { margin-top:0; }
+    label { display:block; margin:12px 0 4px; font-weight:500; }
+    input, select, textarea { width:100%; padding:8px; border:1px solid #ccc; border-radius:6px; font-family:inherit; }
+    .hidden { display:none; }
+    button { margin-top:12px; padding:10px 16px; border:none; border-radius:6px; background:#3498db; color:white; cursor:pointer; font-size:16px; }
+    button:disabled { opacity:0.6; cursor:not-allowed; }
+    #riwayat { margin-top:24px; background:#eef; padding:12px; border-radius:8px; }
+    #riwayat h2 { margin-top:0; }
+    .session-record { padding:8px; border-bottom:1px solid #ccc; }
+    .session-record:last-child { border:none; }
   </style>
 </head>
 <body>
-<div class="container">
-  <h2>Input Mata Kuliah</h2>
+  <div class="container">
+    <h1>Input Mata Kuliah</h1>
 
-  <label for="nama">Nama Mata Kuliah</label>
-  <div class="autocomplete">
-    <input id="nama" type="text" placeholder="Ketik nama matkul…" />
+    <!-- Form input mata kuliah -->
+    <div id="mkForm">
+      <label for="namaMatkul">Nama Mata Kuliah</label>
+      <input type="text" id="namaMatkul" placeholder="Nama Mata Kuliah" required>
+      <label for="kodeMatkul">Kode Mata Kuliah</label>
+      <input type="text" id="kodeMatkul" placeholder="Kode Mata Kuliah" required>
+      <label for="sksMatkul">Jumlah SKS</label>
+      <input type="number" id="sksMatkul" placeholder="Jumlah SKS" required min="0">
+      <button id="saveMkBtn">Save Mata Kuliah</button>
+    </div>
+
+    <!-- Form sesi, muncul setelah save mata kuliah -->
+    <div id="sessionForm" class="hidden">
+      <h2>Sesi <span id="sessionNumber">1</span> - Nama Matkulnya apa?</h2>
+      <!-- 1. Hal apa dipelajari -->
+      <label for="pelajaran">1. Hal apa yang dipelajari?</label>
+      <textarea id="pelajaran" rows="3"></textarea>
+
+      <!-- 2. Materi upload -->
+      <label>2. Apakah ada materi yang mau diupload?</label>
+      <select id="pilihMateri">
+        <option value="">--Pilih--</option>
+        <option value="ya">Ya</option>
+        <option value="tidak">Tidak</option>
+      </select>
+      <div id="uploadMateri" class="hidden">
+        <label for="fileMateri">Upload Materi (PDF/Image)</label>
+        <input type="file" id="fileMateri" accept="application/pdf,image/*">
+        <label for="judulMateri">Judul Materi</label>
+        <input type="text" id="judulMateri" placeholder="Judul Materi">
+      </div>
+
+      <!-- 3. File lain -->
+      <label>3. Apakah ada file lain yang mau diupload?</label>
+      <select id="pilihFileLain">
+        <option value="">--Pilih--</option>
+        <option value="ya">Ya</option>
+        <option value="tidak">Tidak</option>
+      </select>
+      <div id="uploadLain" class="hidden">
+        <label for="fileLain">Upload File Lain</label>
+        <input type="file" id="fileLain" accept="application/pdf,image/*">
+        <label for="judulLain">Judul File</label>
+        <input type="text" id="judulLain" placeholder="Judul File">
+      </div>
+
+      <!-- 4. Ringkasan diskusi -->
+      <label>4. Apakah ada ringkasan diskusi atau catatan?</label>
+      <select id="pilihRingkasan">
+        <option value="">--Pilih--</option>
+        <option value="ya">Ya</option>
+        <option value="tidak">Tidak</option>
+      </select>
+      <div id="ringkasanDiv" class="hidden">
+        <label for="ringkasan">Ringkasan</label>
+        <textarea id="ringkasan" rows="3"></textarea>
+      </div>
+
+      <!-- 5. Tugas -->
+      <label>5. Apakah ada tugas?</label>
+      <select id="pilihTugas">
+        <option value="">--Pilih--</option>
+        <option value="ya">Ya</option>
+        <option value="tidak">Tidak</option>
+      </select>
+      <div id="tugasDiv" class="hidden">
+        <label for="fileTugas">Upload Tugas (PDF/Image/Link)</label>
+        <input type="file" id="fileTugas" accept="application/pdf,image/*">
+        <label for="linkTugas">Link Video (Opsional)</label>
+        <input type="url" id="linkTugas" placeholder="https://...">
+      </div>
+
+      <!-- 6. Nilai -->
+      <label>6. Apakah sudah ada nilai?</label>
+      <select id="pilihNilai">
+        <option value="">--Pilih--</option>
+        <option value="ya">Ya</option>
+        <option value="tidak">Tidak</option>
+      </select>
+      <div id="nilaiDiv" class="hidden">
+        <label for="nilai">Nilai</label>
+        <input type="text" id="nilai" placeholder="Nilai">
+      </div>
+
+      <button id="saveSessionBtn">Simpan Sesi <span id="sessionNumLabel">1</span></button>
+    </div>
+
+    <!-- Riwayat sesi -->
+    <div id="riwayat" class="hidden">
+      <h2>Riwayat Sesi</h2>
+      <div id="riwayatList"></div>
+    </div>
   </div>
-
-  <label for="kode">Kode Mata Kuliah</label>
-  <input id="kode" type="text" />
-
-  <label for="sks">Jumlah SKS</label>
-  <input id="sks" type="number" min="0" max="6" />
-
-  <button id="addSesi" type="button" disabled>Tambah Sesi</button>
-
-  <div id="sesiContainer"></div>
-
-  <div class="riwayat">
-    <h3>Riwayat Sesi</h3>
-    <ul id="riwayatList"></ul>
-  </div>
-</div>
 
 <script>
-  // === 1) Daftar lengkap mata kuliah ===
-  const courses = [
-    { kode:'MATA4101', nama:'PENGANTAR MATEMATIKA',                        sks:3 },
-    { kode:'MATA4110', nama:'KALKULUS I',                                  sks:3 },
-    { kode:'MKWU4101', nama:'PENDIDIKAN AGAMA ISLAM',                      sks:3 },
-    { kode:'MKWU4108', nama:'BAHASA INDONESIA',                            sks:3 },
-    { kode:'MKWU4109', nama:'PENDIDIKAN KEWARGANEGARAAN',                  sks:3 },
-    { kode:'MSIM4101', nama:'PENGANTAR SISTEM INFORMASI',                  sks:3 },
-    { kode:'EKMA4111', nama:'PENGANTAR BISNIS',                            sks:3 },
-    { kode:'EKMA4116', nama:'MANAJEMEN',                                   sks:4 },
-    { kode:'MATA4112', nama:'ALJABAR LINEAR ELEMENTER I',                 sks:2 },
-    { kode:'MKWI4201', nama:'BAHASA INGGRIS',                              sks:3 },
-    { kode:'MSIM4103', nama:'LOGIKA INFORMATIKA',                         sks:3 },
-    { kode:'SATS4111', nama:'KOMPUTER I',                                  sks:3 },
-    { kode:'ADPU4341', nama:'TEORI ORGANISASI',                            sks:3 },
-    { kode:'BING4102', nama:'READING I',                                   sks:3 },
-    { kode:'EKMA4158', nama:'PERILAKU ORGANISASI',                        sks:3 },
-    { kode:'MSIM4201', nama:'SISTEM OPERASI',                             sks:3 },
-    { kode:'MSIM4202', nama:'STRUKTUR DATA',                              sks:3 },
-    { kode:'SATS4121', nama:'METODE STATISTIK I',                         sks:3 },
-    { kode:'MKWI4202', nama:'BELAJAR DI ERA DIGITAL',                     sks:3 },
-    { kode:'MSIM4203', nama:'ALGORITMA DAN PEMROGRAMAN',                  sks:3 },
-    { kode:'MSIM4204', nama:'JARINGAN KOMPUTER',                          sks:3 },
-    { kode:'MSIM4205', nama:'PROSES BISNIS',                              sks:2 },
-    { kode:'MSIM4206', nama:'BASIS DATA',                                 sks:3 },
-    { kode:'MSIM4207', nama:'SISTEM INFORMASI MANAJEMEN',                 sks:3 },
-    { kode:'MSIM4208', nama:'INTERAKSI MANUSIA DAN KOMPUTER',             sks:3 },
-    { kode:'MSIM4301', nama:'PEMROGRAMAN BERBASIS DESKTOP',               sks:3 },
-    { kode:'MSIM4302', nama:'ANALISIS DAN PERANCANGAN SISTEM',            sks:3 },
-    { kode:'MSIM4303', nama:'REKAYASA PERANGKAT LUNAK',                   sks:3 },
-    { kode:'MSIM4304', nama:'DASAR INFRASTRUKTUR TI',                     sks:2 },
-    { kode:'MSIM4305', nama:'MANAJEMEN RESIKO DAN AUDIT SISTEM INFORMASI', sks:3 },
-    { kode:'MSIM4306', nama:'KOMUNIKASI BISNIS DAN TEKNIS',               sks:2 },
-    { kode:'MSIM4307', nama:'SISTEM PENDUKUNG KEPUTUSAN',                sks:3 },
-    { kode:'MSIM4308', nama:'ADMINISTRASI SERVER',                       sks:3 },
-    { kode:'LUHT4353', nama:'TEKNIK PENULISAN ILMIAH',                   sks:2 },
-    { kode:'MSIM4309', nama:'PEMROGRAMAN BERBASIS WEB',                  sks:3 },
-    { kode:'MSIM4310', nama:'ANALISIS DAN VISUALISASI DATA',             sks:2 },
-    { kode:'MSIM4311', nama:'ARSITEKTUR DAN PERANCANGAN SISTEM ENTERPRISE', sks:3 },
-    { kode:'MSIM4312', nama:'METODOLOGI PENELITIAN',                     sks:3 },
-    { kode:'MSIM4315', nama:'DATA WAREHOUSE',                            sks:3 },
-    { kode:'MSIM4316', nama:'ADMINISTRASI JARINGAN',                     sks:3 },
-    { kode:'STSI4401', nama:'Capstone Project',                          sks:4 },
-    { kode:'MKWI4203', nama:'KEWIRAUSAHAAN DI ERA DIGITAL',              sks:3 },
-    { kode:'MSIM4401', nama:'PEMROGRAMAN BERBASIS PERANGKAT BERGERAK',   sks:3 },
-    { kode:'MSIM4402', nama:'TATA KELOLA TEKNOLOGI INFORMASI',           sks:2 },
-    { kode:'MSIM4403', nama:'DATA MINING',                               sks:3 },
-    { kode:'MSIM4404', nama:'KEAMANAN JARINGAN',                         sks:3 },
-    { kode:'MSIM4500', nama:'TUGAS AKHIR PROGRAM',                      sks:6 },
-    { kode:'MSIM4560', nama:'KARYA ILMIAH',                              sks:0 },
-    { kode:'EKMA4483', nama:'E-Business',                                sks:3 },
-    { kode:'MKWU4110', nama:'PANCASILA',                                 sks:3 },
-    { kode:'MSIM4405', nama:'KEAMANAN SISTEM INFORMASI',                 sks:2 },
-    { kode:'MSIM4406', nama:'MANAJEMEN PROYEK SISTEM INFORMASI',        sks:2 },
-    { kode:'MSIM4407', nama:'MANAJEMEN LAYANAN TEKNOLOGI INFORMASI',     sks:3 },
-    { kode:'MSIM4408', nama:'ETIKA PROFESI',                            sks:2 }
-  ];
+  // Ambil query semester
+  const params = new URLSearchParams(location.search);
+  const semester = params.get('semester');
+  const user = JSON.parse(localStorage.getItem('user'));
+  if (!user) location.href='login.html';
 
-  // === 2) custom autocomplete function ===
-  function autocomplete(inp, items) {
-    let currentFocus;
-    inp.addEventListener("input", function(){
-      const val = this.value;
-      closeAllLists();
-      if (!val) return false;
-      currentFocus = -1;
-      const list = document.createElement("div");
-      list.setAttribute("class", "autocomplete-items");
-      this.parentNode.appendChild(list);
+  let mataKuliahId = null;
+  let sessionCount = 0;
+  let riwayat = [];
 
-      items.forEach(text => {
-        if (text.substr(0, val.length).toUpperCase() === val.toUpperCase()) {
-          const entry = document.createElement("div");
-          entry.innerHTML = "<strong>" + text.substr(0, val.length) + "</strong>" + text.substr(val.length);
-          entry.addEventListener("click", () => {
-            inp.value = text;
-            fillKodeSks(text);
-            closeAllLists();
-          });
-          list.appendChild(entry);
-        }
-      });
+  // Elemen
+  const mkForm = document.getElementById('mkForm');
+  const sessionForm = document.getElementById('sessionForm');
+  const riwayatDiv = document.getElementById('riwayat');
+  const riwayatList = document.getElementById('riwayatList');
+
+  // Handlers show/hide detail
+  function toggleDetail(selId, divId) {
+    document.getElementById(selId).addEventListener('change', e => {
+      document.getElementById(divId).classList.toggle('hidden', e.target.value !== 'ya');
     });
+  }
+  ['pilihMateri','pilihFileLain','pilihRingkasan','pilihTugas','pilihNilai']
+    .forEach(id => toggleDetail(id, { 'pilihMateri':'uploadMateri', 'pilihFileLain':'uploadLain', 'pilihRingkasan':'ringkasanDiv', 'pilihTugas':'tugasDiv', 'pilihNilai':'nilaiDiv' }[id]));
 
-    inp.addEventListener("keydown", function(e) {
-      let x = document.querySelector(".autocomplete-items");
-      if (x) x = x.getElementsByTagName("div");
-      if (e.keyCode === 40) { currentFocus++; addActive(x); }
-      else if (e.keyCode === 38) { currentFocus--; addActive(x); }
-      else if (e.keyCode === 13) { 
-        e.preventDefault();
-        if (x && currentFocus > -1) x[currentFocus].click();
-      }
+  // Save mata kuliah
+  document.getElementById('saveMkBtn').onclick = async () => {
+    const nama = document.getElementById('namaMatkul').value;
+    const kode = document.getElementById('kodeMatkul').value;
+    const sks  = parseInt(document.getElementById('sksMatkul').value) || 0;
+    const body = { userId:user._id, semester, nama, kode, sks };
+    const res = await fetch('https://ediska-backend.onrender.com/api/matakuliah', {
+      method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)
     });
+    const data = await res.json();
+    mataKuliahId = data._id;
+    mkForm.classList.add('hidden');
+    sessionForm.classList.remove('hidden');
+    riwayatDiv.classList.remove('hidden');
+    loadRiwayat();
+  };
 
-    function addActive(x) {
-      if (!x) return false;
-      removeActive(x);
-      if (currentFocus >= x.length) currentFocus = 0;
-      if (currentFocus < 0)    currentFocus = x.length - 1;
-      x[currentFocus].classList.add("autocomplete-active");
+  // Save sesi
+  document.getElementById('saveSessionBtn').onclick = async () => {
+    const sesi = sessionCount + 1;
+    const payload = { session:sesi, pelajaran:document.getElementById('pelajaran').value };
+    if (document.getElementById('pilihMateri').value==='ya') {
+      payload.materi = {
+        file: document.getElementById('fileMateri').files[0],
+        judul: document.getElementById('judulMateri').value
+      };
     }
-    function removeActive(x) {
-      for (const el of x) el.classList.remove("autocomplete-active");
+    if (document.getElementById('pilihFileLain').value==='ya') {
+      payload.fileLain = {
+        file: document.getElementById('fileLain').files[0],
+        judul: document.getElementById('judulLain').value
+      };
     }
-    function closeAllLists(elmnt) {
-      const lists = document.getElementsByClassName("autocomplete-items");
-      for (const list of lists) {
-        if (elmnt !== list && elmnt !== inp) list.parentNode.removeChild(list);
-      }
+    if (document.getElementById('pilihRingkasan').value==='ya') {
+      payload.ringkasan = document.getElementById('ringkasan').value;
     }
-    document.addEventListener("click", e => closeAllLists(e.target));
-  }
-
-  function fillKodeSks(namaMtkl) {
-    const m = courses.find(c => c.nama === namaMtkl);
-    if (m) {
-      document.getElementById("kode").value = m.kode;
-      document.getElementById("sks").value  = m.sks;
-      document.getElementById("addSesi").disabled = false;
+    if (document.getElementById('pilihTugas').value==='ya') {
+      payload.tugas = {
+        file: document.getElementById('fileTugas').files[0],
+        link: document.getElementById('linkTugas').value
+      };
     }
+    if (document.getElementById('pilihNilai').value==='ya') {
+      payload.nilai = document.getElementById('nilai').value;
+    }
+    // Kirim form-data jika ada file
+    const form = new FormData();
+    form.append('userId', user._id);
+    form.append('matakuliahId', mataKuliahId);
+    form.append('session', sesi);
+    form.append('pelajaran', payload.pelajaran);
+    if (payload.materi) { form.append('materiFile', payload.materi.file); form.append('materiJudul', payload.materi.judul); }
+    if (payload.fileLain) { form.append('fileLain', payload.fileLain.file); form.append('fileLainJudul', payload.fileLain.judul); }
+    if (payload.ringkasan) form.append('ringkasan', payload.ringkasan);
+    if (payload.tugas) { form.append('tugasFile', payload.tugas.file); form.append('tugasLink', payload.tugas.link); }
+    if (payload.nilai) form.append('nilai', payload.nilai);
+
+    await fetch('https://ediska-backend.onrender.com/api/matakuliah/sessions', {
+      method:'POST', body: form
+    });
+    loadRiwayat();
+    sessionCount++;
+    document.getElementById('sessionNumber').innerText = sessionCount+1;
+    document.getElementById('sessionNumLabel').innerText = sessionCount+1;
+  };
+
+  // Load riwayat sesi
+  async function loadRiwayat() {
+    const res = await fetch(`https://ediska-backend.onrender.com/api/matakuliah/${mataKuliahId}/sessions`);
+    riwayat = await res.json();
+    riwayatList.innerHTML = riwayat.map(r=>
+      `<div class="session-record">
+        <strong>Sesi ${r.session}</strong>: ${r.pelajaran}
+      </div>`
+    ).join('');
   }
-
-  // inisialisasi autocomplete
-  autocomplete(document.getElementById("nama"), courses.map(c => c.nama));
-
-  // === 3) kode sesi & riwayat (sama seperti sebelumnya) ===
-  let sesiIndex = 1, riwayat = [];
-
-  function createSesiBlock(i) {
-    const div = document.createElement("div");
-    div.className = 'sesi-block'; div.id = `sesi${i}`;
-    div.innerHTML = `
-      <h3>Sesi ${i} - Nama Matkulnya apa?</h3>
-      <label>1. Hal apa yang dipelajari?</label>
-      <textarea id="belajar${i}" required></textarea>
-      <label>2. Apakah ada materi yang mau diupload?</label>
-      <select id="materiSelect${i}">
-        <option value="tidak">Tidak</option><option value="ya">Ya</option>
-      </select>
-      <input type="file" id="materi${i}" class="hidden" accept="application/pdf,image/*">
-      <label>3. Apakah ada file lain yang mau diupload?</label>
-      <select id="lainSelect${i}">
-        <option value="tidak">Tidak</option><option value="ya">Ya</option>
-      </select>
-      <div id="lainFile${i}" class="hidden">
-        <label>Upload Ringkasan</label><input type="file" id="ringkasan${i}" accept="application/pdf,image/*">
-        <label>Upload Soal Diskusi dan Jawaban</label><input type="file" id="diskusi${i}" accept="application/pdf,image/*">
-        <label>Upload Tugas</label><input type="file" id="tugas${i}" accept="application/pdf,image/*">
-      </div>
-      <label>4. Apakah sudah ada nilai?</label>
-      <select id="nilaiSelect${i}">
-        <option value="tidak">Tidak</option><option value="ya">Ya</option>
-      </select>
-      <input type="number" id="nilai${i}" class="hidden" min="0" max="100">
-      <button type="button" onclick="simpanSesi(${i}, this)">Simpan Sesi ${i}</button>
-    `;
-    return div;
-  }
-
-  function simpanSesi(i, btn) {
-    if (riwayat.includes(i)) return alert("Sesi ini sudah disimpan.");
-    riwayat.push(i);
-    document.getElementById('riwayatList').innerHTML += `<li>Sesi ${i} disimpan</li>`;
-    btn.disabled = true;
-    document.getElementById('addSesi').disabled = false;
-  }
-
-  document.getElementById('addSesi').addEventListener('click', () => {
-    sesiIndex++;
-    document.getElementById('addSesi').disabled = true;
-    const sb = createSesiBlock(sesiIndex);
-    document.getElementById('sesiContainer').appendChild(sb);
-    attachHandlers(sesiIndex);
-  });
-
-  function attachHandlers(i) {
-    document.getElementById(`materiSelect${i}`)
-      .addEventListener('change', e =>
-        document.getElementById(`materi${i}`).classList.toggle('hidden', e.target.value==='tidak'));
-
-    document.getElementById(`lainSelect${i}`)
-      .addEventListener('change', e =>
-        document.getElementById(`lainFile${i}`).classList.toggle('hidden', e.target.value==='tidak'));
-
-    document.getElementById(`nilaiSelect${i}`)
-      .addEventListener('change', e =>
-        document.getElementById(`nilai${i}`).classList.toggle('hidden', e.target.value==='tidak'));
-  }
-
-  // load sesi 1
-  const awal = createSesiBlock(1);
-  document.getElementById('sesiContainer').appendChild(awal);
-  attachHandlers(1);
 </script>
 </body>
 </html>
