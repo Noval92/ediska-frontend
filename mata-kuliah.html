@@ -25,11 +25,11 @@
       <div>Sisa SKS: <span id="sksSisa">0</span></div>
     </div>
 
-    <label>Nama Mata Kuliah</label>
+    <label for="namaMatkul">Nama Mata Kuliah</label>
     <input id="namaMatkul" type="text" placeholder="Nama Mata Kuliah">
-    <label>Kode Mata Kuliah</label>
+    <label for="kodeMatkul">Kode Mata Kuliah</label>
     <input id="kodeMatkul" type="text" placeholder="Kode Mata Kuliah">
-    <label>Jumlah SKS</label>
+    <label for="sksMatkul">Jumlah SKS</label>
     <input id="sksMatkul" type="number" placeholder="Jumlah SKS">
     <button id="saveMkBtn">Simpan Mata Kuliah</button>
 
@@ -55,35 +55,43 @@
     let sksSisa = 0;
 
     async function loadSemesterData() {
-      const res = await fetch(`https://ediska-backend.onrender.com/api/semester/${user._id}`);
-      const semesters = await res.json();
-      const sem = semesters.find(s => s.semester === semesterParam);
-      if (sem) {
-        sksMax = sem.sks || 0;
-        sksSisa = sem.sks || 0;
-        semesterInfo.textContent = sem.semester;
-        sksMaxEl.textContent = sksMax;
-        sksSisaEl.textContent = sksSisa;
+      try {
+        const res = await fetch(`https://ediska-backend.onrender.com/api/semester/${user._id}`);
+        const semesters = await res.json();
+        const sem = semesters.find(s => s.semester === semesterParam);
+        if (sem) {
+          sksMax = sem.sks || 0;
+          sksSisa = sem.sks || 0;
+          semesterInfo.textContent = sem.semester;
+          sksMaxEl.textContent = sksMax;
+          sksSisaEl.textContent = sksSisa;
+        }
+      } catch (error) {
+        console.error('Gagal memuat data semester:', error);
       }
     }
 
     async function loadMatkulList() {
-      const res = await fetch(`https://ediska-backend.onrender.com/api/matakuliah?userId=${user._id}&semester=${semesterParam}`);
-      const list = await res.json();
-      const used = list.reduce((sum, m) => sum + m.sks, 0);
-      sksSisa = sksMax - used;
-      sksSisaEl.textContent = sksSisa;
-      if (list.length === 0) {
-        mkRows.innerHTML = '<div style="color:#777;font-style:italic">Belum ada mata kuliah.</div>';
-      } else {
-        mkRows.innerHTML = list.map(m => `
-          <div class="mk-row">
-            <div>${m.nama} (${m.kode}) - ${m.sks} SKS</div>
-            <div class="actions">
-              <button onclick="deleteMatkul('${m._id}', ${m.sks})">Hapus</button>
+      try {
+        const res = await fetch(`https://ediska-backend.onrender.com/api/matakuliah?userId=${user._id}&semester=${semesterParam}`);
+        const list = await res.json();
+        const used = list.reduce((sum, m) => sum + m.sks, 0);
+        sksSisa = sksMax - used;
+        sksSisaEl.textContent = sksSisa;
+        if (list.length === 0) {
+          mkRows.innerHTML = '<div style="color:#777;font-style:italic">Belum ada mata kuliah.</div>';
+        } else {
+          mkRows.innerHTML = list.map(m => `
+            <div class="mk-row">
+              <div>${m.nama} (${m.kode}) - ${m.sks} SKS</div>
+              <div class="actions">
+                <button onclick="deleteMatkul('${m._id}', ${m.sks})">Hapus</button>
+              </div>
             </div>
-          </div>
-        `).join('');
+          `).join('');
+        }
+      } catch (error) {
+        console.error('Gagal memuat daftar matkul:', error);
       }
     }
 
@@ -93,20 +101,29 @@
       const sks = parseInt(sksInput.value);
       if (!nama || !kode || !sks) return alert('Lengkapi semua input.');
       if (sks > sksSisa) return alert(`SKS melebihi sisa: ${sksSisa}`);
-
-      await fetch('https://ediska-backend.onrender.com/api/matakuliah', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: user._id, semester: semesterParam, nama, kode, sks })
-      });
-      namaInput.value = kodeInput.value = sksInput.value = '';
-      await loadMatkulList();
+      try {
+        await fetch('https://ediska-backend.onrender.com/api/matakuliah', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId: user._id, semester: semesterParam, nama, kode, sks })
+        });
+        namaInput.value = kodeInput.value = sksInput.value = '';
+        await loadMatkulList();
+      } catch (error) {
+        alert('Gagal menyimpan data.');
+        console.error(error);
+      }
     };
 
     window.deleteMatkul = async (id, sks) => {
       if (!confirm('Yakin hapus matkul ini?')) return;
-      await fetch(`https://ediska-backend.onrender.com/api/matakuliah/${id}`, { method: 'DELETE' });
-      await loadMatkulList();
+      try {
+        await fetch(`https://ediska-backend.onrender.com/api/matakuliah/${id}`, { method: 'DELETE' });
+        await loadMatkulList();
+      } catch (error) {
+        alert('Gagal menghapus matkul.');
+        console.error(error);
+      }
     };
 
     document.addEventListener('DOMContentLoaded', async () => {
