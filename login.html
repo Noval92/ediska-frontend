@@ -68,32 +68,19 @@
   </div>
 
   <script>
-    // --- LOGIN JS ---
-    const loginForm = document.getElementById('loginForm');
-    loginForm.addEventListener('submit', async e => {
-      e.preventDefault(); // WAJIB agar form tidak reload
-      
+    document.getElementById('loginForm').addEventListener('submit', async e => {
+      e.preventDefault();
       const username = document.getElementById('username').value.trim();
       const password = document.getElementById('password').value;
       const remember = document.getElementById('rememberMe').checked;
-
       try {
         const res = await fetch('https://ediska-backend.onrender.com/api/auth/login', {
           method: 'POST',
+          mode: 'cors',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ username, password })
         });
-
-        // Cek response benar-benar JSON
-        const contentType = res.headers.get('content-type');
-        if (!contentType || !contentType.includes('application/json')) {
-          const text = await res.text();
-          alert('Server Error (not JSON):\n' + text.slice(0,200));
-          return;
-        }
-
         const result = await res.json();
-
         if (res.ok && result.user) {
           localStorage.setItem('user', JSON.stringify(result.user));
           if (remember) {
@@ -112,3 +99,14 @@
     });
 
     window.addEventListener('load', () => {
+      const creds = localStorage.getItem('rememberedUser');
+      if (creds) {
+        const { username, password } = JSON.parse(creds);
+        document.getElementById('username').value = username;
+        document.getElementById('password').value = password;
+        document.getElementById('rememberMe').checked = true;
+      }
+    });
+  </script>
+</body>
+</html>
