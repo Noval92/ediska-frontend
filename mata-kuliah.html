@@ -1,69 +1,41 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Isi Mata Kuliah – E-DISKA</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ISI MATA KULIAH</title>
   <style>
-    body { font-family:'Poppins',sans-serif; background:#f3f7fa; margin:0; padding-bottom:80px; }
-    .container { max-width:700px; margin:40px auto; padding:0 16px; }
-    .header { background:#3498db; color:#fff; padding:20px; text-align:center; border-radius:8px 8px 0 0; font-size:24px; font-weight:600; }
-    .info-sks { background:#e8f6fc; padding:12px 20px; display:flex; justify-content:space-between; color:#1576b1; font-weight:500; }
-    .mk-form, .mk-list { background:#fff; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.06); padding:24px 20px; margin:24px 0; }
-    .mk-form label { display:block; margin:12px 0 4px; font-weight:500; }
-    .mk-form input { width:100%; padding:10px; border:1px solid #ccc; border-radius:6px; font-size:15px; box-sizing:border-box; }
-    .mk-form .btn { margin-top:16px; background:#3498db; color:#fff; border:none; padding:10px 16px; border-radius:6px; cursor:pointer; font-size:16px; }
-    .mk-list-title { font-size:18px; font-weight:600; color:#3498db; margin-bottom:12px; }
-    .mk-row { display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #eee; }
-    .mk-row:last-child { border-bottom:none; }
-    .mk-row .actions button { margin-left:8px; background:#ff5252; border:none; color:#fff; border-radius:4px; padding:4px 10px; cursor:pointer; font-size:13px; }
-    .mk-row .actions .edit { background:#32c787; }
-    nav { position:fixed; bottom:0; left:0; width:100%; background:#fff; box-shadow:0 -2px 8px rgba(0,0,0,0.05); display:flex; justify-content:space-around; padding:10px 0; font-size:14px; }
-    nav a { text-decoration:none; color:#555; text-align:center; }
-    nav a:active, nav a:focus { color:#3498db; }
+    body { font-family: Arial, sans-serif; background: #f1f5f9; margin: 0; padding: 0; }
+    .container { max-width: 700px; margin: 40px auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+    h2 { background: #3498db; color: white; padding: 16px; margin: 0; border-radius: 8px 8px 0 0; text-align: center; }
+    .info { display: flex; justify-content: space-between; background: #e3f2fd; padding: 12px; font-weight: bold; }
+    label { display: block; margin-top: 12px; font-weight: bold; }
+    input { width: 100%; padding: 8px; margin-top: 4px; border-radius: 4px; border: 1px solid #ccc; }
+    button { margin-top: 16px; padding: 10px 20px; background: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer; }
+    .mk-row { margin-top: 10px; padding: 10px; background: #f9f9f9; border-left: 4px solid #3498db; border-radius: 4px; display: flex; justify-content: space-between; }
+    .actions button { margin-left: 8px; background: #e74c3c; }
   </style>
 </head>
 <body>
   <div class="container">
-    <div class="header">ISI MATA KULIAH</div>
-    <div class="info-sks">
-      <div>Semester: <span id="semesterInfo">–</span></div>
+    <h2>ISI MATA KULIAH</h2>
+    <div class="info">
+      <div>Semester: <span id="semesterInfo">-</span></div>
       <div>Jumlah SKS: <span id="sksMax">0</span></div>
       <div>Sisa SKS: <span id="sksSisa">0</span></div>
     </div>
 
-    <!-- Form Tambah / Edit Matkul -->
-    <div class="mk-form" id="mkForm">
-      <label for="namaMatkul">Nama Mata Kuliah</label>
-      <input id="namaMatkul" type="text" placeholder="Nama Mata Kuliah">
+    <label>Nama Mata Kuliah</label>
+    <input id="namaMatkul" type="text" placeholder="Nama Mata Kuliah">
+    <label>Kode Mata Kuliah</label>
+    <input id="kodeMatkul" type="text" placeholder="Kode Mata Kuliah">
+    <label>Jumlah SKS</label>
+    <input id="sksMatkul" type="number" placeholder="Jumlah SKS">
+    <button id="saveMkBtn">Simpan Mata Kuliah</button>
 
-      <label for="kodeMatkul">Kode Mata Kuliah</label>
-      <input id="kodeMatkul" type="text" placeholder="Kode Mata Kuliah">
-
-      <label for="sksMatkul">Jumlah SKS</label>
-      <input id="sksMatkul" type="number" min="1" placeholder="Jumlah SKS">
-
-      <button class="btn" id="saveMkBtn">Simpan Mata Kuliah</button>
-    </div>
-
-    <!-- Daftar Matkul -->
-    <div class="mk-list">
-      <div class="mk-list-title">Daftar Mata Kuliah Semester Ini</div>
-      <div id="mkRows">
-        <!-- Data akan di-render di sini -->
-      </div>
-    </div>
+    <h3 style="margin-top:30px; color:#3498db">Daftar Mata Kuliah Semester Ini</h3>
+    <div id="mkRows"></div>
   </div>
-
-  <!-- Navigation Bawah -->
-  <nav>
-    <a href="dashboard.html">🏠<br>Beranda</a>
-    <a href="profil.html">👤<br>Profil</a>
-    <a href="semester.html">🎓<br>Semester</a>
-    <a href="mata-kuliah.html">📚<br>MK</a>
-    <a href="logout.html">🚪<br>Logout</a>
-  </nav>
 
   <script>
     const user = JSON.parse(localStorage.getItem('user'));
@@ -79,90 +51,68 @@
     const sksInput = document.getElementById('sksMatkul');
     const saveBtn = document.getElementById('saveMkBtn');
 
-    let sksMax = 0, sksSisa = 0;
+    let sksMax = 0;
+    let sksSisa = 0;
 
-    // Load data semester
     async function loadSemesterData() {
       const res = await fetch(`https://ediska-backend.onrender.com/api/semester/${user._id}`);
       const semesters = await res.json();
       const sem = semesters.find(s => s.semester === semesterParam);
       if (sem) {
-        sksMax = sem.sks;
-        sksSisa = sem.sks;
+        sksMax = sem.sks || 0;
+        sksSisa = sem.sks || 0;
         semesterInfo.textContent = sem.semester;
-        sksMaxEl.textContent = sem.sks;
-        sksSisaEl.textContent = sem.sks;
+        sksMaxEl.textContent = sksMax;
+        sksSisaEl.textContent = sksSisa;
       }
     }
 
-    // Load dan render daftar matkul
     async function loadMatkulList() {
       const res = await fetch(`https://ediska-backend.onrender.com/api/matakuliah?userId=${user._id}&semester=${semesterParam}`);
       const list = await res.json();
       const used = list.reduce((sum, m) => sum + m.sks, 0);
       sksSisa = sksMax - used;
       sksSisaEl.textContent = sksSisa;
-
-      if (!list.length) {
-        mkRows.innerHTML = `<div style="color:#999;font-style:italic;">Belum ada mata kuliah.</div>`;
+      if (list.length === 0) {
+        mkRows.innerHTML = '<div style="color:#777;font-style:italic">Belum ada mata kuliah.</div>';
       } else {
         mkRows.innerHTML = list.map(m => `
           <div class="mk-row">
-            <div>${m.nama} (${m.kode}) – ${m.sks} SKS</div>
+            <div>${m.nama} (${m.kode}) - ${m.sks} SKS</div>
             <div class="actions">
-              <button class="edit" onclick="editMatkul('${m._id}','${m.nama}','${m.kode}',${m.sks})">Edit</button>
-              <button onclick="deleteMatkul('${m._id}',${m.sks})">Hapus</button>
+              <button onclick="deleteMatkul('${m._id}', ${m.sks})">Hapus</button>
             </div>
           </div>
         `).join('');
       }
     }
 
-    // Simpan mata kuliah
     saveBtn.onclick = async () => {
       const nama = namaInput.value.trim();
       const kode = kodeInput.value.trim();
-      const sks = parseInt(sksInput.value, 10);
-      if (!nama || !kode || !sks) return alert('Lengkapi semua field.');
-      if (sks > sksSisa) return alert(`SKS tidak boleh melebihi sisa (${sksSisa}).`);
+      const sks = parseInt(sksInput.value);
+      if (!nama || !kode || !sks) return alert('Lengkapi semua input.');
+      if (sks > sksSisa) return alert(`SKS melebihi sisa: ${sksSisa}`);
 
       await fetch('https://ediska-backend.onrender.com/api/matakuliah', {
         method: 'POST',
-        headers: {'Content-Type':'application/json'},
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId: user._id, semester: semesterParam, nama, kode, sks })
       });
       namaInput.value = kodeInput.value = sksInput.value = '';
       await loadMatkulList();
     };
 
-    // Hapus matkul
-    window.deleteMatkul = async (id) => {
-      if (!confirm('Yakin hapus matkul?')) return;
+    window.deleteMatkul = async (id, sks) => {
+      if (!confirm('Yakin hapus matkul ini?')) return;
       await fetch(`https://ediska-backend.onrender.com/api/matakuliah/${id}`, { method: 'DELETE' });
       await loadMatkulList();
     };
 
-    // Edit matkul
-    window.editMatkul = (id,nama,kode,sks) => {
-      namaInput.value = nama;
-      kodeInput.value = kode;
-      sksInput.value = sks;
-      saveBtn.textContent = 'Update Mata Kuliah';
-      saveBtn.onclick = async () => {
-        await fetch(`https://ediska-backend.onrender.com/api/matakuliah/${id}`, {
-          method: 'PUT',
-          headers: {'Content-Type':'application/json'},
-          body: JSON.stringify({ nama, kode, sks })
-        });
-        saveBtn.textContent = 'Simpan Mata Kuliah';
-        namaInput.value = kodeInput.value = sksInput.value = '';
-        saveBtn.onclick = arguments.callee;
-        await loadMatkulList();
-      };
-    };
-
-    // Inisialisasi
-    (async () => {
+    document.addEventListener('DOMContentLoaded', async () => {
       await loadSemesterData();
       await loadMatkulList();
-    })()
+    });
+  </script>
+</body>
+</html>
