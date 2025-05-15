@@ -77,6 +77,10 @@
       cursor: pointer;
       font-size: 14px;
     }
+    .actions button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
     .hapus-semester {
       position: absolute;
       top: 8px; right: 8px;
@@ -146,20 +150,16 @@
 
     let semesterData = [];
 
-    // Load existing semester records or default 1–8
     async function loadSemesters() {
       try {
         const res = await fetch(`https://ediska-backend.onrender.com/api/semester/${user._id}`);
         const records = await res.json();
-        // build data for semesters 1..8
         semesterData = Array.from({length:8}, (_,i) => {
           const rec = records.find(r => r.semester === i+1);
           return rec ? rec : { semester: i+1, sks:0, tahun:'', parity:'', _id: null };
         });
-        // append any extra semesters >8
         records.filter(r => r.semester > 8).forEach(r => semesterData.push(r));
       } catch (e) {
-        // fallback default 1..8
         semesterData = Array.from({length:8}, (_,i) => ({ semester:i+1, sks:0, tahun:'', parity:'', _id: null }));
       }
       render();
@@ -173,9 +173,7 @@
         const box = document.createElement('div');
         box.className = 'semester-box ' + (filled ? 'green' : '');
         box.innerHTML = `
-          ${data.semester > 8
-            ? `<button class="hapus-semester" onclick="hapus(${data.semester})">×</button>`
-            : ''}
+          ${data.semester > 8 ? `<button class="hapus-semester" onclick="hapus(${data.semester})">×</button>` : ''}
           <label>Semester</label>
           <input type="text" value="${data.semester}" readonly>
           <label>Jumlah SKS</label>
@@ -191,8 +189,8 @@
           <div class="actions">
             <button onclick="save(${data.semester})">Save</button>
             <button onclick="resetSem(${data.semester})">Reset</button>
-            <button onclick="isi(${data.semester})">Isi MK</button>
-            <button onclick="lihat(${data.semester})">Lihat MK</button>
+            <button onclick="isi(${data.semester})" ${!filled?'disabled':''}>Isi MK</button>
+            <button onclick="lihat(${data.semester})" ${!filled?'disabled':''}>Lihat MK</button>
           </div>`;
         container.appendChild(box);
       });
@@ -202,17 +200,15 @@
       const sks = parseInt(document.getElementById(`sks${sem}`).value) || 0;
       const tahun = document.getElementById(`tahun${sem}`).value;
       const parity = document.getElementById(`parity${sem}`).value;
-      const body = { userId: user._id, semester: sem, sks, tahun, parity };
       await fetch('https://ediska-backend.onrender.com/api/semester', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
+        body: JSON.stringify({ userId: user._id, semester: sem, sks, tahun, parity })
       });
       await loadSemesters();
     }
 
     async function resetSem(sem) {
-      // find record _id
       const rec = semesterData.find(s => s.semester===sem && s._id);
       if (rec && rec._id) {
         await fetch(`https://ediska-backend.onrender.com/api/semester/${rec._id}`, { method: 'DELETE' });
@@ -220,12 +216,8 @@
       await loadSemesters();
     }
 
-    function isi(sem) {
-      location.href = `mata-kuliah.html?semester=${sem}`;
-    }
-    function lihat(sem) {
-      location.href = `riwayat-matakuliah.html?semester=${sem}`;
-    }
+    function isi(sem) { location.href = `mata-kuliah.html?semester=${sem}`; }
+    function lihat(sem) { location.href = `riwayat-matakuliah.html?semester=${sem}`; }
     function hapus(sem) {
       semesterData = semesterData.filter(s => s.semester!==sem);
       render();
