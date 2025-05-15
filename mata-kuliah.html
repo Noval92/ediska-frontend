@@ -58,7 +58,6 @@
       try {
         const res = await fetch(`https://ediska-backend.onrender.com/api/semester/${user._id}`);
         const semesters = await res.json();
-        // Hati-hati: backend bisa string atau number
         const sem = semesters.find(s => Number(s.semester) === semesterParam);
         if (sem) {
           sksMax = sem.sks || 0;
