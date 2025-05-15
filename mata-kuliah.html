@@ -1,297 +1,480 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Input Mata Kuliah - E-DISKA</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <title>Mata Kuliah - E-DISKA</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     body {
       font-family: 'Poppins', sans-serif;
-      background: #f0f4f8;
-      margin: 0; padding: 0;
-    }
-    header {
-      background: #3498db;
-      color: #fff;
-      text-align: center;
-      padding: 16px 0;
-      font-size: 20px;
-      font-weight: 600;
+      background: #f3f7fa;
+      margin: 0;
+      padding-bottom: 80px;
     }
     .container {
-      max-width: 600px;
-      margin: 20px auto;
+      max-width: 700px;
+      margin: 40px auto 0 auto;
+      padding: 0 10px;
+    }
+    .header {
+      background: #3498db;
+      color: #fff;
+      border-radius: 12px 12px 0 0;
+      text-align: center;
+      font-size: 26px;
+      font-weight: 700;
+      padding: 18px 0 12px 0;
+      margin-bottom: 0;
+      letter-spacing: 1px;
+    }
+    .info-sks {
+      background: #e8f6fc;
+      padding: 16px;
+      border-radius: 0 0 12px 12px;
+      font-size: 16px;
+      font-weight: 500;
+      color: #1576b1;
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+    }
+    .mk-form, .wizard-container, .mk-list, .riwayat-container {
       background: #fff;
       border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-      padding: 24px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+      padding: 32px 26px 24px 26px;
+      margin-bottom: 24px;
     }
-    h1 { margin: 0 0 16px; font-size: 22px; }
-    label { display: block; margin: 12px 0 4px; font-weight: 500; }
-    input, select, textarea {
-      width: 100%; padding: 8px; border:1px solid #ccc;
-      border-radius:6px; font-family: inherit;
-      box-sizing: border-box;
+    .mk-form label, .wizard-step-title, .wizard-container label {
+      font-weight: 500;
+      margin-bottom: 6px;
+      display: block;
+      font-size: 16px;
     }
-    .hidden { display: none; }
+    .mk-form input, .wizard-container input, .wizard-container select, .wizard-container textarea {
+      width: 100%; padding: 10px; border:1px solid #ccc;
+      border-radius:6px; font-family: inherit; font-size: 15px;
+      box-sizing: border-box; margin-bottom: 14px;
+    }
     .btn {
       display: inline-block;
-      margin-top: 16px;
-      padding: 10px 16px;
+      padding: 10px 18px;
       border:none; border-radius:6px;
       background: #3498db; color: #fff;
       font-size: 16px; cursor: pointer;
+      font-weight: 500;
+      transition: background 0.18s;
     }
     .btn:disabled {
       background: #aaa; cursor: not-allowed;
     }
-    #wizard {
-      margin-top: 24px;
-      background: #e8f6fc;
-      border-radius: 8px;
-      padding: 16px;
-    }
-    #wizard h2 {
-      margin: 0 0 12px;
+    .btn:hover { background: #2176b9; }
+    .hidden { display: none !important; }
+    .mk-list-title {
       font-size: 18px;
-      color: #2c3e50;
+      font-weight: 600;
+      color: #3498db;
+      margin-bottom: 12px;
     }
-    #riwayat {
-      margin-top: 32px;
+    .mk-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #f1f1f1;
+      padding: 10px 0;
+      font-size: 16px;
+    }
+    .mk-row:last-child { border-bottom: none; }
+    .mk-row .mk-info {
+      flex: 1;
+    }
+    .mk-actions button {
+      margin-left: 8px;
+      background: #ff5252;
+      font-size: 14px;
+      padding: 4px 12px;
+      border-radius: 4px;
+    }
+    .mk-actions .edit-btn {
+      background: #32c787;
+      color: #fff;
+    }
+    .wizard-header {
+      background: #3498db;
+      color: #fff;
+      border-radius: 8px 8px 0 0;
+      padding: 13px 0 8px 20px;
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      margin: -32px -26px 22px -26px;
+      text-align: left;
+    }
+    .wizard-step-title {
+      font-weight: 600;
+      font-size: 17px;
+      margin-bottom: 12px;
+      color: #444;
+    }
+    .wizard-actions {
+      text-align: right;
+      margin-top: 16px;
+    }
+    .wizard-actions .btn {
+      margin-left: 10px;
+      min-width: 120px;
     }
     .session-record {
-      background: #f7fcfe;
-      padding: 12px;
-      border-radius: 6px;
-      margin-bottom: 8px;
-      border-left: 4px solid #3498db;
+      background: #e8f6fc;
+      padding: 13px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      border-left: 5px solid #3498db;
+      font-size: 15px;
+      color: #222;
     }
+    nav {
+      position: fixed;
+      bottom: 0; left: 0; width: 100%;
+      background: white;
+      box-shadow: 0 -2px 8px rgba(0,0,0,0.05);
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 0;
+      z-index: 99;
+    }
+    nav a {
+      text-decoration: none;
+      color: #555;
+      font-size: 15px;
+      text-align: center;
+    }
+    nav a:active, nav a:focus { color: #3498db; }
   </style>
 </head>
 <body>
-
-<header>Input Mata Kuliah</header>
-
-<div class="container">
-  <!-- Form Mata Kuliah -->
-  <div id="mkForm">
-    <label>Nama Mata Kuliah</label>
-    <input id="namaMatkul" type="text" placeholder="Nama Mata Kuliah">
-    <label>Kode Mata Kuliah</label>
-    <input id="kodeMatkul" type="text" placeholder="Kode Mata Kuliah">
-    <label>Jumlah SKS</label>
-    <input id="sksMatkul" type="number" placeholder="Jumlah SKS" min="0">
-    <button id="saveMkBtn" class="btn">Simpan Mata Kuliah</button>
-  </div>
-
-  <!-- Wizard Steps -->
-  <div id="wizard" class="hidden">
-    <h2 id="stepTitle"></h2>
-    <div id="stepContent"></div>
-    <button id="prevBtn" class="btn hidden">Sebelumnya</button>
-    <button id="nextBtn" class="btn">Selanjutnya</button>
-  </div>
-
-  <!-- Riwayat sesi -->
-  <div id="riwayat" class="hidden">
-    <h2>Riwayat Sesi</h2>
-    <div id="riwayatList"></div>
-  </div>
-</div>
-
-<script>
-  const user = JSON.parse(localStorage.getItem('user'));
-  if (!user || !user._id) window.location = 'login.html';
-
-  let mataKuliahId = null;
-  let semester = new URLSearchParams(location.search).get('semester');
-  let sessions = [];
-
-  const steps = [
-    {
-      title: '1. Hal apa yang dipelajari?',
-      render: () => `<textarea id="pelajaran" rows="3" placeholder="Jelaskan..."></textarea>`,
-      getValue: () => document.getElementById('pelajaran').value.trim(),
-      validate: v => v !== ''
-    },
-    {
-      title: '2. Apakah ada materi yang mau diupload?',
-      render: () => `
-        <select id="pilihMateri">
-          <option value="">--Pilih--</option>
-          <option value="ya">Ya</option>
-          <option value="tidak">Tidak</option>
-        </select>
-        <div id="materiDiv" class="hidden">
-          <label>Upload Materi</label>
-          <input type="file" id="materiFile" accept="application/pdf,image/*">
-          <label>Judul Materi</label>
-          <input type="text" id="materiJudul" placeholder="Judul materi">
-        </div>`,
-      setup: () => {
-        document.getElementById('pilihMateri').onchange = e => {
-          document.getElementById('materiDiv')
-            .classList.toggle('hidden', e.target.value !== 'ya');
-        };
-      },
-      getValue: () => ({
-        materi: document.getElementById('pilihMateri').value,
-        file: document.getElementById('materiFile').files[0] || null,
-        judul: document.getElementById('materiJudul').value.trim()
-      })
-    },
-    {
-      title: '3. Apakah ada file lain yang mau diupload?',
-      render: () => `
-        <select id="pilihLain">
-          <option value="">--Pilih--</option>
-          <option value="ya">Ya</option>
-          <option value="tidak">Tidak</option>
-        </select>
-        <div id="lainDiv" class="hidden">
-          <label>Upload File Lain</label>
-          <input type="file" id="lainFile">
-          <label>Judul File</label>
-          <input type="text" id="lainJudul" placeholder="Judul file">
-        </div>`,
-      setup: () => {
-        document.getElementById('pilihLain').onchange = e => {
-          document.getElementById('lainDiv')
-            .classList.toggle('hidden', e.target.value !== 'ya');
-        };
-      },
-      getValue: () => ({
-        lain: document.getElementById('pilihLain').value,
-        file: document.getElementById('lainFile').files[0] || null,
-        judul: document.getElementById('lainJudul').value.trim()
-      })
-    },
-    {
-      title: '4. Apakah sudah ada nilai?',
-      render: () => `
-        <select id="pilihNilai">
-          <option value="">--Pilih--</option>
-          <option value="ya">Ya</option>
-          <option value="tidak">Tidak</option>
-        </select>
-        <div id="nilaiDiv" class="hidden">
-          <label>Nilai</label>
-          <input type="text" id="nilai" placeholder="Nilai (A/B/C...)">
-        </div>`,
-      setup: () => {
-        document.getElementById('pilihNilai').onchange = e => {
-          document.getElementById('nilaiDiv')
-            .classList.toggle('hidden', e.target.value !== 'ya');
-        };
-      },
-      getValue: () => ({ nilai: document.getElementById('nilai').value.trim() })
-    }
-  ];
-
-  let currentStep = 0;
-  let sessionData = {};
-
-  const mkForm    = document.getElementById('mkForm');
-  const wizard    = document.getElementById('wizard');
-  const stepTitle = document.getElementById('stepTitle');
-  const stepContent = document.getElementById('stepContent');
-  const prevBtn   = document.getElementById('prevBtn');
-  const nextBtn   = document.getElementById('nextBtn');
-  const riwayat   = document.getElementById('riwayat');
-  const riwayatList = document.getElementById('riwayatList');
-
-  document.getElementById('saveMkBtn').onclick = async () => {
-    const nama = document.getElementById('namaMatkul').value.trim();
-    const kode = document.getElementById('kodeMatkul').value.trim();
-    const sks  = parseInt(document.getElementById('sksMatkul').value,10);
-
-    if(!nama||!kode||isNaN(sks)){
-      return alert('Lengkapi Nama, Kode & SKS');
-    }
-
-    // simpan mata kuliah
-    const res = await fetch('https://ediska-backend.onrender.com/api/matakuliah', {
-      method:'POST',
-      headers:{ 'Content-Type':'application/json' },
-      body: JSON.stringify({ userId:user._id, semester, nama, kode, sks })
-    });
-    const data = await res.json();
-    mataKuliahId = data._id;
-    mkForm.classList.add('hidden');
-    wizard.classList.remove('hidden');
-    loadStep();
-  };
-
-  prevBtn.onclick = () => {
-    if(currentStep>0){
-      currentStep--;
-      loadStep();
-    }
-  };
-
-  nextBtn.onclick = async () => {
-    const step = steps[currentStep];
-    const val = step.getValue();
-    if(typeof val === 'string' ? !step.validate(val) : false){
-      return alert('Harap isi pertanyaan ini dahulu.');
-    }
-    // kumpulkan data
-    sessionData[currentStep] = val;
-    if(currentStep < steps.length -1){
-      currentStep++;
-      loadStep();
-    } else {
-      // kirim FormData
-      const fd = new FormData();
-      fd.append('userId', user._id);
-      fd.append('matakuliahId', mataKuliahId);
-      fd.append('session', sessions.length+1);
-      fd.append('pelajaran', sessionData[0]);
-      if(sessionData[1].materi==='ya'){
-        fd.append('materiFile', sessionData[1].file);
-        fd.append('materiJudul', sessionData[1].judul);
-      }
-      if(sessionData[2].lain==='ya'){
-        fd.append('fileLain', sessionData[2].file);
-        fd.append('fileLainJudul', sessionData[2].judul);
-      }
-      if(sessionData[3].nilai){
-        fd.append('nilai', sessionData[3].nilai);
-      }
-      await fetch('https://ediska-backend.onrender.com/api/matakuliah/sessions', {
-        method:'POST', body: fd
-      });
-      // tampilkan ulang riwayat
-      await fetchSessions();
-      // reset wizard
-      currentStep=0;
-      sessionData={};
-      loadStep();
-    }
-  };
-
-  function loadStep(){
-    // update tombol
-    prevBtn.classList.toggle('hidden', currentStep===0);
-    nextBtn.textContent = currentStep<steps.length-1 ? 'Selanjutnya' : 'Simpan Sesi '+(sessions.length+1);
-    // render
-    stepTitle.textContent = steps[currentStep].title;
-    stepContent.innerHTML = steps[currentStep].render();
-    if(steps[currentStep].setup) steps[currentStep].setup();
-  }
-
-  async function fetchSessions(){
-    const res = await fetch(`https://ediska-backend.onrender.com/api/matakuliah/${mataKuliahId}/sessions`);
-    sessions = await res.json();
-    riwayatList.innerHTML = sessions.map(s => `
-      <div class="session-record">
-        Sesi ${s.session}: ${s.pelajaran || '-'}
+  <div class="container">
+    <div class="header">
+      ISI MATA KULIAH
+    </div>
+    <div id="infoSks" class="info-sks">
+      Semester: <span id="semesterInfo"></span> | Jumlah SKS: <span id="sksMax"></span> | Sisa SKS: <span id="sksSisa"></span>
+    </div>
+    <!-- Form Input Mata Kuliah -->
+    <div id="mkForm" class="mk-form">
+      <label>Nama Mata Kuliah</label>
+      <input id="namaMatkul" type="text" placeholder="Nama Mata Kuliah">
+      <label>Kode Mata Kuliah</label>
+      <input id="kodeMatkul" type="text" placeholder="Kode Mata Kuliah">
+      <label>Jumlah SKS</label>
+      <input id="sksMatkul" type="number" placeholder="Jumlah SKS" min="1">
+      <button id="saveMkBtn" class="btn" style="margin-top: 12px;">Simpan Mata Kuliah</button>
+    </div>
+    <!-- List Mata Kuliah -->
+    <div id="mkList" class="mk-list">
+      <div class="mk-list-title">Daftar Mata Kuliah Semester Ini</div>
+      <div id="mkRows"></div>
+    </div>
+    <!-- Wizard Step -->
+    <div id="wizard" class="wizard-container hidden">
+      <div class="wizard-header" id="wizardHeader">Sesi 1</div>
+      <div id="stepTitle" class="wizard-step-title"></div>
+      <div id="stepContent"></div>
+      <div class="wizard-actions">
+        <button id="prevBtn" class="btn hidden">Sebelumnya</button>
+        <button id="nextBtn" class="btn">Selanjutnya</button>
       </div>
-    `).join('');
-    riwayat.classList.remove('hidden');
-  }
-</script>
+    </div>
+    <!-- Riwayat sesi -->
+    <div id="riwayat" class="riwayat-container hidden">
+      <h2 style="margin-bottom:14px;font-size:19px;font-weight:600;color:#3498db">Riwayat Sesi</h2>
+      <div id="riwayatList"></div>
+    </div>
+  </div>
+  <nav>
+    <a href="dashboard.html">🏠<br>Beranda</a>
+    <a href="profil.html">👤<br>Profil</a>
+    <a href="semester.html">🎓<br>Semester</a>
+    <a href="mata-kuliah.html">📚<br>MK</a>
+    <a href="logout.html">🚪<br>Logout</a>
+  </nav>
+<script>
+const user = JSON.parse(localStorage.getItem('user'));
+if (!user || !user._id) window.location = 'login.html';
 
-</body>
-</html>
+let semester = parseInt(new URLSearchParams(location.search).get('semester'), 10);
+let sksMax = 0, sksSisa = 0;
+let matkulList = [];
+let matkulSessions = {};
+let editMatkulId = null;
+
+const infoSks = document.getElementById('infoSks');
+const semesterInfo = document.getElementById('semesterInfo');
+const sksMaxElem = document.getElementById('sksMax');
+const sksSisaElem = document.getElementById('sksSisa');
+const mkForm = document.getElementById('mkForm');
+const mkRows = document.getElementById('mkRows');
+const saveMkBtn = document.getElementById('saveMkBtn');
+const namaMatkul = document.getElementById('namaMatkul');
+const kodeMatkul = document.getElementById('kodeMatkul');
+const sksMatkul = document.getElementById('sksMatkul');
+const wizard = document.getElementById('wizard');
+const wizardHeader = document.getElementById('wizardHeader');
+const stepTitle = document.getElementById('stepTitle');
+const stepContent = document.getElementById('stepContent');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const riwayat = document.getElementById('riwayat');
+const riwayatList = document.getElementById('riwayatList');
+
+// Wizard steps
+const steps = [
+  {
+    title: 'Hal apa yang dipelajari?',
+    render: () => `<textarea id="pelajaran" rows="3" placeholder="Jelaskan..."></textarea>`,
+    getValue: () => document.getElementById('pelajaran').value.trim(),
+    validate: v => v !== ''
+  },
+  {
+    title: 'Apakah ada materi yang mau diupload?',
+    render: () => `
+      <select id="pilihMateri">
+        <option value="">--Pilih--</option>
+        <option value="ya">Ya</option>
+        <option value="tidak">Tidak</option>
+      </select>
+      <div id="materiDiv" class="hidden">
+        <label>Upload Materi</label>
+        <input type="file" id="materiFile" accept="application/pdf,image/*">
+        <label>Judul Materi</label>
+        <input type="text" id="materiJudul" placeholder="Judul materi">
+      </div>`,
+    setup: () => {
+      document.getElementById('pilihMateri').onchange = e => {
+        document.getElementById('materiDiv')
+          .classList.toggle('hidden', e.target.value !== 'ya');
+      };
+    },
+    getValue: () => ({
+      materi: document.getElementById('pilihMateri').value,
+      file: document.getElementById('materiFile')?.files[0] || null,
+      judul: document.getElementById('materiJudul').value.trim()
+    })
+  },
+  {
+    title: 'Apakah ada file lain yang mau diupload?',
+    render: () => `
+      <select id="pilihLain">
+        <option value="">--Pilih--</option>
+        <option value="ya">Ya</option>
+        <option value="tidak">Tidak</option>
+      </select>
+      <div id="lainDiv" class="hidden">
+        <label>Upload File Lain</label>
+        <input type="file" id="lainFile">
+        <label>Judul File</label>
+        <input type="text" id="lainJudul" placeholder="Judul file">
+      </div>`,
+    setup: () => {
+      document.getElementById('pilihLain').onchange = e => {
+        document.getElementById('lainDiv')
+          .classList.toggle('hidden', e.target.value !== 'ya');
+      };
+    },
+    getValue: () => ({
+      lain: document.getElementById('pilihLain').value,
+      file: document.getElementById('lainFile')?.files[0] || null,
+      judul: document.getElementById('lainJudul').value.trim()
+    })
+  },
+  {
+    title: 'Apakah sudah ada nilai?',
+    render: () => `
+      <select id="pilihNilai">
+        <option value="">--Pilih--</option>
+        <option value="ya">Ya</option>
+        <option value="tidak">Tidak</option>
+      </select>
+      <div id="nilaiDiv" class="hidden">
+        <label>Nilai</label>
+        <input type="text" id="nilai" placeholder="Nilai (A/B/C...)">
+      </div>`,
+    setup: () => {
+      document.getElementById('pilihNilai').onchange = e => {
+        document.getElementById('nilaiDiv')
+          .classList.toggle('hidden', e.target.value !== 'ya');
+      };
+    },
+    getValue: () => ({ nilai: document.getElementById('nilai').value.trim() })
+  }
+];
+
+let currentStep = 0, sessionData = {}, sesiMatkulId = null;
+
+// ===================== Load SKS & Matkul ======================
+async function loadSemesterData() {
+  // Ambil info semester & sks (update sesuai backend-mu)
+  try {
+    const res = await fetch(`https://ediska-backend.onrender.com/api/semester/${user._id}`);
+    const semesters = await res.json();
+    const semData = semesters.find(s => s.semester === semester);
+    sksMax = semData ? semData.sks : 0;
+    sksSisa = sksMax;
+    semesterInfo.textContent = semester;
+    sksMaxElem.textContent = sksMax;
+  } catch {
+    sksMax = 0; sksSisa = 0;
+    semesterInfo.textContent = semester;
+    sksMaxElem.textContent = '0';
+  }
+}
+async function loadMatkulList() {
+  // Ambil daftar matkul (update sesuai backend-mu)
+  const res = await fetch(`https://ediska-backend.onrender.com/api/matakuliah?userId=${user._id}&semester=${semester}`);
+  matkulList = await res.json();
+  // Hitung sisa SKS
+  let used = matkulList.reduce((t, m) => t + (parseInt(m.sks,10)||0), 0);
+  sksSisa = sksMax - used;
+  sksSisaElem.textContent = sksSisa;
+  renderMatkulList();
+  toggleForm();
+}
+function renderMatkulList() {
+  mkRows.innerHTML = '';
+  if (!matkulList.length) {
+    mkRows.innerHTML = `<div style="color:#999;font-style:italic;">Belum ada mata kuliah di semester ini.</div>`;
+    return;
+  }
+  matkulList.forEach(mk => {
+    mkRows.innerHTML += `
+      <div class="mk-row">
+        <div class="mk-info">
+          <b>${mk.nama}</b> (${mk.kode}) - SKS: ${mk.sks}
+        </div>
+        <div class="mk-actions">
+          <button class="edit-btn btn" onclick="startWizard('${mk._id}','${mk.nama}',${mk.sessionCount||0})">Sesi</button>
+          <button class="btn" onclick="editMatkul('${mk._id}')">Edit</button>
+          <button class="btn" onclick="deleteMatkul('${mk._id}', ${mk.sks})">Hapus</button>
+        </div>
+      </div>
+    `;
+  });
+}
+function toggleForm() {
+  if (sksSisa <= 0) {
+    mkForm.classList.add('hidden');
+  } else {
+    mkForm.classList.remove('hidden');
+    namaMatkul.value = kodeMatkul.value = sksMatkul.value = '';
+    saveMkBtn.textContent = "Simpan Mata Kuliah";
+    editMatkulId = null;
+  }
+}
+
+// ============ Tambah/EDIT Mata Kuliah ===========
+saveMkBtn.onclick = async () => {
+  const nama = namaMatkul.value.trim();
+  const kode = kodeMatkul.value.trim();
+  const sks = parseInt(sksMatkul.value, 10);
+  if (!nama || !kode || isNaN(sks) || sks <= 0) {
+    return alert('Lengkapi Nama, Kode, dan SKS (minimal 1)');
+  }
+  if (sks > sksSisa && !editMatkulId) {
+    return alert('SKS melebihi sisa semester!');
+  }
+  let url = 'https://ediska-backend.onrender.com/api/matakuliah', method = 'POST', body;
+  if (editMatkulId) {
+    url += '/' + editMatkulId; method = 'PUT';
+    body = JSON.stringify({ nama, kode, sks });
+  } else {
+    body = JSON.stringify({ userId: user._id, semester, nama, kode, sks });
+  }
+  const res = await fetch(url, {
+    method,
+    headers: { 'Content-Type': 'application/json' },
+    body
+  });
+  const data = await res.json();
+  if (!data || data.error) return alert(data.error || "Gagal menyimpan.");
+  loadMatkulList();
+};
+window.editMatkul = function(id) {
+  const mk = matkulList.find(m => m._id === id);
+  if (!mk) return;
+  namaMatkul.value = mk.nama;
+  kodeMatkul.value = mk.kode;
+  sksMatkul.value = mk.sks;
+  mkForm.classList.remove('hidden');
+  saveMkBtn.textContent = "Update Mata Kuliah";
+  editMatkulId = id;
+};
+window.deleteMatkul = async function(id, sks) {
+  if (!confirm('Hapus mata kuliah ini?')) return;
+  await fetch('https://ediska-backend.onrender.com/api/matakuliah/' + id, { method:'DELETE' });
+  loadMatkulList();
+};
+// =============== Wizard Sesi Mata Kuliah ==============
+window.startWizard = function(matkulId, nama, sessionCount=0) {
+  sesiMatkulId = matkulId;
+  wizardHeader.textContent = "Sesi " + (sessionCount+1) + " - " + nama;
+  mkForm.classList.add('hidden');
+  wizard.classList.remove('hidden');
+  currentStep = 0; sessionData = {};
+  loadStep();
+  fetchSessions();
+};
+prevBtn.onclick = () => {
+  if (currentStep > 0) {
+    currentStep--;
+    loadStep();
+  }
+};
+nextBtn.onclick = async () => {
+  const step = steps[currentStep];
+  const val = step.getValue();
+  if(typeof val === 'string' ? !step.validate(val) : false){
+    return alert('Harap isi pertanyaan ini dahulu.');
+  }
+  sessionData[currentStep] = val;
+  if(currentStep < steps.length -1){
+    currentStep++;
+    loadStep();
+  } else {
+    // kirim FormData ke backend
+    const fd = new FormData();
+    fd.append('userId', user._id);
+    fd.append('matakuliahId', sesiMatkulId);
+    fd.append('session', 1); // atau increment jika ada multi sesi
+    fd.append('pelajaran', sessionData[0]);
+    if(sessionData[1].materi==='ya' && sessionData[1].file){
+      fd.append('materiFile', sessionData[1].file);
+      fd.append('materiJudul', sessionData[1].judul);
+    }
+    if(sessionData[2].lain==='ya' && sessionData[2].file){
+      fd.append('fileLain', sessionData[2].file);
+      fd.append('fileLainJudul', sessionData[2].judul);
+    }
+    if(sessionData[3].nilai){
+      fd.append('nilai', sessionData[3].nilai);
+    }
+    await fetch('https://ediska-backend.onrender.com/api/matakuliah/sessions', {
+      method:'POST', body: fd
+    });
+    fetchSessions();
+    wizard.classList.add('hidden');
+    mkForm.classList.remove('hidden');
+  }
+};
+function loadStep() {
+  prevBtn.classList.toggle('hidden', currentStep===0);
+  nextBtn.textContent = currentStep<steps.length-1 ? 'Selanjutnya' : 'Simpan Sesi';
+  stepTitle.textContent = steps[currentStep].title;
+  stepContent.innerHTML = steps[currentStep].render();
+  if(steps[currentStep].setup) steps[currentStep].setup();
+}
+async function fetchSessions() {
+  const res = await fetch(`https://ediska-backend.onrender.com/api/matakuliah/${sesiMatkulId}/sessions`);
+  const sessions = await res.json();
+  riwayatList.innerHTML = sessions.map((s,i) => `
+    <div class="session-
