@@ -58,13 +58,15 @@
       try {
         const res = await fetch(`https://ediska-backend.onrender.com/api/semester/${user._id}`);
         const semesters = await res.json();
-        const sem = semesters.find(s => s.semester === semesterParam);
+        const sem = semesters.find(s => Number(s.semester) === semesterParam);
         if (sem) {
           sksMax = sem.sks || 0;
           sksSisa = sem.sks || 0;
           semesterInfo.textContent = sem.semester;
           sksMaxEl.textContent = sksMax;
           sksSisaEl.textContent = sksSisa;
+        } else {
+          console.warn('Semester tidak ditemukan.');
         }
       } catch (error) {
         console.error('Gagal memuat data semester:', error);
