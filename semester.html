@@ -2,165 +2,187 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>Semester E-DISKA</title>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SEMESTER E-DISKA</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     body {
       font-family: 'Poppins', sans-serif;
-      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-      min-height: 100vh;
+      background: linear-gradient(135deg,#f5f7fa,#c3cfe2);
       margin: 0; padding-bottom: 80px;
     }
     .container {
+      margin: 40px auto; padding: 20px;
       max-width: 960px;
-      margin: 40px auto;
-      padding: 32px;
-      border-radius: 22px;
-      box-shadow: 0 8px 36px rgba(0,0,0,0.12);
       background: rgba(255,255,255,0.45);
       backdrop-filter: blur(10px);
+      border-radius: 20px;
+      box-shadow: 0 8px 36px rgba(0,0,0,0.12);
     }
-    .header { 
-      display: flex; 
-      align-items: center; 
-      justify-content: center; 
-      margin-bottom: 24px; 
+    .header {
+      text-align: center; margin-bottom: 20px;
     }
-    .header img { width: 40px; margin-right: 12px; }
+    .header img { width: 40px; vertical-align: middle; }
+    .header h2 {
+      display: inline; font-size: 28px; margin: 0;
+      vertical-align: middle; font-weight: 600;
+    }
+    #semesterContainer {
+      display: flex; overflow-x: auto; gap: 15px; padding-bottom: 10px;
+      scroll-snap-type: x mandatory;
+    }
     .semester-box {
-      padding: 20px; margin-bottom: 15px;
-      border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-      background: rgba(255,255,255,0.5);
-      border-left: 8px solid red;
-      display: grid; gap: 16px;
-      grid-template-columns: repeat(auto-fit,minmax(180px,1fr));
+      scroll-snap-align: start;
+      min-width: 85vw; flex-shrink: 0;
+      padding: 16px; border-radius: 12px;
+      background: rgba(255,255,255,0.8);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
       position: relative;
+      border-left: 6px solid #ff5252;
     }
     .semester-box.green { border-left-color: #4caf50; }
-    label { font-weight: 600; margin-bottom: 6px; }
+    label { font-weight: 600; margin-bottom: 6px; display: block; }
     input, select {
-      width: 100%; padding: 8px; border-radius: 6px;
-      border: 1px solid #ddd; background: #fff;
+      width: 100%; padding: 8px; margin-bottom: 8px;
+      border: 1px solid #ddd; border-radius: 6px;
+      font-family: inherit;
     }
-    .actions {
-      grid-column: 1/-1; text-align: right;
-    }
+    .actions { text-align: right; }
     .actions button {
-      padding: 8px 12px; border-radius: 6px;
-      border: none; background: #5379fa; color: #fff;
-      cursor: pointer; margin-left: 6px;
+      margin-left: 6px; padding: 6px 10px;
+      border: none; border-radius: 5px;
+      background: #5379fa; color: white; cursor: pointer;
     }
     .hapus-semester {
-      position: absolute; top: 8px; right: 10px; 
-      background: #ff6b6b; color: white; border: none;
-      border-radius: 50%; width: 30px; height: 30px; 
-      cursor: pointer; font-weight: bold;
+      position: absolute; top: 8px; right: 8px;
+      width: 24px; height: 24px; 
+      background: #ff5252; color: white;
+      border: none; border-radius: 50%;
+      font-weight: bold; cursor: pointer;
     }
     #tambahSemester {
-      padding: 12px 20px; margin-top: 10px;
-      background: #32c787; color: white; border-radius: 8px;
-      cursor: pointer; border: none; width: 100%;
+      display: block; width: 100%;
+      padding: 12px; margin-top: 12px;
+      background: #32c787; color: white; border: none;
+      border-radius: 8px; font-size: 16px;
+      cursor: pointer;
     }
     nav {
       position: fixed; bottom: 0; left: 0; width: 100%;
-      background: rgba(255,255,255,0.95); padding: 10px 0;
+      background: rgba(255,255,255,0.95);
+      box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
       display: flex; justify-content: space-around;
-      box-shadow: 0 -2px 8px rgba(0,0,0,0.06);
+      padding: 8px 0;
     }
-    nav a { color: #333; text-decoration: none; font-size: 14px; }
+    nav a { text-decoration: none; color: #333; font-size: 14px; text-align: center; }
   </style>
 </head>
 <body>
-<div class="container">
-  <div class="header">
-    <img src="logo-ediska.png" alt="E-DISKA Logo">
-    <h2>SEMESTER</h2>
+  <div class="container">
+    <div class="header">
+      <img src="logo-ediska.png" alt="Logo E-DISKA">
+      <h2>SEMESTER</h2>
+    </div>
+
+    <div id="semesterContainer"></div>
+    <button id="tambahSemester">Tambah Semester</button>
   </div>
-  <div id="semesterContainer"></div>
-  <button id="tambahSemester">Tambah Semester</button>
-</div>
 
-<nav>
-  <a href="dashboard.html">Dashboard</a>
-  <a href="profil.html">Profil</a>
-  <a href="semester.html">Semester</a>
-  <a href="mata-kuliah.html">Mata Kuliah</a>
-  <a href="logout.html">Logout</a>
-</nav>
+  <nav>
+    <a href="dashboard.html">🏠<br>Beranda</a>
+    <a href="profil.html">👤<br>Profil</a>
+    <a href="semester.html">🎓<br>Semester</a>
+    <a href="mata-kuliah.html">📚<br>MK</a>
+    <a href="logout.html">🚪<br>Logout</a>
+  </nav>
 
-<script>
-let semesterData = Array.from({length:8}, (_,i)=>({semester:i+1,sks:0,tahun:'',parity:''}));
+  <script>
+  // Ambil userId dari localStorage
+  const userData = JSON.parse(localStorage.getItem('user'));
+  if(!userData || !userData._id) {
+    alert('Silakan login dahulu.');
+    location.href='login.html';
+  }
+  let semesterData = [];
 
-function renderSemesters() {
-  const container=document.getElementById('semesterContainer');
-  container.innerHTML='';
-  semesterData.forEach(data=>{
-    const filled=data.sks>0&&data.tahun!==''&&data.parity!=='';
-    const box=document.createElement('div');
-    box.className='semester-box '+(filled?'green':'red');
-    box.innerHTML=`
-      ${data.semester > 8 ? `<button class="hapus-semester" onclick="hapusSemester(${data.semester})">X</button>`:''}
-      <div>
-        <label>Semester</label>
-        <input type="text" value="${data.semester}" readonly>
-      </div>
-      <div>
-        <label>Jumlah SKS</label>
-        <input id="sks${data.semester}" type="number" min="0" max="24" value="${data.sks}">
-      </div>
-      <div>
-        <label>Tahun</label>
-        <input id="tahun${data.semester}" type="number" value="${data.tahun}">
-      </div>
-      <div>
+  // Load awal
+  async function load() {
+    try {
+      const res = await fetch('https://ediska-backend.onrender.com/api/semester/'+userData._id);
+      semesterData = await res.json();
+    } catch {
+      // jika belum ada, inisialisasi 1–8
+      semesterData = Array.from({length:8},(_,i)=>({
+        semester:i+1,sks:0,tahun:'',parity:''
+      }));
+    }
+    render();
+  }
+
+  function render() {
+    const container = document.getElementById('semesterContainer');
+    container.innerHTML = '';
+    semesterData.forEach(data => {
+      const box = document.createElement('div');
+      const filled = data.sks>0 && data.tahun && data.parity;
+      box.className = 'semester-box '+(filled?'green':'');
+      box.innerHTML = `
+        ${data.semester>8?'<button class="hapus-semester" onclick="hapus('+data.semester+')">×</button>':''}
+        <label>Semester</label><input value="${data.semester}" readonly>
+        <label>SKS</label><input id="sks${data.semester}" type="number" value="${data.sks}">
+        <label>Tahun</label><input id="tahun${data.semester}" type="number" value="${data.tahun}">
         <label>Ganjil/Genap</label>
         <select id="parity${data.semester}">
           <option value="">--Pilih--</option>
-          <option value="1" ${data.parity==='1'?'selected':''}>Ganjil</option>
-          <option value="2" ${data.parity==='2'?'selected':''}>Genap</option>
+          <option value="1"${data.parity==='1'?' selected':''}>Ganjil</option>
+          <option value="2"${data.parity==='2'?' selected':''}>Genap</option>
         </select>
-      </div>
-      <div class="actions">
-        <button onclick="save(${data.semester})">Save</button>
-        <button onclick="reset(${data.semester})">Reset</button>
-        <button onclick="isi(${data.semester})">Isi Mata Kuliah</button>
-        <button onclick="lihat(${data.semester})">Lihat Mata Kuliah</button>
-      </div>`;
-    container.appendChild(box);
-  });
-}
+        <div class="actions">
+          <button onclick="save(${data.semester})">Save</button>
+          <button onclick="resetSem(${data.semester})">Reset</button>
+          <button onclick="isi(${data.semester})">Isi MK</button>
+          <button onclick="lihat(${data.semester})">Lihat MK</button>
+        </div>`;
+      container.appendChild(box);
+    });
+  }
 
-function save(sem) {
-  const idx=semesterData.findIndex(d=>d.semester===sem);
-  semesterData[idx]={
-    semester: sem,
-    sks: parseInt(document.getElementById(`sks${sem}`).value)||0,
-    tahun: document.getElementById(`tahun${sem}`).value,
-    parity: document.getElementById(`parity${sem}`).value
+  async function save(sem) {
+    const idx = semesterData.findIndex(s=>s.semester===sem);
+    const sks = parseInt(document.getElementById('sks'+sem).value)||0;
+    const tahun = document.getElementById('tahun'+sem).value;
+    const parity = document.getElementById('parity'+sem).value;
+    const body = { userId:userData._id, semester:sem, sks, tahun, parity };
+    await fetch('https://ediska-backend.onrender.com/api/semester', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(body)
+    });
+    await load();
+  }
+
+  async function resetSem(sem) {
+    const rec = semesterData.find(s=>s.semester===sem);
+    if(rec && rec._id) {
+      await fetch('https://ediska-backend.onrender.com/api/semester/'+rec._id, { method:'DELETE' });
+    }
+    await load();
+  }
+
+  function isi(sem){ location.href='mata-kuliah.html?semester='+sem; }
+  function lihat(sem){ location.href='riwayat-matakuliah.html?semester='+sem; }
+  function hapus(sem) {
+    semesterData = semesterData.filter(s=>s.semester!==sem);
+    render();
+  }
+
+  document.getElementById('tambahSemester').onclick = async ()=>{
+    const newSem = Math.max(...semesterData.map(s=>s.semester))+1;
+    semesterData.push({ semester:newSem, sks:0, tahun:'', parity:''});
+    render();
   };
-  renderSemesters();
-}
 
-function reset(sem) {
-  const idx=semesterData.findIndex(d=>d.semester===sem);
-  semesterData[idx]={semester:sem,sks:0,tahun:'',parity:''};
-  renderSemesters();
-}
-
-function isi(sem){location.href=`mata-kuliah.html?semester=${sem}`;}
-function lihat(sem){location.href=`riwayat-matakuliah.html?semester=${sem}`;}
-function hapusSemester(sem){
-  semesterData=semesterData.filter(d=>d.semester!==sem);
-  renderSemesters();
-}
-
-document.getElementById('tambahSemester').onclick=()=>{
-  const newSem=semesterData.length?Math.max(...semesterData.map(s=>s.semester))+1:9;
-  semesterData.push({semester:newSem,sks:0,tahun:'',parity:''});
-  renderSemesters();
-};
-
-renderSemesters();
-</script>
+  load();
+  </script>
 </body>
 </html>
