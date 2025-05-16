@@ -55,10 +55,10 @@
     const user = JSON.parse(localStorage.getItem('user'));
     if (!user || !user._id) window.location = 'login.html';
 
-    const semesterParam = parseInt(new URLSearchParams(location.search).get('semester'), 10);
-    const semesterInfo = document.getElementById('semesterInfo');
-    const sksMaxEl = document.getElementById('sksMax');
-    const sksSisaEl = document.getElementById('sksSisa');
+const semesterParam = parseInt(new URLSearchParams(location.search).get('semester'), 10);
+const semesterInfo = document.getElementById('semesterInfo');
+const sksMaxEl = document.getElementById('sksMax');
+const sksSisaEl = document.getElementById('sksSisa');
     const mkRows = document.getElementById('mkRows');
 
     let sksMax = 0;
