@@ -224,56 +224,50 @@ window.editSesi = async (matkulId, sesiId) => {
       <textarea name="pelajaran" required>${s.pelajaran || ''}</textarea>
 
       <label>Ringkasan belajar sesi ini</label>
-      <textarea name="ringkasan">${s.ringkasan || ''}</textarea>
+      <textarea name="ringkasan" rows="4">${s.ringkasan ? s.ringkasan.replace(/</g, "&lt;").replace(/>/g, "&gt;") : ''}</textarea>
 
       <label>Upload PDF (max 10)</label>
       <div id="pdfContainer-edit-${sesiId}"></div>
       <button type="button" onclick="addPdf('edit-${sesiId}')">+ Tambah PDF</button>
 
-      <label>Link Video (max 10)</label>
+      <label style="margin-top:1rem">Link Video (max 10)</label>
       <div id="videoContainer-edit-${sesiId}"></div>
       <button type="button" onclick="addVideo('edit-${sesiId}')">+ Tambah Video</button>
 
-      <label>Nilai (opsional)</label>
+      <label style="margin-top:1rem">Nilai (opsional)</label>
       <input type="number" name="nilai" value="${s.nilai || ''}" min="0" max="100" />
 
       <button type="submit">Simpan Perubahan</button>
     </form>
   `;
 
-
-      // ISI PDF LAMA
+  // PDF
   const pdfContainer = document.getElementById(`pdfContainer-edit-${sesiId}`);
-  if (Array.isArray(s.pdf) && Array.isArray(s.pdfJudul)) {
-    s.pdf.forEach((filePath, i) => {
-      const div = document.createElement('div');
-      div.innerHTML = `
-        <input type="text" name="pdfJudul[]" value="${s.pdfJudul[i] || ''}" />
-        <input type="file" name="pdfFile[]" />
-        <a href="/${filePath}" target="_blank">Lihat PDF Lama</a>
-        <button type="button" onclick="this.parentNode.remove()">❌</button>
-      `;
-      pdfContainer.appendChild(div);
-    });
-  }
+  (s.pdf || []).forEach((filePath, i) => {
+    const div = document.createElement('div');
+    div.innerHTML = `
+      <input type="text" name="pdfJudul[]" value="${s.pdfJudul?.[i] || ''}" />
+      <input type="file" name="pdfFile[]" />
+      <a href="/${filePath}" target="_blank">Lihat PDF Lama</a>
+      <button type="button" onclick="this.parentNode.remove()">❌</button>
+    `;
+    pdfContainer.appendChild(div);
+  });
 
-
-      // ISI VIDEO LAMA
+  // Video
   const videoContainer = document.getElementById(`videoContainer-edit-${sesiId}`);
-  if (Array.isArray(s.videoLink) && Array.isArray(s.videoJudul)) {
-    s.videoLink.forEach((url, i) => {
-      const div = document.createElement('div');
-      div.innerHTML = `
-        <input type="text" name="videoJudul[]" value="${s.videoJudul[i] || ''}" />
-        <input type="url" name="videoLink[]" value="${url}" />
-        <button type="button" onclick="this.parentNode.remove()">❌</button>
-      `;
-      videoContainer.appendChild(div);
-    });
-  }
+  (s.videoLink || []).forEach((url, i) => {
+    const div = document.createElement('div');
+    div.innerHTML = `
+      <input type="text" name="videoJudul[]" value="${s.videoJudul?.[i] || ''}" />
+      <input type="url" name="videoLink[]" value="${url}" />
+      <button type="button" onclick="this.parentNode.remove()">❌</button>
+    `;
+    videoContainer.appendChild(div);
+  });
 
-      // Submit perubahan
-   document.getElementById(`form-edit-${sesiId}`).onsubmit = async function (e) {
+  // Submit
+  document.getElementById(`form-edit-${sesiId}`).onsubmit = async function (e) {
     e.preventDefault();
     const fd = new FormData();
 
@@ -290,7 +284,7 @@ window.editSesi = async (matkulId, sesiId) => {
       }
     });
 
-        const videoJudul = this.querySelectorAll('input[name="videoJudul[]"]');
+    const videoJudul = this.querySelectorAll('input[name="videoJudul[]"]');
     const videoLink = this.querySelectorAll('input[name="videoLink[]"]');
     videoJudul.forEach((el, i) => {
       fd.append('videoJudul[]', el.value);
@@ -305,6 +299,7 @@ window.editSesi = async (matkulId, sesiId) => {
     await loadSesiList(matkulId);
   };
 };
+
 
     window.hapusSesi = async (sesiId, matkulId) => {
       if (!confirm('Yakin hapus sesi ini?')) return;
