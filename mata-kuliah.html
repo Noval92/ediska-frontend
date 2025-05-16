@@ -319,6 +319,7 @@
 };
     };
 
+<script>
 window.editSesi = async (matkulId, sesiId) => {
   const res = await fetch(`https://ediska-backend.onrender.com/api/matakuliah/sesi/${sesiId}`);
   const s = await res.json();
@@ -347,6 +348,7 @@ window.editSesi = async (matkulId, sesiId) => {
     </form>
   `;
 
+  // 📄 Tampilkan PDF lama
   const pdfContainer = document.getElementById(`pdfContainer-edit-${sesiId}`);
   if (Array.isArray(s.pdf) && Array.isArray(s.pdfJudul)) {
     s.pdf.forEach((filePath, i) => {
@@ -361,6 +363,7 @@ window.editSesi = async (matkulId, sesiId) => {
     });
   }
 
+  // 🎞️ Tampilkan Video lama
   const videoContainer = document.getElementById(`videoContainer-edit-${sesiId}`);
   if (Array.isArray(s.videoLink) && Array.isArray(s.videoJudul)) {
     s.videoLink.forEach((url, i) => {
@@ -374,6 +377,7 @@ window.editSesi = async (matkulId, sesiId) => {
     });
   }
 
+  // 💾 Submit perubahan
   document.getElementById(`form-edit-${sesiId}`).onsubmit = async function (e) {
     e.preventDefault();
     const fd = new FormData();
@@ -406,7 +410,7 @@ window.editSesi = async (matkulId, sesiId) => {
     await loadSesiList(matkulId);
   };
 };
-
+</script>
 `;
 
       document.getElementById(`form-edit-${sesiId}`).onsubmit = async function(e) {
