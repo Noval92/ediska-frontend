@@ -313,20 +313,21 @@ window.editSesi = async (matkulId, sesiId) => {
     };
 
     window.exportPDF = async (matkulId, nama, kode) => {
-      const sesi = await fetch(`https://ediska-backend.onrender.com/api/matakuliah/${matkulId}/sesi`).then(r => r.json());
-      const wrapper = document.createElement('div');
-      wrapper.innerHTML = `
-        <h2>${nama} (${kode})</h2>
-        ${sesi.map((s, i) => `
-          <hr/>
-          <p><strong>Sesi ${i + 1}</strong></p>
-          <p>Pelajaran: ${s.pelajaran}</p>
-	 <p>Materi: ${s.materiJudul || '-'}</p>
-	<p>File Materi: ${s.materiFile ? 'Ada' : '-'}</p>
-	<p>File Lain: ${s.lainJudul || '-'}</p>
-	<p>Nilai: ${s.nilai || '-'}</p>
-).join('')} ;
-html2pdf().from(wrapper).save(${nama}-${kode}.pdf);
+  const sesi = await fetch(`https://ediska-backend.onrender.com/api/matakuliah/${matkulId}/sesi`).then(r => r.json());
+  const wrapper = document.createElement('div');
+  wrapper.innerHTML = `
+    <h2>${nama} (${kode})</h2>
+    ${sesi.map((s, i) => `
+      <hr/>
+      <p><strong>Sesi ${i + 1}</strong></p>
+      <p>Pelajaran: ${s.pelajaran}</p>
+      <p>Materi: ${s.materiJudul || '-'}</p>
+      <p>File Materi: ${s.materiFile ? 'Ada' : '-'}</p>
+      <p>File Lain: ${s.lainJudul || '-'}</p>
+      <p>Nilai: ${s.nilai || '-'}</p>
+    `).join('')}
+  `;
+  html2pdf().from(wrapper).save(`${nama}-${kode}.pdf`);
 };
 async function loadSesiList(matkulId) {
   const res = await fetch(`https://ediska-backend.onrender.com/api/matakuliah/${matkulId}/sesi`);
