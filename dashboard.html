@@ -100,18 +100,19 @@
       font-weight: bold;
       cursor: pointer;
     }
-    /* Timeline X card custom */
-    .twitter-card {
+    /* EMBED X TIMELINE */
+    .x-timeline-box {
+      margin: 32px 20px 16px;
       background: #fff;
       border-radius: 16px;
-      padding: 20px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-      margin: 28px 20px 20px;
-      max-width: 700px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+      padding: 16px 12px;
     }
-    .twitter-card h3 {
-      margin-top: 0;
-      color: #1da1f2;
+    .x-timeline-title {
+      font-size: 17px;
+      font-weight: 600;
+      color: #3b82f6;
+      margin-bottom: 8px;
     }
     footer {
       position: fixed;
@@ -183,12 +184,12 @@
     </div>
   </div>
 
-  <!-- Timeline X (Twitter) akun UTFESS -->
-  <div class="twitter-card">
-    <h3>Timeline X (Twitter) UTFESS</h3>
-    <a class="twitter-timeline" data-height="450" href="https://x.com/utfess?ref_src=twsrc%5Etfw">Tweet oleh @utfess</a>
-    <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+  <!-- ====== EMBED X TIMELINE HERE ====== -->
+  <div class="x-timeline-box">
+    <div class="x-timeline-title">Timeline X (Twitter) @utfess</div>
+    <a class="twitter-timeline" data-height="400" data-theme="light" href="https://twitter.com/utfess?ref_src=twsrc%5Etfw">Tweets by utfess</a>
   </div>
+  <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 
   <footer>
     <a href="dashboard.html">🏠<br>Beranda</a>
