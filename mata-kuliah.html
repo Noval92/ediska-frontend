@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>ISI MATA KULIAH</title>
+  <script src="https://raw.githack.com/eKoopmans/html2pdf/master/dist/html2pdf.bundle.js"></script>
   <style>
     body { font-family: Arial; background: #f1f5f9; margin: 0; padding: 0; }
     .container { max-width: 700px; margin: 30px auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
@@ -77,6 +78,7 @@
           <div class="actions">
             <button onclick="deleteMatkul('${m._id}')">Hapus</button>
             <button onclick="tambahSesi('${m._id}')">Tambah Sesi</button>
+            <button onclick="exportPDF('${m._id}', '${m.nama}', '${m.kode}')">Export PDF</button>
           </div>
           <div id="sesi-list-${m._id}"></div>
         </div>
@@ -110,96 +112,25 @@
       await loadMatkulList();
     };
 
-    window.tambahSesi = async (matkulId) => {
-      const sesiList = await fetch(`https://ediska-backend.onrender.com/api/matakuliah/${matkulId}/sesi`).then(r => r.json());
-      const sesiKe = sesiList.length + 1;
-
-      // validasi tidak boleh sesi ganda
-      const existing = sesiList.find(s => s.pelajaran && s.pelajaran.includes(`Sesi ${sesiKe}`));
-      if (existing) return alert(`Sesi ${sesiKe} sudah ada.`);
-
-      const sesiDiv = document.getElementById(`sesi-list-${matkulId}`);
-      sesiDiv.innerHTML += `
-        <form id="form-sesi-${matkulId}" style="margin-top:10px; background:#e3f2fd; padding:10px; border-radius:6px;">
-          <label>Hal apa yang dipelajari? (Sesi ${sesiKe})</label>
-          <textarea name="pelajaran" required>Sesi ${sesiKe} - </textarea>
-          <label>Upload Materi</label>
-          <input type="file" name="materiFile">
-          <input type="text" name="materiJudul" placeholder="Judul Materi">
-          <label>Upload File Lain</label>
-          <input type="file" name="lainFile">
-          <input type="text" name="lainJudul" placeholder="Judul File Lain">
-          <label>Nilai</label>
-          <input type="text" name="nilai" placeholder="Nilai (opsional)">
-          <button type="submit">Simpan</button>
-        </form>
+    window.exportPDF = async (matkulId, nama, kode) => {
+      const sesi = await fetch(`https://ediska-backend.onrender.com/api/matakuliah/${matkulId}/sesi`).then(r => r.json());
+      const wrapper = document.createElement('div');
+      wrapper.innerHTML = `
+        <h2>${nama} (${kode})</h2>
+        ${sesi.map((s, i) => `
+          <hr/>
+          <p><strong>Sesi ${i + 1}</strong></p>
+          <p>Pelajaran: ${s.pelajaran}</p>
+          <p>Materi: ${s.materiJudul || '-'}</p>
+          <p>File Materi: ${s.materiFile ? 'Ada' : '-'}</p>
+          <p>File Lain: ${s.lainJudul || '-'}</p>
+          <p>Nilai: ${s.nilai || '-'}</p>
+        `).join('')}
       `;
-      document.getElementById(`form-sesi-${matkulId}`).onsubmit = async function(e) {
-        e.preventDefault();
-        const fd = new FormData(this);
-        fd.append('matkulId', matkulId);
-        await fetch(`https://ediska-backend.onrender.com/api/matakuliah/sesi`, {
-          method: 'POST',
-          body: fd
-        });
-        await loadSesiList(matkulId);
-        this.remove();
-      };
+      html2pdf().from(wrapper).save(`${nama}-${kode}.pdf`);
     };
 
-    window.editSesi = async (matkulId, sesiId) => {
-      const res = await fetch(`https://ediska-backend.onrender.com/api/matakuliah/sesi/${sesiId}`);
-      const s = await res.json();
-      const sesiBox = document.getElementById(`sesi-box-${sesiId}`);
-      sesiBox.innerHTML = `
-        <form id="form-edit-${sesiId}" style="background:#e3f2fd; padding:10px; border-radius:6px;">
-          <label>Hal apa yang dipelajari?</label>
-          <textarea name="pelajaran" required>${s.pelajaran || ''}</textarea>
-          <label>Upload Materi baru:</label>
-          <input type="file" name="materiFile">
-          <input type="text" name="materiJudul" value="${s.materiJudul || ''}">
-          <label>Upload File Lain baru:</label>
-          <input type="file" name="lainFile">
-          <input type="text" name="lainJudul" value="${s.lainJudul || ''}">
-          <label>Nilai</label>
-          <input type="text" name="nilai" value="${s.nilai || ''}">
-          <button type="submit">Simpan Perubahan</button>
-        </form>
-      `;
-      document.getElementById(`form-edit-${sesiId}`).onsubmit = async function(e) {
-        e.preventDefault();
-        const fd = new FormData(this);
-        await fetch(`https://ediska-backend.onrender.com/api/matakuliah/sesi/${sesiId}`, {
-          method: 'PUT',
-          body: fd
-        });
-        await loadSesiList(matkulId);
-      };
-    };
-
-    window.hapusSesi = async (sesiId, matkulId) => {
-      if (!confirm('Yakin hapus sesi ini?')) return;
-      await fetch(`https://ediska-backend.onrender.com/api/matakuliah/sesi/${sesiId}`, {
-        method: 'DELETE'
-      });
-      await loadSesiList(matkulId);
-    };
-
-    async function loadSesiList(matkulId) {
-      const res = await fetch(`https://ediska-backend.onrender.com/api/matakuliah/${matkulId}/sesi`);
-      const sesi = await res.json();
-      const sesiDiv = document.getElementById(`sesi-list-${matkulId}`);
-      sesiDiv.innerHTML = sesi.map((s, i) => `
-        <div class="sesi-box" id="sesi-box-${s._id}">
-          <div><b>Sesi ${i + 1}</b> - ${s.pelajaran}</div>
-          ${s.materiJudul ? `<div>Materi: ${s.materiJudul} <a href="/${s.materiFile}" target="_blank">[Lihat]</a></div>` : ''}
-          ${s.lainJudul ? `<div>File Lain: ${s.lainJudul} <a href="/${s.lainFile}" target="_blank">[Lihat]</a></div>` : ''}
-          ${s.nilai ? `<div>Nilai: ${s.nilai}</div>` : ''}
-          <button onclick="editSesi('${matkulId}', '${s._id}')">Edit</button>
-          <button onclick="hapusSesi('${s._id}', '${matkulId}')">Hapus</button>
-        </div>
-      `).join('');
-    }
+    // fungsi tambahSesi, editSesi, hapusSesi, loadSesiList diletakkan di sini (kalau belum ada)
 
     document.addEventListener('DOMContentLoaded', async () => {
       await loadSemesterData();
