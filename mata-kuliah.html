@@ -66,26 +66,26 @@
     let semesterAktif = 0; // semester terakhir yang aktif
     let allMatkul = [];
 
-    async function loadSemesterData() {
-      const res = await fetch(`https://ediska-backend.onrender.com/api/semester/${user._id}`);
-      const data = await res.json();
+   async function loadSemesterData() {
+  const res = await fetch(`https://ediska-backend.onrender.com/api/semester/${user._id}`);
+  const data = await res.json();
 
-      // cari semester terakhir (angka terbesar)
-      data.sort((a, b) => b.semester - a.semester);
-      if (data.length > 0) {
-        semesterAktif = data[0].semester;
-      }
+  // cari semester terakhir (angka terbesar)
+  data.sort((a, b) => b.semester - a.semester);
+  if (data.length > 0) {
+    semesterAktif = data[0].semester;
+  }
 
-      const sem = data.find(s => Number(s.semester) === semesterParam);
-      if (sem) {
-        sksMax = sem.sks || 0;
-        sksSisa = sem.sks || 0;
-        semesterInfo.textContent = sem.semester;
-      }
+  const sem = data.find(s => parseInt(s.semester) === parseInt(semesterParam)); // ✅ FIX
+  if (sem) {
+    sksMax = sem.sks || 0;
+    sksSisa = sem.sks || 0;
+    semesterInfo.textContent = sem.semester;
+  }
 
-      sksMaxEl.textContent = sksMax;
-      sksSisaEl.textContent = sksSisa;
-    }
+  sksMaxEl.textContent = sksMax;
+  sksSisaEl.textContent = sksSisa;
+}
 
     async function loadMatkulList() {
       const res = await fetch(`https://ediska-backend.onrender.com/api/matakuliah?userId=${user._id}&semester=${semesterParam}`);
