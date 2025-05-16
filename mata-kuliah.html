@@ -52,19 +52,21 @@
   </div>
 
   <script>
-    const user = JSON.parse(localStorage.getItem('user'));
-    if (!user || !user._id) window.location = 'login.html';
+     const user = JSON.parse(localStorage.getItem('user'));
+  if (!user || !user._id) window.location = 'login.html';
 
-const semesterParam = parseInt(new URLSearchParams(location.search).get('semester'), 10);
-const semesterInfo = document.getElementById('semesterInfo');
-const sksMaxEl = document.getElementById('sksMax');
-const sksSisaEl = document.getElementById('sksSisa');
-    const mkRows = document.getElementById('mkRows');
+  const semesterParamRaw = new URLSearchParams(location.search).get('semester');
+  const semesterParam = semesterParamRaw ? parseInt(semesterParamRaw) : null;
 
-    let sksMax = 0;
-    let sksSisa = 0;
-    let semesterAktif = 0; // semester terakhir yang aktif
-    let allMatkul = [];
+  const semesterInfo = document.getElementById('semesterInfo');
+  const sksMaxEl = document.getElementById('sksMax');
+  const sksSisaEl = document.getElementById('sksSisa');
+  const mkRows = document.getElementById('mkRows');
+
+  let sksMax = 0;
+  let sksSisa = 0;
+  let semesterAktif = 0;
+  let allMatkul = [];
 
    async function loadSemesterData() {
   const res = await fetch(`https://ediska-backend.onrender.com/api/semester/${user._id}`);
@@ -76,7 +78,8 @@ const sksSisaEl = document.getElementById('sksSisa');
     semesterAktif = data[0].semester;
   }
 
-  const sem = data.find(s => parseInt(s.semester) === parseInt(semesterParam)); // ✅ FIX
+const sem = data.find(s => parseInt(s.semester) === semesterParam);
+
   if (sem) {
     sksMax = sem.sks || 0;
     sksSisa = sem.sks || 0;
