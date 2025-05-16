@@ -373,21 +373,33 @@
       html2pdf().from(wrapper).save(`${nama}-${kode}.pdf`);
     };
 
-    async function loadSesiList(matkulId) {
-      const res = await fetch(`https://ediska-backend.onrender.com/api/matakuliah/${matkulId}/sesi`);
-      const sesi = await res.json();
-      const sesiDiv = document.getElementById(`sesi-list-${matkulId}`);
-      sesiDiv.innerHTML = sesi.map((s, i) => `
-        <div class="sesi-box" id="sesi-box-${s._id}">
-          <div><b>Sesi ${i + 1}</b> - ${s.pelajaran}</div>
-          ${s.materiJudul ? `<div>Materi: ${s.materiJudul} <a href="/${s.materiFile}" target="_blank">[Lihat]</a></div>` : ''}
-          ${s.lainJudul ? `<div>File Lain: ${s.lainJudul} <a href="/${s.lainFile}" target="_blank">[Lihat]</a></div>` : ''}
-          ${s.nilai ? `<div>Nilai: ${s.nilai}</div>` : ''}
-          <div class="actions">
+        async function loadSesiList(matkulId) {
+        const res = await fetch(`https://ediska-backend.onrender.com/api/matakuliah/${matkulId}/sesi`);
+        const sesi = await res.json();
+        const sesiDiv = document.getElementById(`sesi-list-${matkulId}`);
+        sesiDiv.innerHTML = sesi.map((s, i) => {
+        const pdfList = (s.pdf || []).map((p, idx) =>
+      `<li>${s.pdfJudul?.[idx] || 'File'}: <a href="/${p}" target="_blank">Lihat PDF</a></li>`
+    ).join('');
+
+    const videoList = (s.videoLink || []).map((link, idx) =>
+      `<li>${s.videoJudul?.[idx] || 'Video'}: <a href="${link}" target="_blank">${link}</a></li>`
+    ).join('');
+
+    return `
+      <div class="sesi-box" id="sesi-box-${s._id}">
+        <div><b>Sesi ${i + 1}</b> - ${s.pelajaran}</div>
+        ${s.ringkasan ? `<div><i>${s.ringkasan}</i></div>` : ''}
+        ${pdfList ? `<div><b>PDF:</b><ul>${pdfList}</ul></div>` : ''}
+        ${videoList ? `<div><b>Video:</b><ul>${videoList}</ul></div>` : ''}
+        ${s.nilai ? `<div>Nilai: ${s.nilai}</div>` : ''}
+        <div class="actions">
           <button style="background:#f39c12" onclick="editSesi('${matkulId}', '${s._id}')">Edit</button>
           <button style="background:#e74c3c" onclick="hapusSesi('${s._id}', '${matkulId}')">Hapus</button>
-          </div>
-      `).join('');
+        </div>
+      </div>
+    `;
+  }).join('');
     }
 
 window.filterMatkul = async () => {
