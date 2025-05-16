@@ -5,26 +5,74 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>ISI MATA KULIAH</title>
   <script src="https://raw.githack.com/eKoopmans/html2pdf/master/dist/html2pdf.bundle.js"></script>
-  <style>
-    :root { --primary: #3498db; --danger: #e74c3c; --bg: #f1f5f9; }
-    body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 0; }
-    .container { max-width: 90%; margin: 2rem auto; background: #fff; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06); }
-    h2 { background: var(--primary); color: white; padding: 1rem; border-radius: 8px 8px 0 0; text-align: center; font-size: 1.5rem; }
-    label { display: block; font-weight: 600; margin-top: 1rem; font-size: 0.95rem; }
-    input, textarea { width: 100%; padding: 0.6rem; margin-top: 0.3rem; border: 1px solid #ccc; border-radius: 6px; font-size: 0.95rem; }
-    button { padding: 0.6rem 1.2rem; margin-top: 1rem; border: none; border-radius: 6px; background: var(--primary); color: white; font-weight: bold; cursor: pointer; }
-    .info { display: flex; flex-wrap: wrap; justify-content: space-between; background: #e3f2fd; padding: 1rem; font-weight: bold; font-size: 0.95rem; margin-bottom: 1.5rem; border-radius: 8px; }
-    .mk-row { background: #f9f9f9; padding: 1rem; border-left: 5px solid var(--primary); margin-bottom: 1rem; border-radius: 8px; }
-    .actions { margin-top: 0.8rem; display: flex; flex-wrap: wrap; gap: 0.5rem; }
-    .actions button { background: var(--danger); flex: 1; }
-    .sesi-box { background: #f0f4f8; padding: 0.8rem; margin-top: 0.8rem; border-radius: 6px; font-size: 0.9rem; }
-    #searchInput { width: 100%; padding: 0.6rem; margin-bottom: 1rem; border: 1px solid #ccc; border-radius: 6px; font-size: 0.95rem; }
-    #resumeContainer { background: #fff8dc; padding: 1rem; border-radius: 6px; border: 1px solid #ccc; font-size: 0.9rem; margin-top: 2rem; }
-    @media (max-width: 600px) {
-      .info { flex-direction: column; gap: 0.5rem; }
-      .actions { flex-direction: column; }
-    }
-  </style>
+<style>
+  :root { --primary: #3498db; --danger: #e74c3c; --bg: #f1f5f9; }
+  body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 0; }
+  .container { max-width: 90%; margin: 2rem auto; background: #fff; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06); }
+  h2 { background: var(--primary); color: white; padding: 1rem; border-radius: 8px 8px 0 0; text-align: center; font-size: 1.5rem; }
+  label { display: block; font-weight: 600; margin-top: 1rem; font-size: 0.95rem; }
+  input, textarea { width: 100%; padding: 0.6rem; margin-top: 0.3rem; border: 1px solid #ccc; border-radius: 6px; font-size: 0.95rem; }
+  button { padding: 0.6rem 1.2rem; margin-top: 1rem; border: none; border-radius: 6px; background: var(--primary); color: white; font-weight: bold; cursor: pointer; }
+  .info { display: flex; flex-wrap: wrap; justify-content: space-between; background: #e3f2fd; padding: 1rem; font-weight: bold; font-size: 0.95rem; margin-bottom: 1.5rem; border-radius: 8px; }
+  .mk-row { background: #f9f9f9; padding: 1rem; border-left: 5px solid var(--primary); margin-bottom: 1rem; border-radius: 8px; }
+  .actions { margin-top: 0.8rem; display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .actions button { background: var(--danger); flex: 1; }
+  .sesi-box { background: #f0f4f8; padding: 0.8rem; margin-top: 0.8rem; border-radius: 6px; font-size: 0.9rem; }
+  #searchInput { width: 100%; padding: 0.6rem; margin-bottom: 1rem; border: 1px solid #ccc; border-radius: 6px; font-size: 0.95rem; }
+  #resumeContainer { background: #fff8dc; padding: 1rem; border-radius: 6px; border: 1px solid #ccc; font-size: 0.9rem; margin-top: 2rem; }
+
+ /* 🎨 Tambahan tombol rapi */
+  .btn-tambah-sesi {
+    background-color: #2ecc71;
+    color: white;
+  }
+
+  .btn-delete-mk {
+    background-color: #e74c3c;
+    color: white;
+  }
+
+  .btn-delete-sesi {
+    background-color: #f1948a;
+    color: white;
+  }
+
+  .btn-edit-sesi {
+    background-color: #f39c12;
+    color: white;
+  }
+
+  .btn-export {
+    background-color: #34495e;
+    color: white;
+  }
+
+  /* Tambahan style baru */
+  .mk-header {
+    background: #d0ebff;
+    padding: 10px;
+    border: 2px solid #3498db;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    font-weight: bold;
+  }
+
+  .btn-delete-mk {
+    background-color: #e74c3c;
+    color: white;
+  }
+
+  .btn-delete-sesi {
+    background-color: #f1948a;
+    color: white;
+  }
+
+  @media (max-width: 600px) {
+    .info { flex-direction: column; gap: 0.5rem; }
+    .actions { flex-direction: column; }
+  }
+</style>
+
 </head>
 <body>
   <div class="container">
@@ -101,17 +149,17 @@ const sem = data.find(s => parseInt(s.semester) === semesterParam);
       sksSisa = sksMax - used;
       sksSisaEl.textContent = sksSisa;
 
-      mkRows.innerHTML = list.map(m => `
-        <div class="mk-row">
-          <div><b>${m.nama}</b> (${m.kode}) - ${m.sks} SKS</div>
-          <div class="actions">
-            <button onclick="deleteMatkul('${m._id}')">Hapus</button>
-            <button onclick="tambahSesi('${m._id}')">Tambah Sesi</button>
-            <button onclick="exportPDF('${m._id}', '${m.nama}', '${m.kode}')">Export PDF</button>
-          </div>
-          <div id="sesi-list-${m._id}"></div>
-        </div>
-      `).join('');
+mkRows.innerHTML = list.map(m => `
+  <div class="mk-row">
+    <div class="mk-header">MATA KULIAH: <b>${m.nama}</b> (${m.kode}) - ${m.sks} SKS</div>
+    <div class="actions">
+      <button class="btn-delete-mk" onclick="deleteMatkul('${m._id}')">Hapus Matkul</button>
+      <button class="btn-tambah-sesi" onclick="tambahSesi('${m._id}')">Tambah Sesi</button>
+      <button class="btn-export" onclick="exportPDF('${m._id}', '${m.nama}', '${m.kode}')">Export PDF</button>
+    </div>
+    <div id="sesi-list-${m._id}"></div>
+  </div>
+`).join('');
 
       list.forEach(m => loadSesiList(m._id));
     }
@@ -370,19 +418,19 @@ async function loadSesiList(matkulId) {
       `<li>${s.videoJudul?.[idx] || 'Video'}: <a href="${link}" target="_blank">${link}</a></li>`
     ).join('');
 
-    return `
-      <div class="sesi-box" id="sesi-box-${s._id}">
-        <div><b>Sesi ${i + 1}</b> - ${s.pelajaran}</div>
-        ${s.ringkasan ? `<div><i>${s.ringkasan}</i></div>` : ''}
-        ${pdfList ? `<div><b>PDF:</b><ul>${pdfList}</ul></div>` : ''}
-        ${videoList ? `<div><b>Video:</b><ul>${videoList}</ul></div>` : ''}
-        ${s.nilai ? `<div>Nilai: ${s.nilai}</div>` : ''}
-        <div class="actions">
-          <button style="background:#f39c12" onclick="editSesi('${matkulId}', '${s._id}')">Edit</button>
-          <button style="background:#e74c3c" onclick="hapusSesi('${s._id}', '${matkulId}')">Hapus</button>
-        </div>
-      </div>
-    `;
+return `
+  <div class="sesi-box" id="sesi-box-${s._id}">
+    <div><b>Sesi ${i + 1}</b> - ${s.pelajaran}</div>
+    ${s.ringkasan ? `<div><i>${s.ringkasan}</i></div>` : ''}
+    ${pdfList ? `<div><b>PDF:</b><ul>${pdfList}</ul></div>` : ''}
+    ${videoList ? `<div><b>Video:</b><ul>${videoList}</ul></div>` : ''}
+    ${s.nilai ? `<div>Nilai: ${s.nilai}</div>` : ''}
+<div class="actions">
+  <button class="btn-edit-sesi" onclick="editSesi('${matkulId}', '${s._id}')">Edit</button>
+  <button class="btn-delete-sesi" onclick="hapusSesi('${s._id}', '${matkulId}')">Hapus Sesi</button>
+</div>
+  </div>
+`;
   }).join('');
 }
 
