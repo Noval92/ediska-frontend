@@ -312,7 +312,7 @@ window.editSesi = async (matkulId, sesiId) => {
       await loadSesiList(matkulId);
     };
 
-    window.exportPDF = async (matkulId, nama, kode) => {
+window.exportPDF = async (matkulId, nama, kode) => {
   const sesi = await fetch(`https://ediska-backend.onrender.com/api/matakuliah/${matkulId}/sesi`).then(r => r.json());
   const wrapper = document.createElement('div');
   wrapper.innerHTML = `
@@ -320,15 +320,33 @@ window.editSesi = async (matkulId, sesiId) => {
     ${sesi.map((s, i) => `
       <hr/>
       <p><strong>Sesi ${i + 1}</strong></p>
-      <p>Pelajaran: ${s.pelajaran}</p>
-      <p>Materi: ${s.materiJudul || '-'}</p>
-      <p>File Materi: ${s.materiFile ? 'Ada' : '-'}</p>
-      <p>File Lain: ${s.lainJudul || '-'}</p>
-      <p>Nilai: ${s.nilai || '-'}</p>
+      <p><strong>Pelajaran:</strong> ${s.pelajaran || '-'}</p>
+      ${s.ringkasan ? `<p><strong>Ringkasan:</strong> ${s.ringkasan}</p>` : ''}
+
+      ${Array.isArray(s.pdf) && s.pdf.length > 0 ? `
+        <p><strong>PDF:</strong></p>
+        <ul>
+          ${s.pdf.map((p, idx) => `
+            <li>${s.pdfJudul?.[idx] || 'Judul tidak tersedia'} - ${p}</li>
+          `).join('')}
+        </ul>
+      ` : ''}
+
+      ${Array.isArray(s.videoLink) && s.videoLink.length > 0 ? `
+        <p><strong>Video:</strong></p>
+        <ul>
+          ${s.videoLink.map((v, idx) => `
+            <li>${s.videoJudul?.[idx] || 'Video'}: ${v}</li>
+          `).join('')}
+        </ul>
+      ` : ''}
+
+      ${s.nilai ? `<p><strong>Nilai:</strong> ${s.nilai}</p>` : ''}
     `).join('')}
   `;
   html2pdf().from(wrapper).save(`${nama}-${kode}.pdf`);
 };
+
 async function loadSesiList(matkulId) {
   const res = await fetch(`https://ediska-backend.onrender.com/api/matakuliah/${matkulId}/sesi`);
   const sesi = await res.json();
