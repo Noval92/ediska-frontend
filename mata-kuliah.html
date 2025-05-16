@@ -1,22 +1,20 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>ISI MATA KULIAH</title>
   <style>
-    body { font-family: Arial, sans-serif; background: #f1f5f9; margin: 0; padding: 0; }
-    .container { max-width: 700px; margin: 40px auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-    h2 { background: #3498db; color: white; padding: 16px; margin: 0; border-radius: 8px 8px 0 0; text-align: center; }
-    .info { display: flex; justify-content: space-between; background: #e3f2fd; padding: 12px; font-weight: bold; }
-    label { display: block; margin-top: 12px; font-weight: bold; }
-    input, select, textarea { width: 100%; padding: 8px; margin-top: 4px; border-radius: 4px; border: 1px solid #ccc; }
-    button { margin-top: 16px; padding: 10px 20px; background: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer; }
-    .mk-row { margin-top: 10px; padding: 10px; background: #f9f9f9; border-left: 4px solid #3498db; border-radius: 4px; display: flex; flex-direction: column; }
-    .actions { margin-top: 4px; }
-    .actions button { margin-right: 8px; background: #e74c3c; }
-    .sesi-list { margin-top: 8px; padding-left: 16px; }
-    .sesi-box { margin: 8px 0; background: #f0f4f8; border-radius: 6px; padding: 8px; }
+    body { font-family: Arial; background: #f1f5f9; margin: 0; padding: 0; }
+    .container { max-width: 700px; margin: 30px auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    h2 { text-align: center; background: #3498db; color: white; padding: 12px; border-radius: 8px 8px 0 0; }
+    label { font-weight: bold; display: block; margin-top: 12px; }
+    input, textarea { width: 100%; padding: 8px; margin-top: 4px; border: 1px solid #ccc; border-radius: 4px; }
+    button { margin-top: 12px; padding: 8px 16px; background: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer; }
+    .info { display: flex; justify-content: space-between; background: #e3f2fd; padding: 10px; font-weight: bold; margin-bottom: 20px; }
+    .mk-row { background: #f9f9f9; padding: 12px; border-left: 4px solid #3498db; margin-bottom: 10px; border-radius: 6px; }
+    .actions button { background: #e74c3c; margin-right: 10px; }
+    .sesi-box { background: #f0f4f8; padding: 8px; margin-top: 6px; border-radius: 6px; }
   </style>
 </head>
 <body>
@@ -28,15 +26,15 @@
       <div>Sisa SKS: <span id="sksSisa">0</span></div>
     </div>
 
-    <label for="namaMatkul">Nama Mata Kuliah</label>
-    <input id="namaMatkul" type="text" placeholder="Nama Mata Kuliah">
-    <label for="kodeMatkul">Kode Mata Kuliah</label>
-    <input id="kodeMatkul" type="text" placeholder="Kode Mata Kuliah">
-    <label for="sksMatkul">Jumlah SKS</label>
-    <input id="sksMatkul" type="number" placeholder="Jumlah SKS">
+    <label>Nama Mata Kuliah</label>
+    <input id="namaMatkul" type="text" />
+    <label>Kode</label>
+    <input id="kodeMatkul" type="text" />
+    <label>Jumlah SKS</label>
+    <input id="sksMatkul" type="number" />
     <button id="saveMkBtn">Simpan Mata Kuliah</button>
 
-    <h3 style="margin-top:30px; color:#3498db">Daftar Mata Kuliah Semester Ini</h3>
+    <h3 style="margin-top:30px; color:#3498db">Daftar Mata Kuliah</h3>
     <div id="mkRows"></div>
   </div>
 
@@ -49,137 +47,160 @@
     const sksMaxEl = document.getElementById('sksMax');
     const sksSisaEl = document.getElementById('sksSisa');
     const mkRows = document.getElementById('mkRows');
-    const namaInput = document.getElementById('namaMatkul');
-    const kodeInput = document.getElementById('kodeMatkul');
-    const sksInput = document.getElementById('sksMatkul');
-    const saveBtn = document.getElementById('saveMkBtn');
 
     let sksMax = 0;
     let sksSisa = 0;
-    let semesterAngka = '-';
 
-    // GET DATA SEMESTER
     async function loadSemesterData() {
       const res = await fetch(`https://ediska-backend.onrender.com/api/semester/${user._id}`);
       const data = await res.json();
-      // Cari semester sesuai url param
       const sem = data.find(s => Number(s.semester) === semesterParam);
       if (sem) {
         sksMax = sem.sks || 0;
         sksSisa = sem.sks || 0;
-        semesterAngka = sem.semester;
-      } else {
-        sksMax = 0;
-        sksSisa = 0;
-        semesterAngka = '-';
+        semesterInfo.textContent = sem.semester;
       }
-      semesterInfo.textContent = semesterAngka;
       sksMaxEl.textContent = sksMax;
       sksSisaEl.textContent = sksSisa;
     }
 
-    // GET DAN RENDER MATKUL + SISA SKS
     async function loadMatkulList() {
       const res = await fetch(`https://ediska-backend.onrender.com/api/matakuliah?userId=${user._id}&semester=${semesterParam}`);
       const list = await res.json();
-      // Hitung SKS terpakai
       const used = list.reduce((sum, m) => sum + (m.sks || 0), 0);
       sksSisa = sksMax - used;
       sksSisaEl.textContent = sksSisa;
-      if (list.length === 0) {
-        mkRows.innerHTML = '<div style="color:#777;font-style:italic">Belum ada mata kuliah.</div>';
-      } else {
-        mkRows.innerHTML = list.map(m => `
-          <div class="mk-row">
-            <div><b>${m.nama}</b> (${m.kode}) - ${m.sks} SKS</div>
-            <div class="actions">
-              <button onclick="deleteMatkul('${m._id}', ${m.sks})">Hapus</button>
-              <button onclick="tambahSesi('${m._id}')">Tambah Sesi</button>
-            </div>
-            <div class="sesi-list" id="sesi-list-${m._id}"></div>
+
+      mkRows.innerHTML = list.map(m => `
+        <div class="mk-row">
+          <div><b>${m.nama}</b> (${m.kode}) - ${m.sks} SKS</div>
+          <div class="actions">
+            <button onclick="deleteMatkul('${m._id}')">Hapus</button>
+            <button onclick="tambahSesi('${m._id}')">Tambah Sesi</button>
           </div>
-        `).join('');
-        // Auto load sesi
-        list.forEach(m => loadSesiList(m._id));
-      }
+          <div id="sesi-list-${m._id}"></div>
+        </div>
+      `).join('');
+
+      list.forEach(m => loadSesiList(m._id));
     }
 
-    // SIMPAN MATA KULIAH
-    saveBtn.onclick = async () => {
-      const nama = namaInput.value.trim();
-      const kode = kodeInput.value.trim();
-      const sks = parseInt(sksInput.value);
-      if (!nama || !kode || !sks) return alert('Lengkapi semua input.');
-      if (sks > sksSisa) return alert(`SKS melebihi sisa: ${sksSisa}`);
+    document.getElementById('saveMkBtn').onclick = async () => {
+      const nama = document.getElementById('namaMatkul').value;
+      const kode = document.getElementById('kodeMatkul').value;
+      const sks = parseInt(document.getElementById('sksMatkul').value);
+      if (!nama || !kode || !sks) return alert('Lengkapi semua kolom');
+      if (sks > sksSisa) return alert('SKS melebihi batas');
+
       await fetch('https://ediska-backend.onrender.com/api/matakuliah', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId: user._id, semester: semesterParam, nama, kode, sks })
       });
-      namaInput.value = kodeInput.value = sksInput.value = '';
+
+      document.getElementById('namaMatkul').value = '';
+      document.getElementById('kodeMatkul').value = '';
+      document.getElementById('sksMatkul').value = '';
       await loadMatkulList();
     };
 
-    // HAPUS MATA KULIAH
-    window.deleteMatkul = async (id, sks) => {
-      if (!confirm('Yakin hapus matkul ini?')) return;
+    window.deleteMatkul = async (id) => {
+      if (!confirm('Yakin ingin hapus?')) return;
       await fetch(`https://ediska-backend.onrender.com/api/matakuliah/${id}`, { method: 'DELETE' });
       await loadMatkulList();
     };
 
-    // TAMPILKAN FORM TAMBAH SESI (MODAL SEDERHANA)
-    window.tambahSesi = (matkulId) => {
+    window.tambahSesi = async (matkulId) => {
+      const sesiList = await fetch(`https://ediska-backend.onrender.com/api/matakuliah/${matkulId}/sesi`).then(r => r.json());
+      const sesiKe = sesiList.length + 1;
+
+      // validasi tidak boleh sesi ganda
+      const existing = sesiList.find(s => s.pelajaran && s.pelajaran.includes(`Sesi ${sesiKe}`));
+      if (existing) return alert(`Sesi ${sesiKe} sudah ada.`);
+
       const sesiDiv = document.getElementById(`sesi-list-${matkulId}`);
-      sesiDiv.innerHTML = `
-        <form id="form-sesi-${matkulId}" style="margin-top:8px; background:#e3f2fd; padding:8px; border-radius:6px;">
-          <label>Hal apa yang dipelajari?</label>
-          <textarea name="pelajaran" required></textarea>
-          <label>Upload Materi (pdf/jpg opsional):</label>
-          <input type="file" name="materiFile" accept=".pdf,image/*">
+      sesiDiv.innerHTML += `
+        <form id="form-sesi-${matkulId}" style="margin-top:10px; background:#e3f2fd; padding:10px; border-radius:6px;">
+          <label>Hal apa yang dipelajari? (Sesi ${sesiKe})</label>
+          <textarea name="pelajaran" required>Sesi ${sesiKe} - </textarea>
+          <label>Upload Materi</label>
+          <input type="file" name="materiFile">
           <input type="text" name="materiJudul" placeholder="Judul Materi">
-          <label>Upload File Lain (opsional):</label>
+          <label>Upload File Lain</label>
           <input type="file" name="lainFile">
           <input type="text" name="lainJudul" placeholder="Judul File Lain">
-          <label>Nilai (opsional):</label>
-          <input type="text" name="nilai" placeholder="Nilai (A/B/C)">
-          <button type="submit">Simpan Sesi</button>
+          <label>Nilai</label>
+          <input type="text" name="nilai" placeholder="Nilai (opsional)">
+          <button type="submit">Simpan</button>
         </form>
       `;
       document.getElementById(`form-sesi-${matkulId}`).onsubmit = async function(e) {
         e.preventDefault();
         const fd = new FormData(this);
         fd.append('matkulId', matkulId);
-        await fetch('https://ediska-backend.onrender.com/api/matakuliah/sesi', {
+        await fetch(`https://ediska-backend.onrender.com/api/matakuliah/sesi`, {
           method: 'POST',
           body: fd
         });
         await loadSesiList(matkulId);
-        this.reset();
-        sesiDiv.innerHTML = '';
-      }
-    }
+        this.remove();
+      };
+    };
 
-    // GET DAN RENDER SESI PER MATA KULIAH
+    window.editSesi = async (matkulId, sesiId) => {
+      const res = await fetch(`https://ediska-backend.onrender.com/api/matakuliah/sesi/${sesiId}`);
+      const s = await res.json();
+      const sesiBox = document.getElementById(`sesi-box-${sesiId}`);
+      sesiBox.innerHTML = `
+        <form id="form-edit-${sesiId}" style="background:#e3f2fd; padding:10px; border-radius:6px;">
+          <label>Hal apa yang dipelajari?</label>
+          <textarea name="pelajaran" required>${s.pelajaran || ''}</textarea>
+          <label>Upload Materi baru:</label>
+          <input type="file" name="materiFile">
+          <input type="text" name="materiJudul" value="${s.materiJudul || ''}">
+          <label>Upload File Lain baru:</label>
+          <input type="file" name="lainFile">
+          <input type="text" name="lainJudul" value="${s.lainJudul || ''}">
+          <label>Nilai</label>
+          <input type="text" name="nilai" value="${s.nilai || ''}">
+          <button type="submit">Simpan Perubahan</button>
+        </form>
+      `;
+      document.getElementById(`form-edit-${sesiId}`).onsubmit = async function(e) {
+        e.preventDefault();
+        const fd = new FormData(this);
+        await fetch(`https://ediska-backend.onrender.com/api/matakuliah/sesi/${sesiId}`, {
+          method: 'PUT',
+          body: fd
+        });
+        await loadSesiList(matkulId);
+      };
+    };
+
+    window.hapusSesi = async (sesiId, matkulId) => {
+      if (!confirm('Yakin hapus sesi ini?')) return;
+      await fetch(`https://ediska-backend.onrender.com/api/matakuliah/sesi/${sesiId}`, {
+        method: 'DELETE'
+      });
+      await loadSesiList(matkulId);
+    };
+
     async function loadSesiList(matkulId) {
       const res = await fetch(`https://ediska-backend.onrender.com/api/matakuliah/${matkulId}/sesi`);
       const sesi = await res.json();
       const sesiDiv = document.getElementById(`sesi-list-${matkulId}`);
-      if (!sesiDiv) return;
-      if (sesi.length === 0) {
-        sesiDiv.innerHTML = '';
-      } else {
-        sesiDiv.innerHTML = sesi.map((s, i) => `
-          <div class="sesi-box">
-            <div><b>Sesi ${i+1}</b> - ${s.pelajaran || ''}</div>
-            ${s.materiJudul ? `<div>Materi: ${s.materiJudul} <a href="/${s.materiFile}" target="_blank">[Lihat]</a></div>` : ''}
-            ${s.lainJudul ? `<div>File Lain: ${s.lainJudul} <a href="/${s.lainFile}" target="_blank">[Lihat]</a></div>` : ''}
-            ${s.nilai ? `<div>Nilai: ${s.nilai}</div>` : ''}
-          </div>
-        `).join('');
-      }
+      sesiDiv.innerHTML = sesi.map((s, i) => `
+        <div class="sesi-box" id="sesi-box-${s._id}">
+          <div><b>Sesi ${i + 1}</b> - ${s.pelajaran}</div>
+          ${s.materiJudul ? `<div>Materi: ${s.materiJudul} <a href="/${s.materiFile}" target="_blank">[Lihat]</a></div>` : ''}
+          ${s.lainJudul ? `<div>File Lain: ${s.lainJudul} <a href="/${s.lainFile}" target="_blank">[Lihat]</a></div>` : ''}
+          ${s.nilai ? `<div>Nilai: ${s.nilai}</div>` : ''}
+          <button onclick="editSesi('${matkulId}', '${s._id}')">Edit</button>
+          <button onclick="hapusSesi('${s._id}', '${matkulId}')">Hapus</button>
+        </div>
+      `).join('');
     }
 
-    // INIT
     document.addEventListener('DOMContentLoaded', async () => {
       await loadSemesterData();
       await loadMatkulList();
