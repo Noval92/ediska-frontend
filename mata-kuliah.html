@@ -117,23 +117,30 @@ const sem = data.find(s => parseInt(s.semester) === semesterParam);
     }
 
     document.getElementById('saveMkBtn').onclick = async () => {
-      const nama = document.getElementById('namaMatkul').value;
-      const kode = document.getElementById('kodeMatkul').value;
-      const sks = parseInt(document.getElementById('sksMatkul').value);
-      if (!nama || !kode || !sks) return alert('Lengkapi semua kolom');
-      if (sks > sksSisa) return alert('SKS melebihi batas');
+  const nama = document.getElementById('namaMatkul').value;
+  const kode = document.getElementById('kodeMatkul').value;
+  const sks = parseInt(document.getElementById('sksMatkul').value);
+  if (!nama || !kode || !sks) return alert('Lengkapi semua kolom');
+  if (sks > sksSisa) return alert('SKS melebihi batas');
 
-      await fetch('https://ediska-backend.onrender.com/api/matakuliah', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: user._id, semester: semesterParam, nama, kode, sks })
-      });
+  await fetch('https://ediska-backend.onrender.com/api/matakuliah', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ userId: user._id, semester: semesterParam, nama, kode, sks })
+  });
 
-      document.getElementById('namaMatkul').value = '';
-      document.getElementById('kodeMatkul').value = '';
-      document.getElementById('sksMatkul').value = '';
-      await loadMatkulList();
-    };
+  // ✅ Kosongkan input form
+  document.getElementById('namaMatkul').value = '';
+  document.getElementById('kodeMatkul').value = '';
+  document.getElementById('sksMatkul').value = '';
+
+  // ✅ Perbaikan: bersihkan daftar dulu sebelum isi ulang
+  mkRows.innerHTML = '';
+  
+  // ✅ Isi ulang daftar mata kuliah
+  await loadMatkulList();
+};
+
 
     window.deleteMatkul = async (id) => {
       if (!confirm('Yakin ingin hapus?')) return;
