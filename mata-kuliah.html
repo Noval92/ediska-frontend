@@ -36,6 +36,7 @@
     <button id="saveMkBtn">Simpan Mata Kuliah</button>
 
     <h3 style="margin-top:30px; color:#3498db">Daftar Mata Kuliah</h3>
+    <input type="text" id="searchInput" placeholder="Cari nama matkul, kode, atau sesi..." oninput="filterMatkul()" style="margin-bottom:10px; padding:8px; width:100%; border-radius:4px; border:1px solid #ccc;" />
     <div id="mkRows"></div>
   </div>
 
@@ -51,6 +52,8 @@
 
     let sksMax = 0;
     let sksSisa = 0;
+    let allMatkul = [];
+
 
     async function loadSemesterData() {
       const res = await fetch(`https://ediska-backend.onrender.com/api/semester/${user._id}`);
@@ -68,6 +71,7 @@
     async function loadMatkulList() {
       const res = await fetch(`https://ediska-backend.onrender.com/api/matakuliah?userId=${user._id}&semester=${semesterParam}`);
       const list = await res.json();
+      allMatkul = list;
       const used = list.reduce((sum, m) => sum + (m.sks || 0), 0);
       sksSisa = sksMax - used;
       sksSisaEl.textContent = sksSisa;
@@ -218,6 +222,27 @@
         </div>
       `).join('');
     }
+
+window.filterMatkul = async () => {
+  const keyword = document.getElementById('searchInput').value.toLowerCase();
+  const filtered = allMatkul.filter(m =>
+    m.nama.toLowerCase().includes(keyword) ||
+    m.kode.toLowerCase().includes(keyword)
+  );
+  mkRows.innerHTML = filtered.map(m => `
+    <div class="mk-row">
+      <div><b>${m.nama}</b> (${m.kode}) - ${m.sks} SKS</div>
+      <div class="actions">
+        <button onclick="deleteMatkul('${m._id}')">Hapus</button>
+        <button onclick="tambahSesi('${m._id}')">Tambah Sesi</button>
+        <button onclick="exportPDF('${m._id}', '${m.nama}', '${m.kode}')">Export PDF</button>
+      </div>
+      <div id="sesi-list-${m._id}"></div>
+    </div>
+  `).join('');
+  filtered.forEach(m => loadSesiList(m._id));
+};
+
 
     document.addEventListener('DOMContentLoaded', async () => {
       await loadSemesterData();
