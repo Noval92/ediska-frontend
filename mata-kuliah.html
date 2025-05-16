@@ -38,6 +38,10 @@
     <h3 style="margin-top:30px; color:#3498db">Daftar Mata Kuliah</h3>
     <input type="text" id="searchInput" placeholder="Cari nama matkul, kode, atau sesi..." oninput="filterMatkul()" style="margin-bottom:10px; padding:8px; width:100%; border-radius:4px; border:1px solid #ccc;" />
     <div id="mkRows"></div>
+
+<h3 style="margin-top:30px; color:#3498db">Resume Sesi Semester Ini</h3>
+<div id="resumeContainer" style="font-size:14px; background:#fff8dc; padding:10px; border-radius:6px; border:1px solid #ccc;"></div>
+
   </div>
 
   <script>
@@ -243,11 +247,32 @@ window.filterMatkul = async () => {
   filtered.forEach(m => loadSesiList(m._id));
 };
 
+async function loadResume() {
+  const res = await fetch(`https://ediska-backend.onrender.com/api/matakuliah?userId=${user._id}&semester=${semesterParam}`);
+  const matkulList = await res.json();
 
-    document.addEventListener('DOMContentLoaded', async () => {
-      await loadSemesterData();
-      await loadMatkulList();
-    });
+  let output = '';
+  for (const m of matkulList) {
+    const sesiRes = await fetch(`https://ediska-backend.onrender.com/api/matakuliah/${m._id}/sesi`);
+    const sesiList = await sesiRes.json();
+    const lastNilai = sesiList.length > 0 ? (sesiList[sesiList.length - 1].nilai || '-') : '-';
+
+    output += `
+      <div style="margin-bottom:6px">
+        <b>${m.nama}</b> (${m.kode}) - ${m.sks} SKS<br/>
+        Total Sesi: ${sesiList.length} | Nilai Terakhir: ${lastNilai}
+      </div>
+    `;
+  }
+
+  document.getElementById('resumeContainer').innerHTML = output || '<i>Belum ada data sesi.</i>';
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+  await loadSemesterData();
+  await loadMatkulList();
+  await loadResume(); // ✅ jangan lupa baris ini
+});
   </script>
 </body>
 </html>
