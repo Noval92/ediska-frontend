@@ -323,21 +323,29 @@
       const res = await fetch(`https://ediska-backend.onrender.com/api/matakuliah/sesi/${sesiId}`);
       const s = await res.json();
       const sesiBox = document.getElementById(`sesi-box-${sesiId}`);
-      sesiBox.innerHTML = `
-        <form id="form-edit-${sesiId}" style="background:#e3f2fd; padding:10px; border-radius:6px;">
-          <label>Hal apa yang dipelajari?</label>
-          <textarea name="pelajaran" required>${s.pelajaran || ''}</textarea>
-          <label>Upload Materi baru:</label>
-          <input type="file" name="materiFile">
-          <input type="text" name="materiJudul" value="${s.materiJudul || ''}">
-          <label>Upload File Lain baru:</label>
-          <input type="file" name="lainFile">
-          <input type="text" name="lainJudul" value="${s.lainJudul || ''}">
-          <label>Nilai</label>
-          <input type="text" name="nilai" value="${s.nilai || ''}">
-          <button type="submit">Simpan Perubahan</button>
-        </form>
-      `;
+sesiBox.innerHTML = `
+  <form id="form-edit-${sesiId}" style="background:#e3f2fd; padding:10px; border-radius:6px;">
+    <label>Hal apa yang dipelajari?</label>
+    <textarea name="pelajaran" required>${s.pelajaran || ''}</textarea>
+
+    <label>Ringkasan belajar sesi ini</label>
+    <textarea name="ringkasan">${s.ringkasan || ''}</textarea>
+
+    <label>Upload PDF (max 10)</label>
+    <div id="pdfContainer-edit-${sesiId}"></div>
+    <button type="button" onclick="addPdf('edit-${sesiId}')">+ Tambah PDF</button>
+
+    <label>Link Video (max 10)</label>
+    <div id="videoContainer-edit-${sesiId}"></div>
+    <button type="button" onclick="addVideo('edit-${sesiId}')">+ Tambah Video</button>
+
+    <label>Nilai (opsional)</label>
+    <input type="number" name="nilai" value="${s.nilai || ''}" min="0" max="100" />
+
+    <button type="submit">Simpan Perubahan</button>
+  </form>
+`;
+
       document.getElementById(`form-edit-${sesiId}`).onsubmit = async function(e) {
         e.preventDefault();
         const fd = new FormData(this);
