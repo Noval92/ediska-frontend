@@ -324,6 +324,35 @@
       const s = await res.json();
       const sesiBox = document.getElementById(`sesi-box-${sesiId}`);
 sesiBox.innerHTML = `
+
+// Tambahkan file PDF yang sudah tersimpan
+const pdfContainer = document.getElementById(`pdfContainer-edit-${sesiId}`);
+if (Array.isArray(s.pdf) && Array.isArray(s.pdfJudul)) {
+  s.pdf.forEach((filePath, i) => {
+    const div = document.createElement('div');
+    div.innerHTML = `
+      <input type="text" name="pdfJudul[]" value="${s.pdfJudul[i] || ''}" />
+      <input type="file" name="pdfFile[]" />
+      <a href="/${filePath}" target="_blank">Lihat PDF Lama</a>
+      <button type="button" onclick="this.parentNode.remove()">❌</button>
+    `;
+    pdfContainer.appendChild(div);
+  });
+}
+
+// Tambahkan link video yang sudah tersimpan
+const videoContainer = document.getElementById(`videoContainer-edit-${sesiId}`);
+if (Array.isArray(s.videoLink) && Array.isArray(s.videoJudul)) {
+  s.videoLink.forEach((url, i) => {
+    const div = document.createElement('div');
+    div.innerHTML = `
+      <input type="text" name="videoJudul[]" value="${s.videoJudul[i] || ''}" />
+      <input type="url" name="videoLink[]" value="${url}" />
+      <button type="button" onclick="this.parentNode.remove()">❌</button>
+    `;
+    videoContainer.appendChild(div);
+  });
+}
   <form id="form-edit-${sesiId}" style="background:#e3f2fd; padding:10px; border-radius:6px;">
     <label>Hal apa yang dipelajari?</label>
     <textarea name="pelajaran" required>${s.pelajaran || ''}</textarea>
