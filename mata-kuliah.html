@@ -353,9 +353,10 @@
           ${s.materiJudul ? `<div>Materi: ${s.materiJudul} <a href="/${s.materiFile}" target="_blank">[Lihat]</a></div>` : ''}
           ${s.lainJudul ? `<div>File Lain: ${s.lainJudul} <a href="/${s.lainFile}" target="_blank">[Lihat]</a></div>` : ''}
           ${s.nilai ? `<div>Nilai: ${s.nilai}</div>` : ''}
-          <button onclick="editSesi('${matkulId}', '${s._id}')">Edit</button>
-          <button onclick="hapusSesi('${s._id}', '${matkulId}')">Hapus</button>
-        </div>
+          <div class="actions">
+          <button style="background:#f39c12" onclick="editSesi('${matkulId}', '${s._id}')">Edit</button>
+          <button style="background:#e74c3c" onclick="hapusSesi('${s._id}', '${matkulId}')">Hapus</button>
+          </div>
       `).join('');
     }
 
@@ -368,11 +369,12 @@ window.filterMatkul = async () => {
   mkRows.innerHTML = filtered.map(m => `
     <div class="mk-row">
       <div><b>${m.nama}</b> (${m.kode}) - ${m.sks} SKS</div>
-      <div class="actions">
-        <button onclick="deleteMatkul('${m._id}')">Hapus</button>
-        <button onclick="tambahSesi('${m._id}')">Tambah Sesi</button>
-        <button onclick="exportPDF('${m._id}', '${m.nama}', '${m.kode}')">Export PDF</button>
+    <div class="actions">
+      <button style="background:#e74c3c" onclick="deleteMatkul('${m._id}')">Hapus</button>
+      <button style="background:#2ecc71" onclick="tambahSesi('${m._id}')">Tambah Sesi</button>
+      <button style="background:#34495e" onclick="exportPDF('${m._id}', '${m.nama}', '${m.kode}')">Export   PDF</button>
       </div>
+
       <div id="sesi-list-${m._id}"></div>
     </div>
   `).join('');
