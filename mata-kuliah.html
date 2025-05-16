@@ -56,21 +56,31 @@
 
     let sksMax = 0;
     let sksSisa = 0;
+    let semesterAktif = 0; // semester terakhir yang aktif
     let allMatkul = [];
 
 
-    async function loadSemesterData() {
-      const res = await fetch(`https://ediska-backend.onrender.com/api/semester/${user._id}`);
-      const data = await res.json();
-      const sem = data.find(s => Number(s.semester) === semesterParam);
-      if (sem) {
-        sksMax = sem.sks || 0;
-        sksSisa = sem.sks || 0;
-        semesterInfo.textContent = sem.semester;
-      }
-      sksMaxEl.textContent = sksMax;
-      sksSisaEl.textContent = sksSisa;
-    }
+ async function loadSemesterData() {
+  const res = await fetch(`https://ediska-backend.onrender.com/api/semester/${user._id}`);
+  const data = await res.json();
+
+  // cari semester terakhir (angka terbesar)
+  data.sort((a, b) => b.semester - a.semester);
+  if (data.length > 0) {
+    semesterAktif = data[0].semester;
+  }
+
+  const sem = data.find(s => Number(s.semester) === semesterParam);
+  if (sem) {
+    sksMax = sem.sks || 0;
+    sksSisa = sem.sks || 0;
+    semesterInfo.textContent = sem.semester;
+  }
+
+  sksMaxEl.textContent = sksMax;
+  sksSisaEl.textContent = sksSisa;
+}
+
 
     async function loadMatkulList() {
       const res = await fetch(`https://ediska-backend.onrender.com/api/matakuliah?userId=${user._id}&semester=${semesterParam}`);
@@ -121,6 +131,10 @@
     };
 
     window.tambahSesi = async (matkulId) => {
+    if (semesterParam !== semesterAktif) {
+    return alert('Semester ini tidak aktif. Hanya semester terakhir yang bisa diisi sesi.');
+}
+
       const sesiList = await fetch(`https://ediska-backend.onrender.com/api/matakuliah/${matkulId}/sesi`).then(r => r.json());
       const sesiKe = sesiList.length + 1;
       const exist = sesiList.find(s => s.pelajaran?.includes(`Sesi ${sesiKe}`));
