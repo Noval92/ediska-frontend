@@ -535,7 +535,7 @@ function previewPDF(filePath, containerId) {
   if (!container) return;
   if (container.innerHTML === '') {
     container.innerHTML = `
-      <iframe src="/${filePath}#toolbar=0" allowfullscreen></iframe>
+      <iframe src="https://ediska-backend.onrender.com/${filePath}#toolbar=0" allowfullscreen></iframe>
     `;
     container.style.display = 'block';
   } else {
