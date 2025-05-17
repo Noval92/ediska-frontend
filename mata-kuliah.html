@@ -9,7 +9,12 @@
 
 <style>
   :root { --primary: #3498db; --danger: #e74c3c; --bg: #f1f5f9; }
-  body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 0; }
+  body {
+  font-family: 'Segoe UI', sans-serif;
+  background: var(--bg);
+  margin: 0;
+  padding: 0 0 80px 0; /* ⬅ padding bawah agar tidak ketutup footer */
+}
   .container { max-width: 90%; margin: 2rem auto; background: #fff; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06); }
   h2 { background: var(--primary); color: white; padding: 1rem; border-radius: 8px 8px 0 0; text-align: center; font-size: 1.5rem; }
   label { display: block; font-weight: 600; margin-top: 1rem; font-size: 0.95rem; }
@@ -581,6 +586,13 @@ function previewPDF(filePath, containerId) {
     container.style.display = 'none';
   }
 }
+
+<footer style="position:fixed;bottom:0;width:100%;background:#fff;box-shadow:0 -1px 6px rgba(0,0,0,0.05);display:flex;justify-content:space-around;padding:10px 0;z-index:1000;">
+  <a href="dashboard.html" style="text-decoration:none;color:#3498db;text-align:center;">🏠<br>Dashboard</a>
+  <a href="arsip.html" style="text-decoration:none;color:#3498db;text-align:center;">📚<br>Arsip</a>
+  <a href="login.html" onclick="localStorage.clear()" style="text-decoration:none;color:#e74c3c;text-align:center;">🚪<br>Logout</a>
+</footer>
+
 </script>
 </body>
 </html>
