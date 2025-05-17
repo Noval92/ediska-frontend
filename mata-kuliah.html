@@ -531,13 +531,17 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 function previewPDF(filePath, containerId) {
   const container = document.getElementById(containerId);
+  if (!container) return;
   if (container.innerHTML === '') {
-    container.innerHTML = `<iframe src='/${filePath}#toolbar=0' allowfullscreen></iframe>`;
+    container.innerHTML = `
+      <iframe src="/${filePath}#toolbar=0" allowfullscreen></iframe>
+    `;
     container.style.display = 'block';
   } else {
     container.innerHTML = '';
     container.style.display = 'none';
   }
 }
+
 });
 </script> </body> </html> ```
