@@ -318,19 +318,18 @@ window.editSesi = async (matkulId, sesiId) => {
   `;
 
   // PDF
-  const pdfContainer = document.getElementById(`pdfContainer-edit-${sesiId}`);
-  (s.pdf || []).forEach((filePath, i) => {
+const pdfContainer = document.getElementById(`pdfContainer-edit-${sesiId}`);
+(s.pdf || []).forEach((filePath, i) => {
   const div = document.createElement('div');
   div.innerHTML = `
-  <input type="text" name="pdfJudul[]" value="${s.pdfJudul?.[i] || ''}" />
-  <input type="file" name="pdfFile[]" />
-  <button type="button" class="btn-preview" onclick="previewPDF('${filePath}', 'preview-old-${sesiId}-${i}')">Lihat PDF Lama</button>
-  <div id="preview-old-${sesiId}-${i}" class="pdf-preview-container" style="display:none;"></div>
-  <button type="button" onclick="this.parentNode.remove()">❌</button>
-`;
-
-    pdfContainer.appendChild(div);
-  });
+    <input type="text" name="pdfJudul[]" value="${s.pdfJudul?.[i] || ''}" />
+    <input type="file" name="pdfFile[]" />
+    <button type="button" onclick="previewPDF('${filePath}', 'preview-lama-${sesiId}-${i}')">Lihat Dokumen Lama</button>
+    <div id="preview-lama-${sesiId}-${i}" class="pdf-preview-container" style="display:none;"></div>
+    <button type="button" onclick="this.parentNode.remove()">❌</button>
+  `;
+  pdfContainer.appendChild(div);
+});
 
   // Video
   const videoContainer = document.getElementById(`videoContainer-edit-${sesiId}`);
@@ -434,7 +433,7 @@ async function loadSesiList(matkulId) {
   const sesiDiv = document.getElementById(`sesi-list-${matkulId}`);
 
   sesiDiv.innerHTML = sesi.map((s, i) => {
-const pdfList = (s.pdf || []).map((p, idx) => {
+  const pdfList = (s.pdf || []).map((p, idx) => {
   const isPdf = p.toLowerCase().endsWith('.pdf');
   const judul = s.pdfJudul?.[idx] || 'File';
   if (isPdf) {
