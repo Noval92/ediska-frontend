@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>📚 Arsip Akademik Mahasiswa</title>
   <style>
     :root {
@@ -14,7 +14,7 @@
       font-family: 'Segoe UI', sans-serif;
       background: var(--bg);
       margin: 0;
-      padding: 2rem;
+      padding: 1.5rem;
     }
     .container {
       max-width: 95%;
@@ -28,84 +28,95 @@
       background: var(--primary);
       color: white;
       padding: 1rem;
-      border-radius: 8px;
+      border-radius: 8px 8px 0 0;
       text-align: center;
-      font-size: 1.4rem;
-      margin-top: 0;
+      font-size: 1.5rem;
+      margin: 0;
     }
     details {
-      margin-top: 1rem;
-      border: 1px solid var(--primary);
+      background: #e3f2fd;
+      margin-top: 20px;
       border-radius: 8px;
       overflow: hidden;
     }
     summary {
+      padding: 12px 16px;
       background: var(--primary);
       color: white;
-      padding: 10px;
       font-weight: bold;
+      font-size: 1rem;
       cursor: pointer;
+    }
+    .table-wrapper {
+      overflow-x: auto;
     }
     table {
       width: 100%;
       border-collapse: collapse;
+      min-width: 900px;
     }
     th, td {
       border: 1px solid #ddd;
-      padding: 8px;
+      padding: 6px 10px;
       text-align: center;
       font-size: 0.9rem;
     }
     th {
-      background: var(--primary);
+      background: #3498db;
       color: white;
+      font-weight: 600;
     }
     a {
       text-decoration: none;
+      color: #2980b9;
+    }
+    a:hover {
+      text-decoration: underline;
     }
   </style>
 </head>
 <body>
   <div class="container">
     <h2>📚 Arsip Akademik Mahasiswa</h2>
-    <div id="arsipContent"></div>
+    <div id="arsipContainer"></div>
   </div>
 
   <script>
     const user = JSON.parse(localStorage.getItem('user'));
-    const arsipContent = document.getElementById('arsipContent');
+    const arsipContainer = document.getElementById('arsipContainer');
 
     async function loadArsip() {
       const semesterRes = await fetch(`https://ediska-backend.onrender.com/api/semester/${user._id}`);
       const semesterList = await semesterRes.json();
 
-      arsipContent.innerHTML = '';
-
       for (const sem of semesterList) {
-        let semesterBlock = `
-          <details>
-            <summary>📘 Semester ${sem.semester}</summary>
-            <table>
-              <thead>
-                <tr>
-                  <th>Mata Kuliah</th>
-                  <th>Kode</th>
-                  <th>SKS</th>
-                  <th>Sesi</th>
-                  <th>Topik</th>
-                  <th>Ringkasan</th>
-                  <th>Dokumen 1</th>
-                  <th>Dokumen 2</th>
-                  <th>Dokumen 3</th>
-                  <th>Video</th>
-                  <th>Nilai</th>
-                </tr>
-              </thead>
-              <tbody>
-        `;
-
         const matkulRes = await fetch(`https://ediska-backend.onrender.com/api/matakuliah?userId=${user._id}&semester=${sem.semester}`);
         const matkulList = await matkulRes.json();
+
+        if (matkulList.length === 0) continue;
+
+        let semesterBlock = `
+        <details>
+          <summary>📘 Semester ${sem.semester}</summary>
+          <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Mata Kuliah</th>
+                <th>Kode</th>
+                <th>SKS</th>
+                <th>Sesi</th>
+                <th>Topik</th>
+                <th>Ringkasan</th>
+                <th>Dokumen 1</th>
+                <th>Dokumen 2</th>
+                <th>Dokumen 3</th>
+                <th>Video</th>
+                <th>Nilai</th>
+              </tr>
+            </thead>
+            <tbody>
+        `;
 
         for (const mk of matkulList) {
           const sesiRes = await fetch(`https://ediska-backend.onrender.com/api/matakuliah/${mk._id}/sesi`);
@@ -142,8 +153,14 @@
           }
         }
 
-        semesterBlock += `</tbody></table></details>`;
-        arsipContent.insertAdjacentHTML('beforeend', semesterBlock);
+        semesterBlock += `
+            </tbody>
+          </table>
+          </div>
+        </details>
+        `;
+
+        arsipContainer.insertAdjacentHTML('beforeend', semesterBlock);
       }
     }
 
