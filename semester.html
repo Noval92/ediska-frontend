@@ -217,10 +217,11 @@
     }
 
     function isi(sem) { location.href = `mata-kuliah.html?semester=${sem}`; }
-    function lihat(sem) { location.href = `riwayat-matakuliah.html?semester=${sem}`; }
+    function lihat(sem) { location.href = `lihat-mk.html?semester=${sem}`; }
     function hapus(sem) {
       semesterData = semesterData.filter(s => s.semester!==sem);
       render();
+
     }
 
     document.getElementById('tambahSemester').onclick = () => {
