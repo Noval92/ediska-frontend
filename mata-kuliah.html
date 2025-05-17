@@ -432,34 +432,42 @@ async function loadSesiList(matkulId) {
   const res = await fetch(`https://ediska-backend.onrender.com/api/matakuliah/${matkulId}/sesi`);
   const sesi = await res.json();
   const sesiDiv = document.getElementById(`sesi-list-${matkulId}`);
+
   sesiDiv.innerHTML = sesi.map((s, i) => {
-const pdfList = (s.pdf || []).map((p, idx) =>
-  `<li>
-    ${s.pdfJudul?.[idx] || 'File'}:
-    <button class="btn-preview" onclick="previewPDF('${p}', 'pdf-preview-${s._id}-${idx}')">Lihat PDF</button>
-    <div id="pdf-preview-${s._id}-${idx}" class="pdf-preview-container" style="display:none;"></div>
-  </li>`
-).join('');
+    const pdfList = (s.pdf || []).map((p, idx) =>
+      `<li>
+        ${s.pdfJudul?.[idx] || 'File'}:
+        <button class="btn-preview" onclick="previewPDF('${p}', 'pdf-preview-${s._id}-${idx}')">Lihat PDF</button>
+        <div id="pdf-preview-${s._id}-${idx}" class="pdf-preview-container" style="display:none;"></div>
+      </li>`
+    ).join('');
 
     const videoList = (s.videoLink || []).map((link, idx) =>
       `<li>${s.videoJudul?.[idx] || 'Video'}: <a href="${link}" target="_blank">${link}</a></li>`
     ).join('');
 
-return `
-  <div class="sesi-box" id="sesi-box-${s._id}">
-    <div><b>Sesi ${i + 1}</b> - ${s.pelajaran}</div>
-    ${s.ringkasan ? `<div><i>${s.ringkasan}</i></div>` : ''}
-    ${pdfList ? `<div><b>PDF:</b><ul>${pdfList}</ul></div>` : ''}
-    ${videoList ? `<div><b>Video:</b><ul>${videoList}</ul></div>` : ''}
-    ${s.nilai ? `<div>Nilai: ${s.nilai}</div>` : ''}
-<div class="actions">
-  <button class="btn-edit-sesi" onclick="editSesi('${matkulId}', '${s._id}')">Edit</button>
-  <button class="btn-delete-sesi" onclick="hapusSesi('${s._id}', '${matkulId}')">Hapus Sesi</button>
-</div>
-  </div>
-`;
+    return `
+      <div class="sesi-box" id="sesi-box-${s._id}">
+        <div>
+          <b>Sesi ${i + 1}</b> - ${s.pelajaran}
+          <button id="toggle-btn-${s._id}" onclick="toggleSesiDetail('${s._id}')" style="margin-left: 10px;">+</button>
+        </div>
+
+        <div id="sesi-detail-${s._id}" style="display: none; margin-top: 10px;">
+          ${s.ringkasan ? `<div><i>${s.ringkasan}</i></div>` : ''}
+          ${pdfList ? `<div><b>PDF:</b><ul>${pdfList}</ul></div>` : ''}
+          ${videoList ? `<div><b>Video:</b><ul>${videoList}</ul></div>` : ''}
+          ${s.nilai ? `<div>Nilai: ${s.nilai}</div>` : ''}
+          <div class="actions">
+            <button class="btn-edit-sesi" onclick="editSesi('${matkulId}', '${s._id}')">Edit</button>
+            <button class="btn-delete-sesi" onclick="hapusSesi('${s._id}', '${matkulId}')">Hapus Sesi</button>
+          </div>
+        </div>
+      </div>
+    `;
   }).join('');
 }
+
 
 window.filterMatkul = async () => {
   const keyword = document.getElementById('searchInput').value.toLowerCase();
@@ -526,10 +534,22 @@ function addVideo(formId) {
   container.appendChild(div);
 }
 
+function toggleSesiDetail(id) {
+  const box = document.getElementById(`sesi-detail-${id}`);
+  const btn = document.getElementById(`toggle-btn-${id}`);
+  if (box.style.display === 'none') {
+    box.style.display = 'block';
+    btn.textContent = '−';
+  } else {
+    box.style.display = 'none';
+    btn.textContent = '+';
+  }
+}
 document.addEventListener('DOMContentLoaded', async () => {
   await loadSemesterData();
   await loadMatkulList();
   await loadResume();
+
 });
 
 function previewPDF(filePath, containerId) {
