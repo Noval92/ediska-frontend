@@ -244,11 +244,12 @@ mkRows.innerHTML = list.map(m => `
 
           <label>Upload Dokumen(max 10)</label>
           <div id="pdfContainer-${formId}"></div>
-          <button type="button" onclick="addPdf('${formId}')">+ Tambah PDF</button>
+          <button type="button" onclick="addPdf('${formId}')">+ Tambah Dokumen</button>
 
-          <label style="margin-top:1rem">Link Video (max 10)</label>
+          <label style="margin-top:1rem"> Note / Link (max 10)</label>
           <div id="videoContainer-${formId}"></div>
-          <button type="button" onclick="addVideo('${formId}')">+ Tambah Video</button>
+          <button type="button" onclick="addVideo('${formId}')">+ Tambah Note</button>
+
 
           <label style="margin-top:1rem">Nilai (opsional)</label>
           <input type="number" name="nilai" min="0" max="100" placeholder="0–100" />
@@ -405,7 +406,7 @@ window.exportPDF = async (matkulId, nama, kode) => {
         ${s.ringkasan ? `<p><strong>Ringkasan:</strong> ${s.ringkasan}</p>` : ''}
 
         ${Array.isArray(s.pdf) && s.pdf.length > 0 ? `
-          <p><strong>PDF:</strong></p>
+          <p><strong>Dokumen:</strong></p>
           <ul>
             ${s.pdf.map((p, idx) => `
               <li>${s.pdfJudul?.[idx] || 'Tanpa Judul'} - ${p}</li>
@@ -414,7 +415,8 @@ window.exportPDF = async (matkulId, nama, kode) => {
         ` : ''}
 
         ${Array.isArray(s.videoLink) && s.videoLink.length > 0 ? `
-          <p><strong>Video:</strong></p>
+          <p><strong>Note:</strong></p>
+
           <ul>
             ${s.videoLink.map((v, idx) => `
               <li>${s.videoJudul?.[idx] || 'Video'}: ${v}</li>
@@ -471,8 +473,8 @@ async function loadSesiList(matkulId) {
 
         <div id="sesi-detail-${s._id}" style="display: none; margin-top: 10px;">
           ${s.ringkasan ? `<div><i>${s.ringkasan}</i></div>` : ''}
-          ${pdfList ? `<div><b>PDF:</b><ul>${pdfList}</ul></div>` : ''}
-          ${videoList ? `<div><b>Video:</b><ul>${videoList}</ul></div>` : ''}
+          ${pdfList ? `<div><b>Dokumen:</b><ul>${pdfList}</ul></div>` : ''}
+          ${videoList ? `<div><b>Note:</b><ul>${videoList}</ul></div>` : ''}
           ${s.nilai ? `<div>Nilai: ${s.nilai}</div>` : ''}
           <div class="actions">
             <button class="btn-edit-sesi" onclick="editSesi('${matkulId}', '${s._id}')">Edit</button>
