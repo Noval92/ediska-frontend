@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Lihat Matkul Semester</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
@@ -10,48 +10,123 @@
       font-family: 'Poppins', sans-serif;
       background: #f1f5f9;
       margin: 0;
-      padding: 1rem;
+      padding: 0 0 80px 0;
     }
     .container {
-      max-width: 960px;
-      margin: auto;
+      max-width: 1024px;
+      margin: 30px auto 0 auto;
       background: white;
       padding: 1rem;
-      border-radius: 12px;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+      border-radius: 16px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.06);
     }
     h2 {
-      background: #3498db;
-      color: white;
-      padding: 1rem;
-      border-radius: 12px;
       text-align: center;
+      background: #3498db;
+      color: #fff;
+      margin: 0 0 1.5rem 0;
+      padding: 1.2rem 0;
+      border-radius: 12px 12px 0 0;
+      font-size: 2rem;
+      letter-spacing: 1px;
+    }
+    .semester-title {
+      background: #2692d6;
+      color: #fff;
+      margin: 2.2rem 0 0 0;
+      padding: 0.7rem 1rem;
+      border-radius: 10px 10px 0 0;
+      font-weight: bold;
+      font-size: 1.2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
     }
     table {
       width: 100%;
       border-collapse: collapse;
-      overflow-x: auto;
-      display: block;
+      margin-bottom: 1.5rem;
     }
     th, td {
-      border: 1px solid #ddd;
-      padding: 8px;
+      border: 1px solid #e2e2e2;
+      padding: 8px 6px;
       text-align: center;
       font-size: 14px;
     }
     th {
-      background-color: #3498db;
-      color: white;
+      background: #e3f2fd;
+      font-weight: 700;
+      color: #222;
+    }
+    tr:nth-child(even) { background: #f8fbfd; }
+    .dokumen-toggle {
+      cursor: pointer;
+      background: none;
+      border: none;
+      color: #1976d2;
+      font-weight: 500;
+      font-size: 1em;
+      padding: 0;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+    .dokumen-list-row {
+      background: #f6faff;
+    }
+    .dokumen-link {
+      color: #1976d2;
+      text-decoration: underline;
+      cursor: pointer;
+      background: none;
+      border: none;
+      font-size: 1em;
+      padding: 0;
+      margin-right: 12px;
+    }
+    .preview-popup {
+      display: none;
+      position: fixed;
+      left: 0; top: 0; width: 100vw; height: 100vh;
+      z-index: 9999;
+      background: rgba(0,0,0,0.44);
+      justify-content: center;
+      align-items: center;
+    }
+    .preview-popup-inner {
+      background: #fff;
+      border-radius: 10px;
+      max-width: 90vw;
+      max-height: 85vh;
+      overflow: auto;
+      padding: 1rem;
+      position: relative;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.16);
+    }
+    .close-preview {
+      position: absolute; top: 10px; right: 18px;
+      font-size: 1.5rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #d32f2f;
+      z-index: 10;
+    }
+    @media (max-width: 700px) {
+      .container { max-width: 98vw; padding: 0.3rem;}
+      th, td { font-size: 11px; padding: 4px 2px; }
+      h2 { font-size: 1.2rem; }
     }
     footer {
       position: fixed;
       bottom: 0;
       width: 100%;
-      background: white;
-      box-shadow: 0 -1px 6px rgba(0,0,0,0.05);
+      background: #fff;
+      box-shadow: 0 -1px 6px rgba(0,0,0,0.07);
       display: flex;
       justify-content: space-around;
       padding: 10px 0;
+      z-index: 100;
     }
     footer a {
       text-decoration: none;
@@ -63,90 +138,158 @@
 </head>
 <body>
   <div class="container">
-    <h2>📘 Rekap Semester <span id="semTitle">-</span></h2>
-    <div id="arsipContent"></div>
+    <h2 id="judulSemester">REKAP SEMESTER</h2>
+    <div id="arsipContent"><div style="text-align:center;padding:2rem;">Loading...</div></div>
   </div>
-
+  <div id="popup-preview" class="preview-popup" onclick="closePreview(event)">
+    <div class="preview-popup-inner" onclick="event.stopPropagation()">
+      <button class="close-preview" onclick="closePreview(event)">×</button>
+      <div id="popup-inner"></div>
+    </div>
+  </div>
   <footer>
     <a href="dashboard.html">🏠<br>Beranda</a>
     <a href="semester.html">🎓<br>Semester</a>
     <a href="arsip.html">📚<br>Arsip</a>
     <a href="profil.html">👤<br>Profil</a>
-    <a href="login.html" onclick="localStorage.clear()">🚪<br>Logout</a>
+    <a href="login.html" onclick="localStorage.clear()">🚪<br>Log Out</a>
   </footer>
+<script>
+const user = JSON.parse(localStorage.getItem('user'));
+if (!user || !user._id) window.location = 'login.html';
 
-  <script>
-    const user = JSON.parse(localStorage.getItem('user'));
-    const semesterParam = new URLSearchParams(location.search).get('semester');
+function popupPreview(filePath) {
+  const popup = document.getElementById('popup-preview');
+  const popupInner = document.getElementById('popup-inner');
+  const url = filePath.startsWith('http') ? filePath : `https://ediska-backend.onrender.com/${filePath}`;
+  popupInner.innerHTML = '';
+  if (/\.(jpg|jpeg|png|gif)$/i.test(url)) {
+    popupInner.innerHTML = `<img src="${url}" style="max-width:85vw;max-height:75vh;border-radius:7px;" />`;
+  } else if (url.endsWith('.pdf')) {
+    popupInner.innerHTML = `<iframe src="${url}#toolbar=0" style="width:80vw;height:70vh;" allowfullscreen></iframe>`;
+  } else {
+    popupInner.innerHTML = `<a href="${url}" target="_blank" style="font-size:1.2rem;color:#1976d2;">Download File</a>`;
+  }
+  popup.style.display = 'flex';
+}
+function closePreview(ev) {
+  document.getElementById('popup-preview').style.display = 'none';
+  document.getElementById('popup-inner').innerHTML = '';
+}
 
-    async function loadSemester() {
-      const semesterRes = await fetch(`https://ediska-backend.onrender.com/api/semester/${user._id}`);
-      const semesterList = await semesterRes.json();
-      const sem = semesterList.find(s => s.semester == semesterParam);
-      if (!sem) return;
+async function loadRekapSemester() {
+  const semesterParam = new URLSearchParams(location.search).get('semester');
+  if (!semesterParam) {
+    document.getElementById('arsipContent').innerHTML = '<div style="padding:2rem;text-align:center;">Semester tidak ditemukan.</div>';
+    return;
+  }
+  // Dapatkan info semester
+  const resSem = await fetch(`https://ediska-backend.onrender.com/api/semester/${user._id}`);
+  const semesterList = await resSem.json();
+  const sem = semesterList.find(s => String(s.semester) === String(semesterParam));
+  if (!sem) {
+    document.getElementById('arsipContent').innerHTML = '<div style="padding:2rem;text-align:center;">Data semester tidak ditemukan.</div>';
+    return;
+  }
+  // Update judul
+  document.getElementById('judulSemester').innerHTML =
+    `📘 Rekap Semester ${sem.semester} - ${sem.tahun} (${sem.ganjilgenap == '1' ? 'Ganjil' : 'Genap'})`;
 
-      document.getElementById('semTitle').textContent = `${sem.semester} - ${sem.tahun} (${sem.ganjilgenap === '1' ? 'Ganjil' : 'Genap'})`;
+  // fetch matkul per semester
+  const resMk = await fetch(`https://ediska-backend.onrender.com/api/matakuliah?userId=${user._id}&semester=${sem.semester}`);
+  const mkList = await resMk.json();
 
-      const matkulRes = await fetch(`https://ediska-backend.onrender.com/api/matakuliah?userId=${user._id}&semester=${sem.semester}`);
-      const matkulList = await matkulRes.json();
+  let output = `<table>
+    <thead>
+      <tr>
+        <th>Mata Kuliah</th>
+        <th>Kode</th>
+        <th>SKS</th>
+        <th>Sesi</th>
+        <th>Subject</th>
+        <th>Ringkasan</th>
+        <th>Dokumen</th>
+        <th>Note/Link</th>
+        <th>Nilai</th>
+      </tr>
+    </thead>
+    <tbody>`;
 
-      let tableHTML = `
-        <table>
-          <thead>
-            <tr>
-              <th>Mata Kuliah</th>
-              <th>Kode</th>
-              <th>SKS</th>
-              <th>Sesi</th>
-              <th>Topik</th>
-              <th>Ringkasan</th>
-              <th>Dokumen 1</th>
-              <th>Dokumen 2</th>
-              <th>Dokumen 3</th>
-              <th>Note/Link</th>
-              <th>Nilai</th>
-            </tr>
-          </thead>
-          <tbody>
-      `;
-
-      for (const mk of matkulList) {
-        const sesiRes = await fetch(`https://ediska-backend.onrender.com/api/matakuliah/${mk._id}/sesi`);
-        const sesiList = await sesiRes.json();
-
-        for (const s of sesiList) {
-          const dokumen = [s.pdf?.[0], s.pdf?.[1], s.pdf?.[2]];
-          const dokumenHTML = dokumen.map(file => {
-            if (!file) return '-';
-            if (file.endsWith('.pdf')) return `<a href="/${file}" target="_blank">📄 Preview</a>`;
-            return `<a href="/${file}" download>⬇️ Download</a>`;
-          });
-
-          const note = s.videoLink?.[0] ? `<a href="${s.videoLink[0]}" target="_blank">🔗 Link</a>` : '-';
-
-          tableHTML += `
-            <tr>
-              <td>${mk.nama}</td>
-              <td>${mk.kode}</td>
-              <td>${mk.sks}</td>
-              <td>${s.pelajaran || '-'}</td>
-              <td>${s.pelajaran || '-'}</td>
-              <td>${s.ringkasan || '-'}</td>
-              <td>${dokumenHTML[0]}</td>
-              <td>${dokumenHTML[1]}</td>
-              <td>${dokumenHTML[2]}</td>
-              <td>${note}</td>
-              <td>${s.nilai || '-'}</td>
-            </tr>
-          `;
-        }
-      }
-
-      tableHTML += `</tbody></table>`;
-      document.getElementById('arsipContent').innerHTML = tableHTML;
+  for (const mk of mkList) {
+    // fetch sesi per matkul
+    const resSesi = await fetch(`https://ediska-backend.onrender.com/api/matakuliah/${mk._id}/sesi`);
+    const sesiList = await resSesi.json();
+    if (!sesiList.length) {
+      output += `<tr>
+        <td>${mk.nama}</td>
+        <td>${mk.kode}</td>
+        <td>${mk.sks}</td>
+        <td colspan="6"><i>Belum ada sesi</i></td>
+      </tr>`;
+      continue;
     }
+    let sesiIdx = 0;
+    for (const s of sesiList) {
+      sesiIdx++;
+      // Dokumen file array
+      let docs = Array.isArray(s.pdf) ? s.pdf : [];
+      let judulDocs = Array.isArray(s.pdfJudul) ? s.pdfJudul : [];
+      let dokumenSummary = docs.length > 0 ? `${docs.length} dokumen` : '-';
+      let expandBtn = docs.length > 0 ? `<button class="dokumen-toggle" onclick="event.stopPropagation();toggleDokumen(this, '${mk._id}_${s._id}')">[+]</button>` : '';
+      // Note/link
+      let noteHtml = '-';
+      if (s.videoLink && Array.isArray(s.videoLink) && s.videoLink.length > 0) {
+        noteHtml = s.videoLink.map((l, i) => {
+          let judul = s.videoJudul && s.videoJudul[i] ? s.videoJudul[i] : `Note/Link ${i+1}`;
+          return `<div style="white-space:nowrap;"><a href="${l}" target="_blank" style="color:#1976d2;text-decoration:underline;">${judul}</a></div>`;
+        }).join('');
+      }
+      output += `<tr>
+        <td>${mk.nama}</td>
+        <td>${mk.kode}</td>
+        <td>${mk.sks}</td>
+        <td>${s.pelajaran || '-'}</td>
+        <td>${s.pelajaran || '-'}</td>
+        <td>${s.ringkasan || '-'}</td>
+        <td>
+          ${dokumenSummary} ${expandBtn}
+        </td>
+        <td>${noteHtml}</td>
+        <td>${s.nilai || '-'}</td>
+      </tr>`;
+      // Expandable dokumen row (hidden by default)
+      if (docs.length > 0) {
+        output += `<tr class="dokumen-list-row" id="dokumen-row-${mk._id}_${s._id}" style="display:none;">
+          <td colspan="9" style="text-align:left">
+            <b>Daftar Dokumen:</b><br>
+            ${docs.map((f, i) => {
+              let judul = judulDocs[i] || `Dokumen ${i+1}`;
+              if (/\.(pdf|jpg|jpeg|png|gif)$/i.test(f))
+                return `<button class="dokumen-link" onclick="popupPreview('${f}')">${judul}</button>`;
+              return `<a class="dokumen-link" href="https://ediska-backend.onrender.com/${f}" download>${judul}</a>`;
+            }).join('')}
+          </td>
+        </tr>`;
+      }
+    }
+  }
+  output += `</tbody></table>`;
+  document.getElementById('arsipContent').innerHTML = output;
+}
 
-    document.addEventListener('DOMContentLoaded', loadSemester);
-  </script>
+// Toggle dokumen per sesi (expand row)
+function toggleDokumen(btn, rowId) {
+  const row = document.getElementById('dokumen-row-' + rowId);
+  if (!row) return;
+  if (row.style.display === 'none') {
+    row.style.display = '';
+    btn.textContent = '[-]';
+  } else {
+    row.style.display = 'none';
+    btn.textContent = '[+]';
+  }
+}
+document.addEventListener('DOMContentLoaded', loadRekapSemester);
+</script>
 </body>
 </html>
