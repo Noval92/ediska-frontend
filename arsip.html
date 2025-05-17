@@ -3,208 +3,183 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Arsip Akademik</title>
+  <title>ARSIP AKADEMIK</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #f7fafd;
-      margin: 0; padding: 0 0 80px 0;
-      color: #233;
-    }
-    .container {
-      max-width: 95%;
-      margin: 1.5rem auto;
-      background: #fff;
-      border-radius: 12px;
-      padding: 1.5rem;
-      box-shadow: 0 2px 20px 0 #e5eaf3;
-    }
-    h2 {
-      background: #3498db;
-      color: #fff;
-      text-align: center;
-      border-radius: 10px 10px 0 0;
-      margin-top: 0; margin-bottom: 1.5rem;
-      padding: 1.1rem;
-      font-size: 1.3rem;
-      letter-spacing: 2px;
-    }
-    .rekap-semester {
-      margin-bottom: 35px;
-      padding-bottom: 10px;
-      border-bottom: 1px solid #eee;
-    }
-    .rekap-semester:last-child { border-bottom: none; }
-    .matkul-box {
-      background: #f6fbff;
-      border-radius: 8px;
-      padding: 1rem;
-      margin: 1rem 0;
-      box-shadow: 0 2px 6px 0 #e9eef4;
-    }
-    .matkul-title { font-weight: bold; font-size: 1.07rem; color: #1661aa; }
-    .sesi-box {
-      background: #f8f8ff;
-      border-radius: 7px;
-      padding: 0.8rem;
-      margin: 10px 0 0 0;
-      border-left: 4px solid #3498db;
-    }
-    .dokumen-list, .video-list {
-      padding-left: 25px;
-      margin-top: 0.4rem;
-      font-size: 0.99rem;
-    }
-    .dokumen-list li, .video-list li { margin-bottom: 6px; }
-    .btn-preview {
-      background: #3498db;
-      color: white;
-      border: none;
-      padding: 4px 12px;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 0.95em;
-      margin-right: 5px;
-    }
-    .pdf-preview-container iframe,
-    .pdf-preview-container img {
-      width: 100%;
-      height: 420px;
-      border: 1px solid #d2d8e0;
-      border-radius: 8px;
-      margin-top: 10px;
-      background: #fafbff;
-      object-fit: contain;
-    }
-    .pdf-preview-container { margin-bottom: 20px; }
-    @media (max-width:600px) {
-      .container { padding: 7px; }
-      .pdf-preview-container iframe,
-      .pdf-preview-container img { height: 260px; }
-    }
-    footer {
-      position:fixed;bottom:0;width:100%;background:#fff;box-shadow:0 -1px 6px rgba(0,0,0,0.07);display:flex;justify-content:space-around;padding:12px 0;z-index:1000;
-    }
-    footer a {
-      color: #2c3e50;
-      text-decoration: none;
-      text-align: center;
-      font-size: 15px;
+    body { font-family: 'Poppins',sans-serif; background: #f8f9fa; margin:0; padding-bottom:70px;}
+    h2 {text-align:center;background:#3498db;color:white;padding:1.2rem 0;margin:0 0 1.5rem 0;}
+    .table-arsip { width: 98%; margin: 0 auto; border-collapse: collapse; background:#fff; border-radius:12px; box-shadow: 0 2px 16px rgba(0,0,0,0.07);}
+    th, td {border: 1px solid #e0e0e0; padding: 9px 7px; text-align: left;}
+    th {background: #e3f2fd;}
+    tr:nth-child(even) {background: #f6faff;}
+    .min-btn {cursor:pointer;color:#3498db;font-size:1.05em;vertical-align:middle;}
+    .dokumen-list, .note-list {display:none;padding:5px 0;}
+    .dokumen-item, .note-item {margin-bottom:5px;}
+    .pdf-preview-container iframe, .pdf-preview-container img {width:100%;max-width:320px;max-height:380px;border:1px solid #ccc;border-radius:8px;}
+    .footer-nav {position:fixed;bottom:0;left:0;width:100%;background:#fff;box-shadow:0 -1px 6px rgba(0,0,0,0.07);display:flex;justify-content:space-around;padding:10px 0;z-index:1000;}
+    .footer-nav a {text-decoration:none;color:#3498db;text-align:center;font-size:14px;}
+    @media (max-width:700px){
+      .table-arsip {font-size:13px;}
+      th,td {padding:6px 4px;}
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h2>ARSIP AKADEMIK</h2>
-    <div id="rekapAll"></div>
-  </div>
+<h2>ARSIP AKADEMIK</h2>
+<div id="arsipContainer"></div>
 
-  <footer>
-    <a href="dashboard.html">🏠<br>Beranda</a>
-    <a href="semester.html">🎓<br>Semester</a>
-    <a href="arsip.html">📚<br>Arsip</a>
-    <a href="profil.html">👤<br>Profil</a>
-    <a href="login.html" onclick="localStorage.clear()">🚪<br>Logout</a>
-  </footer>
+<footer class="footer-nav">
+  <a href="dashboard.html">🏠<br>Beranda</a>
+  <a href="semester.html">🎓<br>Semester</a>
+  <a href="arsip.html">📚<br>Arsip</a>
+  <a href="profil.html">👤<br>Profil</a>
+  <a href="login.html" onclick="localStorage.clear()">🚪<br>Log Out</a>
+</footer>
 
 <script>
 const user = JSON.parse(localStorage.getItem('user'));
-if (!user || !user._id) location.href = "login.html";
-
-const BASE_URL = "https://ediska-backend.onrender.com/";
-
-function makeFileUrl(path) {
-  if (!path) return '';
-  if (path.startsWith('http')) return path;
-  if (path.startsWith('/')) path = path.slice(1);
-  return BASE_URL + path;
-}
-
-function previewPDF(filePath, containerId) {
-  const container = document.getElementById(containerId);
-  if (!container) return;
-  const fullPath = makeFileUrl(filePath);
-
-  if (container.innerHTML === '') {
-    if (filePath.match(/\.(jpg|jpeg|png|gif|bmp)$/i)) {
-      container.innerHTML = `<img src="${fullPath}" style="max-width:100%; border-radius:6px;" />`;
-    } else if (filePath.endsWith('.pdf')) {
-      container.innerHTML = `<iframe src="${fullPath}#toolbar=0" allowfullscreen style="width:100%;height:420px;border-radius:8px;"></iframe>`;
-    } else {
-      container.innerHTML = `<a href="${fullPath}" target="_blank">Download File</a>`;
-    }
-    container.style.display = 'block';
-  } else {
-    container.innerHTML = '';
-    container.style.display = 'none';
-  }
-}
-
-async function loadArsip() {
-  // get all semester
-  const semesterRes = await fetch(`${BASE_URL}api/semester/${user._id}`);
-  const semesterList = await semesterRes.json();
-
-  let output = '';
-  for (const sem of semesterList) {
-    // skip semester tanpa matkul
-    const matkulRes = await fetch(`${BASE_URL}api/matakuliah?userId=${user._id}&semester=${sem.semester}`);
-    const matkulList = await matkulRes.json();
-    if (!matkulList.length) continue;
-
-    output += `<div class="rekap-semester">
-      <div style="font-weight:bold;font-size:1.07em;margin-bottom:6px;">SEMESTER ${sem.semester} (${sem.tahun || ''} ${sem.parity==1?'Ganjil':'Genap'}) &mdash; Total SKS: ${sem.sks}</div>
-    `;
-
-    for (const m of matkulList) {
-      output += `<div class="matkul-box">
-        <div class="matkul-title">${m.nama} (${m.kode}) - ${m.sks} SKS</div>
-      `;
-
-      // SESI
-      const sesiRes = await fetch(`${BASE_URL}api/matakuliah/${m._id}/sesi`);
-      const sesiList = await sesiRes.json();
-      if (!sesiList.length) {
-        output += `<div style="color:#888;font-size:0.97em;">Belum ada sesi.</div>`;
-      } else {
-        sesiList.forEach((s, i) => {
-          // dokumen & note
-          const dokumenList = (s.pdf || []).map((p, idx) => {
-            const judul = s.pdfJudul?.[idx] || 'Tanpa Judul';
-            return `
-              <li>
-                ${judul}
-                <button class="btn-preview" onclick="previewPDF('${p}','dokumen-preview-${s._id}-${idx}')">Preview</button>
-                <div id="dokumen-preview-${s._id}-${idx}" class="pdf-preview-container" style="display:none;"></div>
-              </li>
-            `;
-          }).join('');
-
-          const noteList = (s.videoLink || []).map((v, idx) => {
-            const judul = s.videoJudul?.[idx] || 'Note/Link';
-            return `<li>${judul}: <a href="${v}" target="_blank">${v}</a></li>`;
-          }).join('');
-
-          output += `
-          <div class="sesi-box">
-            <div style="font-weight:600;">Sesi ${i+1}: ${s.pelajaran}</div>
-            ${s.ringkasan ? `<div style="margin:6px 0;color:#445;"><em>${s.ringkasan}</em></div>` : ''}
-            ${dokumenList ? `<div><b>Dokumen:</b><ul class="dokumen-list">${dokumenList}</ul></div>` : ''}
-            ${noteList ? `<div><b>Note/Link:</b><ul class="video-list">${noteList}</ul></div>` : ''}
-            ${s.nilai ? `<div style="margin-top:5px">Nilai: <b>${s.nilai}</b></div>` : ''}
-          </div>
-          `;
-        });
-      }
-      output += `</div>`;
-    }
-    output += `</div>`;
-  }
-
-  document.getElementById('rekapAll').innerHTML = output || '<i>Belum ada data arsip.</i>';
-}
+if (!user || !user._id) window.location = 'login.html';
 
 document.addEventListener('DOMContentLoaded', loadArsip);
+
+async function loadArsip() {
+  // Ambil seluruh data semester user
+  const semRes = await fetch(`https://ediska-backend.onrender.com/api/semester/${user._id}`);
+  const semesterList = await semRes.json();
+
+  let allRows = '';
+  for (const sem of semesterList) {
+    // Dapatkan semua matkul di semester ini
+    const mkRes = await fetch(`https://ediska-backend.onrender.com/api/matakuliah?userId=${user._id}&semester=${sem.semester}`);
+    const matkulList = await mkRes.json();
+
+    let mkRows = '';
+    for (const mk of matkulList) {
+      // Dapatkan semua sesi pada matkul
+      const sesiRes = await fetch(`https://ediska-backend.onrender.com/api/matakuliah/${mk._id}/sesi`);
+      const sesiList = await sesiRes.json();
+
+      for (let i = 0; i < sesiList.length; i++) {
+        const s = sesiList[i];
+        // Dokumen list (accordion mini)
+        let dokList = '';
+        if (Array.isArray(s.pdf)) {
+          dokList = s.pdf.map((p, idx) => {
+            const isPdf = p.toLowerCase().endsWith('.pdf');
+            const judul = s.pdfJudul?.[idx] || 'File';
+            const fullPath = `https://ediska-backend.onrender.com/${p}`;
+            return `
+              <div class="dokumen-item">
+                <b>${judul}</b>:
+                <button type="button" onclick="previewFile('${fullPath}', 'dokprev-${s._id}-${idx}')">Preview</button>
+                <div id="dokprev-${s._id}-${idx}" class="pdf-preview-container" style="display:none"></div>
+              </div>
+            `;
+          }).join('');
+        }
+        // Note/link list (accordion mini)
+        let noteList = '';
+        if (Array.isArray(s.videoLink)) {
+          noteList = s.videoLink.map((v, idx) => {
+            const judul = s.videoJudul?.[idx] || 'Note/Link';
+            return `
+              <div class="note-item">
+                <b>${judul}</b>: <a href="${v}" target="_blank">${v}</a>
+              </div>
+            `;
+          }).join('');
+        }
+        // Baris tabel
+        mkRows += `
+        <tr>
+          <td>${mk.nama}</td>
+          <td>${s.pelajaran ? s.pelajaran.replace(/^Sesi \d+\s*-\s*/, '') : '-'}</td>
+          <td>
+            <span class="min-btn" onclick="toggleList('dok-${s._id}')">[+]</span>
+            <div class="dokumen-list" id="dok-${s._id}">
+              ${dokList || '<i>Tidak ada dokumen</i>'}
+            </div>
+          </td>
+          <td>
+            <span class="min-btn" onclick="toggleList('note-${s._id}')">[+]</span>
+            <div class="note-list" id="note-${s._id}">
+              ${noteList || '<i>Tidak ada note/link</i>'}
+            </div>
+          </td>
+          <td>${s.nilai || '-'}</td>
+          <td>
+            <button onclick="window.location='mata-kuliah.html?semester=${sem.semester}'">Edit</button>
+          </td>
+        </tr>
+        `;
+      }
+    }
+
+    allRows += `
+      <table class="table-arsip">
+        <thead>
+          <tr>
+            <th colspan="6" style="background:#2980b9;color:white;cursor:pointer;" onclick="toggleList('semrows-${sem.semester}')">
+              SEMESTER ${sem.semester} (${sem.tahun || '-'} ${sem.parity == 1 ? 'Ganjil' : sem.parity == 2 ? 'Genap' : ''})
+              <span class="min-btn" id="semicon-${sem.semester}">[+]</span>
+            </th>
+          </tr>
+          <tr id="semrows-${sem.semester}" style="display:none;">
+            <th>Mata Kuliah</th>
+            <th>Sesi</th>
+            <th>Dokumen</th>
+            <th>Note/Link</th>
+            <th>Nilai</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="bodyrows-${sem.semester}" style="display:none;">
+          ${mkRows || `<tr><td colspan="6"><i>Belum ada data.</i></td></tr>`}
+        </tbody>
+      </table>
+      <br/>
+    `;
+  }
+  document.getElementById('arsipContainer').innerHTML = allRows;
+}
+
+// Accordion
+function toggleList(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (el.style.display === 'none' || el.style.display === '') {
+    el.style.display = 'block';
+    // if semester head, also show rows:
+    if(id.startsWith('semrows-')) {
+      document.getElementById('bodyrows-' + id.replace('semrows-', '')).style.display='table-row-group';
+      document.getElementById('semicon-' + id.replace('semrows-', '')).textContent = '[−]';
+    }
+  } else {
+    el.style.display = 'none';
+    if(id.startsWith('semrows-')) {
+      document.getElementById('bodyrows-' + id.replace('semrows-', '')).style.display='none';
+      document.getElementById('semicon-' + id.replace('semrows-', '')).textContent = '[+]';
+    }
+  }
+}
+
+// Preview PDF/gambar
+function previewFile(url, targetId) {
+  const el = document.getElementById(targetId);
+  if (el.innerHTML === '') {
+    if(url.match(/\.(jpg|jpeg|png|gif)$/i)) {
+      el.innerHTML = `<img src="${url}" alt="Gambar" />`;
+    } else if(url.match(/\.pdf$/i)) {
+      el.innerHTML = `<iframe src="${url}#toolbar=0" allowfullscreen></iframe>`;
+    } else {
+      el.innerHTML = `<a href="${url}" target="_blank">Download File</a>`;
+    }
+    el.style.display = 'block';
+  } else {
+    el.innerHTML = '';
+    el.style.display = 'none';
+  }
+}
 </script>
 </body>
 </html>
