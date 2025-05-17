@@ -26,6 +26,7 @@
       padding: 1rem;
       border-radius: 12px;
       text-align: center;
+      font-size: 20px;
     }
     details {
       margin-bottom: 20px;
@@ -39,9 +40,15 @@
       padding: 10px 16px;
       font-weight: bold;
       cursor: pointer;
+      font-size: 16px;
+    }
+    .table-wrapper {
+      overflow-x: auto;
+      width: 100%;
     }
     table {
       width: 100%;
+      min-width: 900px;
       border-collapse: collapse;
       margin: 0;
     }
@@ -102,23 +109,24 @@
         let semesterBlock = `
           <details>
             <summary>📘 Semester ${sem.semester} - ${sem.tahun} (${sem.ganjilgenap === '1' ? 'Ganjil' : 'Genap'}) - Total SKS: ${sem.sks}</summary>
-            <table>
-              <thead>
-                <tr>
-                  <th>Mata Kuliah</th>
-                  <th>Kode</th>
-                  <th>SKS</th>
-                  <th>Sesi</th>
-                  <th>Topik</th>
-                  <th>Ringkasan</th>
-                  <th>Dokumen 1</th>
-                  <th>Dokumen 2</th>
-                  <th>Dokumen 3</th>
-                  <th>Video</th>
-                  <th>Nilai</th>
-                </tr>
-              </thead>
-              <tbody>
+            <div class="table-wrapper">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Mata Kuliah</th>
+                    <th>Kode</th>
+                    <th>SKS</th>
+                    <th>Sesi</th>
+                    <th>Topik</th>
+                    <th>Ringkasan</th>
+                    <th>Dokumen 1</th>
+                    <th>Dokumen 2</th>
+                    <th>Dokumen 3</th>
+                    <th>Video</th>
+                    <th>Nilai</th>
+                  </tr>
+                </thead>
+                <tbody>
         `;
 
         for (const mk of matkulList) {
@@ -156,7 +164,7 @@
           }
         }
 
-        semesterBlock += `</tbody></table></details>`;
+        semesterBlock += `</tbody></table></div></details>`;
         container.insertAdjacentHTML('beforeend', semesterBlock);
       }
     }
