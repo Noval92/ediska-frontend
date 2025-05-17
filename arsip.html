@@ -60,7 +60,21 @@
       color: #222;
     }
     tr:nth-child(even) { background: #f8fbfd; }
-    .preview-link {
+    .dokumen-toggle {
+      cursor: pointer;
+      background: none;
+      border: none;
+      color: #1976d2;
+      font-weight: 500;
+      font-size: 1em;
+      padding: 0;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+    .dokumen-list-row {
+      background: #f6faff;
+    }
+    .dokumen-link {
       color: #1976d2;
       text-decoration: underline;
       cursor: pointer;
@@ -68,6 +82,7 @@
       border: none;
       font-size: 1em;
       padding: 0;
+      margin-right: 12px;
     }
     .preview-popup {
       display: none;
@@ -163,7 +178,9 @@ function closePreview(ev) {
 }
 async function loadArsip() {
   const resSem = await fetch(`https://ediska-backend.onrender.com/api/semester/${user._id}`);
-  const semesterList = await resSem.json();
+  let semesterList = await resSem.json();
+  // Sort by semester ASC
+  semesterList = semesterList.sort((a, b) => a.semester - b.semester);
   if (!semesterList || semesterList.length == 0) {
     document.getElementById('arsipContent').innerHTML = '<div style="padding:2rem;text-align:center;">Tidak ada data.</div>';
     return;
@@ -183,9 +200,7 @@ async function loadArsip() {
           <th>Sesi</th>
           <th>Subject</th>
           <th>Ringkasan</th>
-          <th>Dokumen 1</th>
-          <th>Dokumen 2</th>
-          <th>Dokumen 3</th>
+          <th>Dokumen</th>
           <th>Note/Link</th>
           <th>Nilai</th>
         </tr>
@@ -203,19 +218,19 @@ async function loadArsip() {
           <td>${mk.nama}</td>
           <td>${mk.kode}</td>
           <td>${mk.sks}</td>
-          <td colspan="8"><i>Belum ada sesi</i></td>
+          <td colspan="6"><i>Belum ada sesi</i></td>
         </tr>`;
         continue;
       }
+      let sesiIdx = 0;
       for (const s of sesiList) {
-        let docs = [s.pdf?.[0], s.pdf?.[1], s.pdf?.[2]];
-        let docHtml = docs.map(f => {
-          if (!f) return '-';
-          if (/\.(pdf|jpg|jpeg|png|gif)$/i.test(f))
-            return `<button class="preview-link" onclick="popupPreview('${f}')">Preview</button>`;
-          return `<a href="https://ediska-backend.onrender.com/${f}" download style="color:#007bff;text-decoration:underline;">Download</a>`;
-        });
-        // Notes/links
+        sesiIdx++;
+        // Dokumen file array
+        let docs = Array.isArray(s.pdf) ? s.pdf : [];
+        let judulDocs = Array.isArray(s.pdfJudul) ? s.pdfJudul : [];
+        let dokumenSummary = docs.length > 0 ? `${docs.length} dokumen` : '-';
+        let expandBtn = docs.length > 0 ? `<button class="dokumen-toggle" onclick="event.stopPropagation();toggleDokumen(this, '${mk._id}_${s._id}')">[+]</button>` : '';
+        // Note/link
         let noteHtml = '-';
         if (s.videoLink && Array.isArray(s.videoLink) && s.videoLink.length > 0) {
           noteHtml = s.videoLink.map((l, i) => {
@@ -230,19 +245,33 @@ async function loadArsip() {
           <td>${s.pelajaran || '-'}</td>
           <td>${s.pelajaran || '-'}</td>
           <td>${s.ringkasan || '-'}</td>
-          <td>${docHtml[0]}</td>
-          <td>${docHtml[1]}</td>
-          <td>${docHtml[2]}</td>
+          <td>
+            ${dokumenSummary} ${expandBtn}
+          </td>
           <td>${noteHtml}</td>
           <td>${s.nilai || '-'}</td>
         </tr>`;
+        // Expandable dokumen row (hidden by default)
+        if (docs.length > 0) {
+          output += `<tr class="dokumen-list-row" id="dokumen-row-${mk._id}_${s._id}" style="display:none;">
+            <td colspan="9" style="text-align:left">
+              <b>Daftar Dokumen:</b><br>
+              ${docs.map((f, i) => {
+                let judul = judulDocs[i] || `Dokumen ${i+1}`;
+                if (/\.(pdf|jpg|jpeg|png|gif)$/i.test(f))
+                  return `<button class="dokumen-link" onclick="popupPreview('${f}')">${judul}</button>`;
+                return `<a class="dokumen-link" href="https://ediska-backend.onrender.com/${f}" download>${judul}</a>`;
+              }).join('')}
+            </td>
+          </tr>`;
+        }
       }
     }
     output += `</tbody></table></div>`;
   }
   document.getElementById('arsipContent').innerHTML = output;
 }
-// toggle table visibility per semester
+// Toggle semester table (minimize)
 function toggleSemester(div) {
   const tableDiv = div.nextElementSibling;
   if (!tableDiv) return;
@@ -252,6 +281,18 @@ function toggleSemester(div) {
   } else {
     tableDiv.style.display = 'none';
     div.querySelector('span').textContent = '[+]';
+  }
+}
+// Toggle dokumen per sesi (expand row)
+function toggleDokumen(btn, rowId) {
+  const row = document.getElementById('dokumen-row-' + rowId);
+  if (!row) return;
+  if (row.style.display === 'none') {
+    row.style.display = '';
+    btn.textContent = '[-]';
+  } else {
+    row.style.display = 'none';
+    btn.textContent = '[+]';
   }
 }
 document.addEventListener('DOMContentLoaded', loadArsip);
