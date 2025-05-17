@@ -26,7 +26,6 @@
       padding: 1rem;
       border-radius: 12px;
       text-align: center;
-      margin-bottom: 20px;
     }
     details {
       margin-bottom: 20px;
@@ -41,13 +40,12 @@
       font-weight: bold;
       cursor: pointer;
     }
-    .table-wrapper {
-      overflow-x: auto;
-    }
     table {
-      min-width: 800px;
       width: 100%;
       border-collapse: collapse;
+      margin: 0;
+      overflow-x: auto;
+      display: block;
     }
     th, td {
       border: 1px solid #ddd;
@@ -58,19 +56,6 @@
     th {
       background-color: #3498db;
       color: white;
-    }
-    .dokumen-item, .video-item {
-      margin-bottom: 4px;
-    }
-    .btn-toggle-dokumen, .btn-toggle-video {
-      margin-top: 6px;
-      padding: 4px 10px;
-      background: #3498db;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      font-size: 13px;
-      cursor: pointer;
     }
     footer {
       position: fixed;
@@ -107,7 +92,10 @@
 
     async function loadArsip() {
       const semesterRes = await fetch(`https://ediska-backend.onrender.com/api/semester/${user._id}`);
-      const semesterList = await semesterRes.json();
+      let semesterList = await semesterRes.json();
+
+      // Sort ASC agar tidak wajib urut
+      semesterList = semesterList.sort((a, b) => parseInt(a.semester) - parseInt(b.semester));
 
       const container = document.getElementById('arsipContent');
       container.innerHTML = '';
@@ -119,22 +107,23 @@
         let semesterBlock = `
           <details>
             <summary>📘 Semester ${sem.semester} - ${sem.tahun} (${sem.ganjilgenap === '1' ? 'Ganjil' : 'Genap'}) - Total SKS: ${sem.sks}</summary>
-            <div class="table-wrapper">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Mata Kuliah</th>
-                    <th>Kode</th>
-                    <th>SKS</th>
-                    <th>Sesi</th>
-                    <th>Topik</th>
-                    <th>Ringkasan</th>
-                    <th>Dokumen</th>
-                    <th>Video</th>
-                    <th>Nilai</th>
-                  </tr>
-                </thead>
-                <tbody>
+            <table>
+              <thead>
+                <tr>
+                  <th>Mata Kuliah</th>
+                  <th>Kode</th>
+                  <th>SKS</th>
+                  <th>Sesi</th>
+                  <th>Topik</th>
+                  <th>Ringkasan</th>
+                  <th>Dokumen 1</th>
+                  <th>Dokumen 2</th>
+                  <th>Dokumen 3</th>
+                  <th>Video</th>
+                  <th>Nilai</th>
+                </tr>
+              </thead>
+              <tbody>
         `;
 
         for (const mk of matkulList) {
@@ -142,35 +131,17 @@
           const sesiList = await sesiRes.json();
 
           for (const s of sesiList) {
-            // Dokumen
-            let dokumenHTML = '';
-            const dokumenList = s.pdf || [];
-            const judulList = s.pdfJudul || [];
-            dokumenList.forEach((file, idx) => {
-              if (!file) return;
-              const judul = judulList[idx] || `Dokumen ${idx + 1}`;
-              const isPdf = file.endsWith('.pdf');
-              const fileLink = isPdf
-                ? `<a href="/${file}" target="_blank">📄 ${judul}</a>`
-                : `<a href="/${file}" download>⬇️ ${judul}</a>`;
-              dokumenHTML += `<div class="dokumen-item" style="${idx > 0 ? 'display:none;' : ''}" data-doc="${s._id}">${fileLink}</div>`;
+            const dokumen = [s.pdf?.[0], s.pdf?.[1], s.pdf?.[2]];
+            const dokumenHTML = dokumen.map(file => {
+              if (!file) return '-';
+              if (file.endsWith('.pdf')) {
+                return `<a href="/${file}" target="_blank">📄 Preview</a>`;
+              } else {
+                return `<a href="/${file}" download>⬇️ Download</a>`;
+              }
             });
-            if (dokumenList.length > 1) {
-              dokumenHTML += `<button class="btn-toggle-dokumen" onclick="toggleDokumen('${s._id}')">+ Lihat semua</button>`;
-            }
 
-            // Video
-            let videoHTML = '';
-            const videoLink = s.videoLink || [];
-            const videoJudul = s.videoJudul || [];
-            videoLink.forEach((link, idx) => {
-              if (!link) return;
-              const judul = videoJudul[idx] || `Video ${idx + 1}`;
-              videoHTML += `<div class="video-item" style="${idx > 0 ? 'display:none;' : ''}" data-vid="${s._id}"><a href="${link}" target="_blank">🎬 ${judul}</a></div>`;
-            });
-            if (videoLink.length > 1) {
-              videoHTML += `<button class="btn-toggle-video" onclick="toggleVideo('${s._id}')">+ Lihat semua</button>`;
-            }
+            const video = s.videoLink?.[0] ? `<a href="${s.videoLink[0]}" target="_blank">🔗 Link</a>` : '-';
 
             semesterBlock += `
               <tr>
@@ -180,34 +151,19 @@
                 <td>${s.pelajaran || '-'}</td>
                 <td>${s.pelajaran || '-'}</td>
                 <td>${s.ringkasan || '-'}</td>
-                <td>${dokumenHTML}</td>
-                <td>${videoHTML}</td>
+                <td>${dokumenHTML[0]}</td>
+                <td>${dokumenHTML[1]}</td>
+                <td>${dokumenHTML[2]}</td>
+                <td>${video}</td>
                 <td>${s.nilai || '-'}</td>
               </tr>
             `;
           }
         }
 
-        semesterBlock += `
-                </tbody>
-              </table>
-            </div>
-          </details>
-        `;
+        semesterBlock += `</tbody></table></details>`;
         container.insertAdjacentHTML('beforeend', semesterBlock);
       }
-    }
-
-    function toggleDokumen(id) {
-      document.querySelectorAll(`.dokumen-item[data-doc="${id}"]`).forEach(el => el.style.display = 'block');
-      const btn = document.querySelector(`.btn-toggle-dokumen[onclick*="${id}"]`);
-      if (btn) btn.style.display = 'none';
-    }
-
-    function toggleVideo(id) {
-      document.querySelectorAll(`.video-item[data-vid="${id}"]`).forEach(el => el.style.display = 'block');
-      const btn = document.querySelector(`.btn-toggle-video[onclick*="${id}"]`);
-      if (btn) btn.style.display = 'none';
     }
 
     document.addEventListener('DOMContentLoaded', loadArsip);
