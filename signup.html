@@ -110,15 +110,30 @@
       const form = e.target;
       const formData = new FormData(form);
 
+      const nim = form.querySelector('input[name="nim"]').value;
+      if (!/^[0-9]{8,}$/.test(nim)) {
+        return alert('NIM harus berupa angka minimal 8 digit.');
+      }
+
       const res = await fetch('https://ediska-backend.onrender.com/api/auth/register', {
         method: 'POST',
         body: formData
       });
 
       const result = await res.json();
-      alert(result.message || result.error);
-      if (result.message) {
+      if (res.ok) {
+        alert(result.message || 'Registrasi berhasil!');
         window.location.href = "login.html";
+      } else {
+        if (result.error?.toLowerCase().includes('email')) {
+          alert('Email sudah terdaftar. Gunakan email lain.');
+        } else if (result.error?.toLowerCase().includes('username')) {
+          alert('Username sudah digunakan. Pilih username lain.');
+        } else if (result.error?.toLowerCase().includes('nim')) {
+          alert('NIM sudah terdaftar. Gunakan NIM lain.');
+        } else {
+          alert(result.error || 'Terjadi kesalahan saat registrasi.');
+        }
       }
     });
   </script>
