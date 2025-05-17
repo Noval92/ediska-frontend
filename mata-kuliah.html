@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>ISI MATA KULIAH</title>
   <script src="https://raw.githack.com/eKoopmans/html2pdf/master/dist/html2pdf.bundle.js"></script>
+
+
 <style>
   :root { --primary: #3498db; --danger: #e74c3c; --bg: #f1f5f9; }
   body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 0; }
@@ -71,6 +73,25 @@
     .info { flex-direction: column; gap: 0.5rem; }
     .actions { flex-direction: column; }
   }
+
+.pdf-preview-container iframe {
+  width: 100%;
+  height: 500px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  margin-top: 10px;
+}
+
+.btn-preview {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  padding: 4px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
 </style>
 
 </head>
@@ -410,9 +431,13 @@ async function loadSesiList(matkulId) {
   const sesi = await res.json();
   const sesiDiv = document.getElementById(`sesi-list-${matkulId}`);
   sesiDiv.innerHTML = sesi.map((s, i) => {
-    const pdfList = (s.pdf || []).map((p, idx) =>
-      `<li>${s.pdfJudul?.[idx] || 'File'}: <a href="/${p}" target="_blank">Lihat PDF</a></li>`
-    ).join('');
+const pdfList = (s.pdf || []).map((p, idx) =>
+  `<li>
+    ${s.pdfJudul?.[idx] || 'File'}:
+    <button class="btn-preview" onclick="previewPDF('${p}', 'pdf-preview-${s._id}-${idx}')">Lihat PDF</button>
+    <div id="pdf-preview-${s._id}-${idx}" class="pdf-preview-container" style="display:none;"></div>
+  </li>`
+).join('');
 
     const videoList = (s.videoLink || []).map((link, idx) =>
       `<li>${s.videoJudul?.[idx] || 'Video'}: <a href="${link}" target="_blank">${link}</a></li>`
@@ -503,5 +528,16 @@ document.addEventListener('DOMContentLoaded', async () => {
   await loadSemesterData();
   await loadMatkulList();
   await loadResume();
+
+function previewPDF(filePath, containerId) {
+  const container = document.getElementById(containerId);
+  if (container.innerHTML === '') {
+    container.innerHTML = `<iframe src='/${filePath}#toolbar=0' allowfullscreen></iframe>`;
+    container.style.display = 'block';
+  } else {
+    container.innerHTML = '';
+    container.style.display = 'none';
+  }
+}
 });
 </script> </body> </html> ```
