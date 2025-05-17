@@ -2,120 +2,123 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>📚 Arsip Akademik Mahasiswa</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Arsip Akademik</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --primary: #3498db;
-      --danger: #e74c3c;
-      --bg: #f1f5f9;
-    }
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: var(--bg);
+      font-family: 'Poppins', sans-serif;
+      background: #f1f5f9;
       margin: 0;
-      padding: 1.5rem;
+      padding: 1rem;
     }
     .container {
-      max-width: 95%;
+      max-width: 960px;
       margin: auto;
-      background: #fff;
-      padding: 1.5rem;
+      background: white;
+      padding: 1rem;
       border-radius: 12px;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
     }
     h2 {
-      background: var(--primary);
+      background: #3498db;
       color: white;
       padding: 1rem;
-      border-radius: 8px 8px 0 0;
+      border-radius: 12px;
       text-align: center;
-      font-size: 1.5rem;
-      margin: 0;
     }
     details {
-      background: #e3f2fd;
-      margin-top: 20px;
+      margin-bottom: 20px;
+      border: 1px solid #3498db;
       border-radius: 8px;
       overflow: hidden;
     }
     summary {
-      padding: 12px 16px;
-      background: var(--primary);
+      background: #3498db;
       color: white;
+      padding: 10px 16px;
       font-weight: bold;
-      font-size: 1rem;
       cursor: pointer;
-    }
-    .table-wrapper {
-      overflow-x: auto;
     }
     table {
       width: 100%;
       border-collapse: collapse;
-      min-width: 900px;
+      margin: 0;
     }
     th, td {
       border: 1px solid #ddd;
-      padding: 6px 10px;
+      padding: 8px;
       text-align: center;
-      font-size: 0.9rem;
+      font-size: 14px;
     }
     th {
-      background: #3498db;
+      background-color: #3498db;
       color: white;
-      font-weight: 600;
     }
-    a {
+    footer {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      background: white;
+      box-shadow: 0 -1px 6px rgba(0,0,0,0.05);
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 0;
+    }
+    footer a {
       text-decoration: none;
-      color: #2980b9;
-    }
-    a:hover {
-      text-decoration: underline;
+      color: #3498db;
+      font-size: 14px;
+      text-align: center;
     }
   </style>
 </head>
 <body>
   <div class="container">
     <h2>📚 Arsip Akademik Mahasiswa</h2>
-    <div id="arsipContainer"></div>
+    <div id="arsipContent"></div>
   </div>
+
+  <footer>
+    <a href="dashboard.html">🏠<br>Beranda</a>
+    <a href="semester.html">🎓<br>Semester</a>
+    <a href="login.html" onclick="localStorage.clear()">🚪<br>Logout</a>
+  </footer>
 
   <script>
     const user = JSON.parse(localStorage.getItem('user'));
-    const arsipContainer = document.getElementById('arsipContainer');
 
     async function loadArsip() {
       const semesterRes = await fetch(`https://ediska-backend.onrender.com/api/semester/${user._id}`);
       const semesterList = await semesterRes.json();
 
+      const container = document.getElementById('arsipContent');
+      container.innerHTML = '';
+
       for (const sem of semesterList) {
         const matkulRes = await fetch(`https://ediska-backend.onrender.com/api/matakuliah?userId=${user._id}&semester=${sem.semester}`);
         const matkulList = await matkulRes.json();
 
-        if (matkulList.length === 0) continue;
-
         let semesterBlock = `
-        <details>
-          <summary>📘 Semester ${sem.semester}</summary>
-          <div class="table-wrapper">
-          <table>
-            <thead>
-              <tr>
-                <th>Mata Kuliah</th>
-                <th>Kode</th>
-                <th>SKS</th>
-                <th>Sesi</th>
-                <th>Topik</th>
-                <th>Ringkasan</th>
-                <th>Dokumen 1</th>
-                <th>Dokumen 2</th>
-                <th>Dokumen 3</th>
-                <th>Video</th>
-                <th>Nilai</th>
-              </tr>
-            </thead>
-            <tbody>
+          <details>
+            <summary>📘 Semester ${sem.semester} - ${sem.tahun} (${sem.ganjilgenap === '1' ? 'Ganjil' : 'Genap'}) - Total SKS: ${sem.sks}</summary>
+            <table>
+              <thead>
+                <tr>
+                  <th>Mata Kuliah</th>
+                  <th>Kode</th>
+                  <th>SKS</th>
+                  <th>Sesi</th>
+                  <th>Topik</th>
+                  <th>Ringkasan</th>
+                  <th>Dokumen 1</th>
+                  <th>Dokumen 2</th>
+                  <th>Dokumen 3</th>
+                  <th>Video</th>
+                  <th>Nilai</th>
+                </tr>
+              </thead>
+              <tbody>
         `;
 
         for (const mk of matkulList) {
@@ -153,14 +156,8 @@
           }
         }
 
-        semesterBlock += `
-            </tbody>
-          </table>
-          </div>
-        </details>
-        `;
-
-        arsipContainer.insertAdjacentHTML('beforeend', semesterBlock);
+        semesterBlock += `</tbody></table></details>`;
+        container.insertAdjacentHTML('beforeend', semesterBlock);
       }
     }
 
