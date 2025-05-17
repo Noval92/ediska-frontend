@@ -41,7 +41,11 @@
       font-weight: bold;
       cursor: pointer;
     }
+    .table-wrapper {
+      overflow-x: auto;
+    }
     table {
+      min-width: 800px;
       width: 100%;
       border-collapse: collapse;
     }
@@ -55,10 +59,10 @@
       background-color: #3498db;
       color: white;
     }
-    .dokumen-item {
+    .dokumen-item, .video-item {
       margin-bottom: 4px;
     }
-    .btn-toggle-dokumen {
+    .btn-toggle-dokumen, .btn-toggle-video {
       margin-top: 6px;
       padding: 4px 10px;
       background: #3498db;
@@ -115,21 +119,22 @@
         let semesterBlock = `
           <details>
             <summary>📘 Semester ${sem.semester} - ${sem.tahun} (${sem.ganjilgenap === '1' ? 'Ganjil' : 'Genap'}) - Total SKS: ${sem.sks}</summary>
-            <table>
-              <thead>
-                <tr>
-                  <th>Mata Kuliah</th>
-                  <th>Kode</th>
-                  <th>SKS</th>
-                  <th>Sesi</th>
-                  <th>Topik</th>
-                  <th>Ringkasan</th>
-                  <th colspan="3">Dokumen</th>
-                  <th>Video</th>
-                  <th>Nilai</th>
-                </tr>
-              </thead>
-              <tbody>
+            <div class="table-wrapper">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Mata Kuliah</th>
+                    <th>Kode</th>
+                    <th>SKS</th>
+                    <th>Sesi</th>
+                    <th>Topik</th>
+                    <th>Ringkasan</th>
+                    <th>Dokumen</th>
+                    <th>Video</th>
+                    <th>Nilai</th>
+                  </tr>
+                </thead>
+                <tbody>
         `;
 
         for (const mk of matkulList) {
@@ -137,36 +142,35 @@
           const sesiList = await sesiRes.json();
 
           for (const s of sesiList) {
+            // Dokumen
             let dokumenHTML = '';
             const dokumenList = s.pdf || [];
             const judulList = s.pdfJudul || [];
-
             dokumenList.forEach((file, idx) => {
               if (!file) return;
-
               const judul = judulList[idx] || `Dokumen ${idx + 1}`;
               const isPdf = file.endsWith('.pdf');
               const fileLink = isPdf
                 ? `<a href="/${file}" target="_blank">📄 ${judul}</a>`
                 : `<a href="/${file}" download>⬇️ ${judul}</a>`;
-
-              dokumenHTML += `
-                <div class="dokumen-item" style="${idx > 0 ? 'display:none;' : ''}" data-group="${s._id}">
-                  ${fileLink}
-                </div>
-              `;
+              dokumenHTML += `<div class="dokumen-item" style="${idx > 0 ? 'display:none;' : ''}" data-doc="${s._id}">${fileLink}</div>`;
             });
-
             if (dokumenList.length > 1) {
-              dokumenHTML += `
-                <button onclick="toggleDokumen('${s._id}')" class="btn-toggle-dokumen">
-                  + Tampilkan semua dokumen
-                </button>
-              `;
+              dokumenHTML += `<button class="btn-toggle-dokumen" onclick="toggleDokumen('${s._id}')">+ Lihat semua</button>`;
             }
 
-            const video = s.videoLink?.[0]
-              ? `<a href="${s.videoLink[0]}" target="_blank">🔗 Link</a>` : '-';
+            // Video
+            let videoHTML = '';
+            const videoLink = s.videoLink || [];
+            const videoJudul = s.videoJudul || [];
+            videoLink.forEach((link, idx) => {
+              if (!link) return;
+              const judul = videoJudul[idx] || `Video ${idx + 1}`;
+              videoHTML += `<div class="video-item" style="${idx > 0 ? 'display:none;' : ''}" data-vid="${s._id}"><a href="${link}" target="_blank">🎬 ${judul}</a></div>`;
+            });
+            if (videoLink.length > 1) {
+              videoHTML += `<button class="btn-toggle-video" onclick="toggleVideo('${s._id}')">+ Lihat semua</button>`;
+            }
 
             semesterBlock += `
               <tr>
@@ -176,25 +180,33 @@
                 <td>${s.pelajaran || '-'}</td>
                 <td>${s.pelajaran || '-'}</td>
                 <td>${s.ringkasan || '-'}</td>
-                <td colspan="3">${dokumenHTML}</td>
-                <td>${video}</td>
+                <td>${dokumenHTML}</td>
+                <td>${videoHTML}</td>
                 <td>${s.nilai || '-'}</td>
               </tr>
             `;
           }
         }
 
-        semesterBlock += `</tbody></table></details>`;
+        semesterBlock += `
+                </tbody>
+              </table>
+            </div>
+          </details>
+        `;
         container.insertAdjacentHTML('beforeend', semesterBlock);
       }
     }
 
-    function toggleDokumen(groupId) {
-      const items = document.querySelectorAll(`.dokumen-item[data-group="${groupId}"]`);
-      items.forEach(item => {
-        item.style.display = 'block';
-      });
-      const btn = document.querySelector(`button.btn-toggle-dokumen[onclick*="${groupId}"]`);
+    function toggleDokumen(id) {
+      document.querySelectorAll(`.dokumen-item[data-doc="${id}"]`).forEach(el => el.style.display = 'block');
+      const btn = document.querySelector(`.btn-toggle-dokumen[onclick*="${id}"]`);
+      if (btn) btn.style.display = 'none';
+    }
+
+    function toggleVideo(id) {
+      document.querySelectorAll(`.video-item[data-vid="${id}"]`).forEach(el => el.style.display = 'block');
+      const btn = document.querySelector(`.btn-toggle-video[onclick*="${id}"]`);
       if (btn) btn.style.display = 'none';
     }
 
