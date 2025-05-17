@@ -320,13 +320,15 @@ window.editSesi = async (matkulId, sesiId) => {
   // PDF
   const pdfContainer = document.getElementById(`pdfContainer-edit-${sesiId}`);
   (s.pdf || []).forEach((filePath, i) => {
-    const div = document.createElement('div');
-    div.innerHTML = `
-      <input type="text" name="pdfJudul[]" value="${s.pdfJudul?.[i] || ''}" />
-      <input type="file" name="pdfFile[]" />
-      <a href="/${filePath}" target="_blank">Lihat PDF Lama</a>
-      <button type="button" onclick="this.parentNode.remove()">❌</button>
-    `;
+  const div = document.createElement('div');
+  div.innerHTML = `
+  <input type="text" name="pdfJudul[]" value="${s.pdfJudul?.[i] || ''}" />
+  <input type="file" name="pdfFile[]" />
+  <button type="button" class="btn-preview" onclick="previewPDF('${filePath}', 'preview-old-${sesiId}-${i}')">Lihat PDF Lama</button>
+  <div id="preview-old-${sesiId}-${i}" class="pdf-preview-container" style="display:none;"></div>
+  <button type="button" onclick="this.parentNode.remove()">❌</button>
+`;
+
     pdfContainer.appendChild(div);
   });
 
