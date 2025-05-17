@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <title>Arsip Akademik</title>
+  <style>
+    :root {
+      --primary: #3498db;
+      --danger: #e74c3c;
+      --bg: #f1f5f9;
+    }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: var(--bg);
+      margin: 0;
+      padding: 2rem;
+    }
+    .container {
+      max-width: 90%;
+      margin: auto;
+      background: #fff;
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+    }
+    h2 {
+      background: var(--primary);
+      color: white;
+      padding: 1rem;
+      border-radius: 8px 8px 0 0;
+      text-align: center;
+      font-size: 1.5rem;
+      margin-top: 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: center;
+    }
+    th {
+      background: #3498db;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>📚 Arsip Akademik Mahasiswa</h2>
+    <table id="arsipTable">
+      <thead>
+        <tr>
+          <th>Semester</th>
+          <th>Mata Kuliah</th>
+          <th>Kode</th>
+          <th>SKS</th>
+          <th>Sesi</th>
+          <th>Topik</th>
+          <th>Nilai</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Data akan dimuat lewat JS -->
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    const user = JSON.parse(localStorage.getItem('user'));
+
+    async function loadArsip() {
+      const semesterRes = await fetch(`https://ediska-backend.onrender.com/api/semester/${user._id}`);
+      const semesterList = await semesterRes.json();
+
+      const tbody = document.querySelector('#arsipTable tbody');
+      tbody.innerHTML = '';
+
+      for (const sem of semesterList) {
+        const matkulRes = await fetch(`https://ediska-backend.onrender.com/api/matakuliah?userId=${user._id}&semester=${sem.semester}`);
+        const matkulList = await matkulRes.json();
+
+        for (const mk of matkulList) {
+          const sesiRes = await fetch(`https://ediska-backend.onrender.com/api/matakuliah/${mk._id}/sesi`);
+          const sesiList = await sesiRes.json();
+
+          for (const s of sesiList) {
+            const row = `
+              <tr>
+                <td>${sem.semester}</td>
+                <td>${mk.nama}</td>
+                <td>${mk.kode}</td>
+                <td>${mk.sks}</td>
+                <td>${s.pelajaran}</td>
+                <td>${s.ringkasan || '-'}</td>
+                <td>${s.nilai || '-'}</td>
+              </tr>
+            `;
+            tbody.insertAdjacentHTML('beforeend', row);
+          }
+        }
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadArsip);
+  </script>
+</body>
+</html>
