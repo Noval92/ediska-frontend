@@ -218,9 +218,9 @@ mkRows.innerHTML = list.map(m => `
     };
 
     window.tambahSesi = async (matkulId) => {
-      if (semesterParam !== semesterAktif) {
-        return alert('Semester ini tidak aktif. Hanya semester terakhir yang bisa diisi sesi.');
-      }
+      //if (semesterParam !== semesterAktif) {
+        //return alert('Semester ini tidak aktif. Hanya semester terakhir yang bisa diisi sesi.');
+      //}
 
       const sesiList = await fetch(`https://ediska-backend.onrender.com/api/matakuliah/${matkulId}/sesi`).then(r => r.json());
       const sesiKe = sesiList.length + 1;
@@ -302,13 +302,13 @@ window.editSesi = async (matkulId, sesiId) => {
       <label>Ringkasan belajar sesi ini</label>
       <textarea name="ringkasan" rows="4">${s.ringkasan ? s.ringkasan.replace(/</g, "&lt;").replace(/>/g, "&gt;") : ''}</textarea>
 
-      <label>Upload PDF (max 10)</label>
+      <label>Upload Dokumen (max 10)</label>
       <div id="pdfContainer-edit-${sesiId}"></div>
-      <button type="button" onclick="addPdf('edit-${sesiId}')">+ Tambah PDF</button>
+      <button type="button" onclick="addPdf('edit-${sesiId}')">+ Tambah Dokumen</button>
 
-      <label style="margin-top:1rem">Link Video (max 10)</label>
+      <label style="margin-top:1rem">Link / Note (max 10)</label>
       <div id="videoContainer-edit-${sesiId}"></div>
-      <button type="button" onclick="addVideo('edit-${sesiId}')">+ Tambah Video</button>
+      <button type="button" onclick="addVideo('edit-${sesiId}')">+ Tambah Note</button>
 
       <label style="margin-top:1rem">Nilai (opsional)</label>
       <input type="number" name="nilai" value="${s.nilai || ''}" min="0" max="100" />
@@ -337,7 +337,7 @@ const pdfContainer = document.getElementById(`pdfContainer-edit-${sesiId}`);
     const div = document.createElement('div');
     div.innerHTML = `
       <input type="text" name="videoJudul[]" value="${s.videoJudul?.[i] || ''}" />
-      <input type="url" name="videoLink[]" value="${url}" />
+      <input type="text" name="videoLink[]" placeholder="Tulis link atau catatan" />
       <button type="button" onclick="this.parentNode.remove()">❌</button>
     `;
     videoContainer.appendChild(div);
