@@ -16,12 +16,13 @@
       padding: 2rem;
     }
     .container {
-      max-width: 90%;
+      max-width: 95%;
       margin: auto;
       background: #fff;
       padding: 1.5rem;
       border-radius: 12px;
       box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+      overflow-x: auto;
     }
     h2 {
       background: var(--primary);
@@ -36,6 +37,7 @@
       width: 100%;
       border-collapse: collapse;
       margin-top: 20px;
+      font-size: 0.95rem;
     }
     th, td {
       border: 1px solid #ddd;
@@ -43,7 +45,7 @@
       text-align: center;
     }
     th {
-      background: #3498db;
+      background: var(--primary);
       color: white;
     }
   </style>
@@ -56,10 +58,15 @@
         <tr>
           <th>Semester</th>
           <th>Mata Kuliah</th>
-          <th>Kode</th>
+          <th>Kode MK</th>
           <th>SKS</th>
           <th>Sesi</th>
-          <th>Topik</th>
+          <th>Subject</th>
+          <th>Ringkasan Belajar</th>
+          <th>Dokumen 1</th>
+          <th>Dokumen 2</th>
+          <th>Dokumen 3</th>
+          <th>Link Video/Reff</th>
           <th>Nilai</th>
         </tr>
       </thead>
@@ -88,14 +95,32 @@
           const sesiList = await sesiRes.json();
 
           for (const s of sesiList) {
+            const dokumen = [s.pdf?.[0], s.pdf?.[1], s.pdf?.[2]];
+            const dokumenHTML = dokumen.map(file => {
+              if (!file) return '-';
+              const name = file.split('/').pop();
+              if (file.endsWith('.pdf')) {
+                return `<a href="/${file}" target="_blank">Lihat PDF</a>`;
+              } else {
+                return `<a href="/${file}" download>Download File</a>`;
+              }
+            });
+
+            const video = s.videoLink?.[0] || '-';
+
             const row = `
               <tr>
                 <td>${sem.semester}</td>
                 <td>${mk.nama}</td>
                 <td>${mk.kode}</td>
                 <td>${mk.sks}</td>
-                <td>${s.pelajaran}</td>
+                <td>${s.pelajaran || '-'}</td>
+                <td>${s.pelajaran || '-'}</td>
                 <td>${s.ringkasan || '-'}</td>
+                <td>${dokumenHTML[0]}</td>
+                <td>${dokumenHTML[1]}</td>
+                <td>${dokumenHTML[2]}</td>
+                <td>${video}</td>
                 <td>${s.nilai || '-'}</td>
               </tr>
             `;
