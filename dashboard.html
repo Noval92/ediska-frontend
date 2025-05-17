@@ -5,85 +5,48 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Dashboard E-DISKA</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     body {
       font-family: 'Poppins', sans-serif;
       background: #f5f7fa;
       color: #2c3e50;
       margin: 0;
-      padding: 0;
+      padding: 0 0 80px 0;
     }
 
-    /* 🔄 Spinner loader */
-    #loader {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-
-    .spinner {
-      width: 50px;
-      height: 50px;
-      border: 5px solid #ddd;
-      border-top: 5px solid #3498db;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
-
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    header {
+    .profile-box {
       background: white;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-      padding: 15px 20px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      padding: 20px;
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 15px;
     }
-    .profile-header img {
-      width: 42px;
-      height: 42px;
+    .profile-box img {
+      width: 64px;
+      height: 64px;
       border-radius: 50%;
+      object-fit: cover;
     }
-    .card-section {
-      padding: 20px;
+    .profile-info {
+      line-height: 1.4;
     }
     .card {
-      background: rgba(255, 255, 255, 0.75);
-      backdrop-filter: blur(6px);
-      border-radius: 16px;
+      background: white;
+      margin: 20px;
       padding: 20px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-      margin-bottom: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
     }
-    .chart-container {
-      display: flex;
-      align-items: center;
-      gap: 30px;
+    .card h3 {
+      margin-bottom: 10px;
     }
-    .chart-box {
-      width: 120px;
-      height: 120px;
-      position: relative;
-    }
-    .chart-center-text {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
+    .card .highlight {
       font-size: 18px;
       font-weight: bold;
     }
-    .chart-info h2 {
-      margin: 0;
-    }
     .grid-section {
-      padding: 0 20px 20px;
+      padding: 0 20px;
     }
     .grid-title {
       font-size: 18px;
@@ -123,6 +86,25 @@
       font-weight: bold;
       cursor: pointer;
     }
+    .scroll-section {
+      padding: 0 20px 20px;
+    }
+    .scroll-section h3 {
+      margin-bottom: 10px;
+    }
+    .scroll-container {
+      display: flex;
+      overflow-x: auto;
+      gap: 16px;
+    }
+    .scroll-item {
+      background: white;
+      padding: 16px;
+      border-radius: 12px;
+      min-width: 150px;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
     footer {
       position: fixed;
       bottom: 0;
@@ -139,125 +121,89 @@
       font-size: 13px;
       text-align: center;
     }
-
-    .twitter-section {
-      padding: 24px 20px 10px 20px;
-      margin-top: 20px;
-      margin-bottom: 60px;
-    }
-    .twitter-title {
-      font-size: 17px;
-      font-weight: 600;
-      margin-bottom: 12px;
-      color: #1877f2;
-    }
   </style>
 </head>
 <body>
 
-  <!-- 🔄 Loader spinner -->
-  <div id="loader">
-    <div class="spinner"></div>
+  <div class="profile-box">
+    <img id="fotoProfil" src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="Foto Profil"/>
+    <div class="profile-info">
+      <div id="namaUser">Nama Pengguna</div>
+      <div id="emailUser" style="font-size:13px;color:#666;">Email</div>
+      <div id="nimUser" style="font-size:13px;">NIM</div>
+      <div id="domisiliUser" style="font-size:13px;">Domisili</div>
+    </div>
   </div>
 
-  <!-- 📦 Konten utama (disembunyikan dulu) -->
-  <div id="dashboardContent" style="display:none;">
+  <div class="card">
+    <h3>Informasi Akademik</h3>
+    <p>Jumlah semester yang sedang ditempuh: <span class="highlight" id="jumlahSemester">-</span></p>
+    <p>Jumlah SKS yang sedang ditempuh: <span class="highlight" id="jumlahSKS">-</span></p>
+  </div>
 
-    <header class="profile-header">
-      <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="Profil" />
-      <div>
-        <span style="font-weight:600;">Noval</span><br/>
-        <small>2102030119</small>
+  <div class="grid-section">
+    <div class="grid-title">Menu</div>
+    <div class="grid-menu">
+      <div class="grid-card">
+        <img src="Semester.png" alt="Semester">
+        <h4>Semester</h4>
+        <a href="semester.html"><button>Lihat</button></a>
       </div>
-    </header>
-
-    <div class="card-section">
-      <div class="card">
-        <h3>IPK & Semester</h3>
-        <div class="chart-container">
-          <div class="chart-box">
-            <canvas id="ipkChart"></canvas>
-            <div class="chart-center-text">3.95</div>
-          </div>
-          <div class="chart-info">
-            <p>Semester:</p>
-            <h2>6</h2>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="grid-section">
-      <div class="grid-title">Menu</div>
-      <div class="grid-menu">
-        <div class="grid-card">
-          <img src="Semester.png" alt="Semester">
-          <h4>Semester</h4>
-          <a href="semester.html"><button>Lihat</button></a>
-        </div>
-        <div class="grid-card">
+      <div class="grid-card">
         <img src="Arsip.png" alt="Arsip">
         <h4>Arsip</h4>
         <a href="arsip.html"><button>Lihat</button></a>
-        </div>
-
-
-        <div class="grid-card">
-          <img src="Profil.png" alt="Profil">
-          <h4>Profil</h4>
-          <a href="profil.html"><button>Lihat</button></a>
-        </div>
-        <div class="grid-card">
-          <img src="Tambah Teman.png" alt="Tambah Teman">
-          <h4>Tambah Teman</h4>
-          <a href="#"><button>Lihat</button></a>
-        </div>
+      </div>
+      <div class="grid-card">
+        <img src="Profil.png" alt="Profil">
+        <h4>Profil</h4>
+        <a href="profil.html"><button>Lihat</button></a>
+      </div>
+      <div class="grid-card">
+        <img src="Tambah Teman.png" alt="Tambah Teman">
+        <h4>Tambah Teman</h4>
+        <a href="#"><button>Lihat</button></a>
       </div>
     </div>
-
-    <!-- Embed Twitter -->
-    <div class="twitter-section">
-      <div class="twitter-title">Timeline X (Twitter) @utfess</div>
-      <a class="twitter-timeline" data-height="400" href="https://twitter.com/utfess?ref_src=twsrc%5Etfw">Tweets by utfess</a>
-    </div>
-    <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-
-    <footer>
-      <a href="dashboard.html">🏠<br>Beranda</a>
-      <a href="nilai.html">📚<br>Nilai</a>
-      <a href="tugas.html">📝<br>Tugas</a>
-      <a href="semester.html">🎓<br>Semester</a>
-      <a href="diskusi.html">💬<br>Diskusi</a>
-    </footer>
   </div>
 
-  <!-- ⏬ Inisialisasi grafik dan tampilkan dashboard -->
-  <script>
-    const ctx = document.getElementById('ipkChart').getContext('2d');
-    new Chart(ctx, {
-      type: 'doughnut',
-      data: {
-        labels: ['IPK', 'Sisa'],
-        datasets: [{
-          data: [3.95, 0.05],
-          backgroundColor: ['#2c80d3', '#ecf0f1'],
-          borderWidth: 0
-        }]
-      },
-      options: {
-        cutout: '75%',
-        plugins: {
-          legend: { display: false },
-          tooltip: { enabled: false }
-        }
-      }
-    });
+  <div class="scroll-section">
+    <h3>Halaman Lainnya</h3>
+    <div class="scroll-container">
+      <div class="scroll-item"><a href="#">My UT</a></div>
+      <div class="scroll-item"><a href="#">Tuton</a></div>
+      <div class="scroll-item"><a href="#">Web UT</a></div>
+    </div>
+  </div>
 
-    document.addEventListener('DOMContentLoaded', async () => {
-      await new Promise(resolve => setTimeout(resolve, 800));
-      document.getElementById('loader').style.display = 'none';
-      document.getElementById('dashboardContent').style.display = 'block';
-    });
+  <footer>
+    <a href="dashboard.html">🏠<br>Beranda</a>
+    <a href="semester.html">🎓<br>Semester</a>
+    <a href="arsip.html">📚<br>Arsip</a>
+    <a href="profil.html">👤<br>Profil</a>
+    <a href="login.html" onclick="localStorage.clear()">🚪<br>Logout</a>
+  </footer>
+
+  <script>
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (!user) location.href = 'login.html';
+
+    document.getElementById('namaUser').textContent = user.nama;
+    document.getElementById('emailUser').textContent = user.email;
+    document.getElementById('nimUser').textContent = user.nim;
+    document.getElementById('domisiliUser').textContent = user.domisili;
+    if (user.foto) document.getElementById('fotoProfil').src = '/' + user.foto;
+
+    // Hitung jumlah semester dan SKS dari backend
+    async function loadAkademik() {
+      const res = await fetch(`https://ediska-backend.onrender.com/api/semester/${user._id}`);
+      const list = await res.json();
+      document.getElementById('jumlahSemester').textContent = list.length;
+      const totalSKS = list.reduce((sum, s) => sum + (s.sks || 0), 0);
+      document.getElementById('jumlahSKS').textContent = totalSKS;
+    }
+
+    loadAkademik();
   </script>
 
 </body>
