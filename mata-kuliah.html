@@ -434,13 +434,25 @@ async function loadSesiList(matkulId) {
   const sesiDiv = document.getElementById(`sesi-list-${matkulId}`);
 
   sesiDiv.innerHTML = sesi.map((s, i) => {
-    const pdfList = (s.pdf || []).map((p, idx) =>
-      `<li>
-        ${s.pdfJudul?.[idx] || 'File'}:
-        <button class="btn-preview" onclick="previewPDF('${p}', 'pdf-preview-${s._id}-${idx}')">Lihat PDF</button>
+const pdfList = (s.pdf || []).map((p, idx) => {
+  const isPdf = p.toLowerCase().endsWith('.pdf');
+  const judul = s.pdfJudul?.[idx] || 'File';
+  if (isPdf) {
+    return `
+      <li>${judul}:
+        <button class="btn-preview" onclick="previewPDF('${p}', 'pdf-preview-${s._id}-${idx}')">Lihat Dokumen</button>
         <div id="pdf-preview-${s._id}-${idx}" class="pdf-preview-container" style="display:none;"></div>
-      </li>`
-    ).join('');
+      </li>`;
+  } else {
+    return `
+      <li>${judul}:
+        <a href="/${p}" download>
+          <button class="btn-preview">Download File</button>
+        </a>
+      </li>`;
+  }
+}).join('');
+;
 
     const videoList = (s.videoLink || []).map((link, idx) =>
       `<li>${s.videoJudul?.[idx] || 'Video'}: <a href="${link}" target="_blank">${link}</a></li>`
