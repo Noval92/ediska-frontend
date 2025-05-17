@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lihat Matkul Semester</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f1f5f9;
+      margin: 0;
+      padding: 1rem;
+    }
+    .container {
+      max-width: 960px;
+      margin: auto;
+      background: white;
+      padding: 1rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+    }
+    h2 {
+      background: #3498db;
+      color: white;
+      padding: 1rem;
+      border-radius: 12px;
+      text-align: center;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow-x: auto;
+      display: block;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: center;
+      font-size: 14px;
+    }
+    th {
+      background-color: #3498db;
+      color: white;
+    }
+    footer {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      background: white;
+      box-shadow: 0 -1px 6px rgba(0,0,0,0.05);
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 0;
+    }
+    footer a {
+      text-decoration: none;
+      color: #3498db;
+      font-size: 14px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>📘 Rekap Semester <span id="semTitle">-</span></h2>
+    <div id="arsipContent"></div>
+  </div>
+
+  <footer>
+    <a href="dashboard.html">🏠<br>Beranda</a>
+    <a href="semester.html">🎓<br>Semester</a>
+    <a href="arsip.html">📚<br>Arsip</a>
+    <a href="profil.html">👤<br>Profil</a>
+    <a href="login.html" onclick="localStorage.clear()">🚪<br>Logout</a>
+  </footer>
+
+  <script>
+    const user = JSON.parse(localStorage.getItem('user'));
+    const semesterParam = new URLSearchParams(location.search).get('semester');
+
+    async function loadSemester() {
+      const semesterRes = await fetch(`https://ediska-backend.onrender.com/api/semester/${user._id}`);
+      const semesterList = await semesterRes.json();
+      const sem = semesterList.find(s => s.semester == semesterParam);
+      if (!sem) return;
+
+      document.getElementById('semTitle').textContent = `${sem.semester} - ${sem.tahun} (${sem.ganjilgenap === '1' ? 'Ganjil' : 'Genap'})`;
+
+      const matkulRes = await fetch(`https://ediska-backend.onrender.com/api/matakuliah?userId=${user._id}&semester=${sem.semester}`);
+      const matkulList = await matkulRes.json();
+
+      let tableHTML = `
+        <table>
+          <thead>
+            <tr>
+              <th>Mata Kuliah</th>
+              <th>Kode</th>
+              <th>SKS</th>
+              <th>Sesi</th>
+              <th>Topik</th>
+              <th>Ringkasan</th>
+              <th>Dokumen 1</th>
+              <th>Dokumen 2</th>
+              <th>Dokumen 3</th>
+              <th>Note/Link</th>
+              <th>Nilai</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      for (const mk of matkulList) {
+        const sesiRes = await fetch(`https://ediska-backend.onrender.com/api/matakuliah/${mk._id}/sesi`);
+        const sesiList = await sesiRes.json();
+
+        for (const s of sesiList) {
+          const dokumen = [s.pdf?.[0], s.pdf?.[1], s.pdf?.[2]];
+          const dokumenHTML = dokumen.map(file => {
+            if (!file) return '-';
+            if (file.endsWith('.pdf')) return `<a href="/${file}" target="_blank">📄 Preview</a>`;
+            return `<a href="/${file}" download>⬇️ Download</a>`;
+          });
+
+          const note = s.videoLink?.[0] ? `<a href="${s.videoLink[0]}" target="_blank">🔗 Link</a>` : '-';
+
+          tableHTML += `
+            <tr>
+              <td>${mk.nama}</td>
+              <td>${mk.kode}</td>
+              <td>${mk.sks}</td>
+              <td>${s.pelajaran || '-'}</td>
+              <td>${s.pelajaran || '-'}</td>
+              <td>${s.ringkasan || '-'}</td>
+              <td>${dokumenHTML[0]}</td>
+              <td>${dokumenHTML[1]}</td>
+              <td>${dokumenHTML[2]}</td>
+              <td>${note}</td>
+              <td>${s.nilai || '-'}</td>
+            </tr>
+          `;
+        }
+      }
+
+      tableHTML += `</tbody></table>`;
+      document.getElementById('arsipContent').innerHTML = tableHTML;
+    }
+
+    document.addEventListener('DOMContentLoaded', loadSemester);
+  </script>
+</body>
+</html>
