@@ -6,7 +6,6 @@
   <title>ISI MATA KULIAH</title>
   <style>
     :root { --primary: #3498db; --bg: #f1f5f9; }
-
     body {
       font-family: 'Segoe UI', sans-serif;
       background: var(--bg);
@@ -18,9 +17,7 @@
     label { display: block; font-weight: 600; margin-top: 1rem; font-size: 0.95rem; }
     input, textarea { width: 100%; padding: 0.6rem; margin-top: 0.3rem; border: 1px solid #ccc; border-radius: 6px; font-size: 0.95rem; }
     button { padding: 0.6rem 1.2rem; margin-top: 1rem; border: none; border-radius: 6px; background: var(--primary); color: white; font-weight: bold; cursor: pointer; }
-
     .info { display: flex; flex-wrap: wrap; justify-content: space-between; background: #e3f2fd; padding: 1rem; font-weight: bold; font-size: 0.95rem; margin-bottom: 1.5rem; border-radius: 8px; }
-
     .matkul-list { margin-top: 30px; }
     .mk-row {
       background: #f9f9f9;
@@ -75,7 +72,6 @@
     .edit-btn:hover { background: #3498db; color: #fff; }
     .delete-btn { border-color: #e74c3c; color: #e74c3c; }
     .delete-btn:hover { background: #e74c3c; color: #fff; }
-
     #searchInput {
       width: 100%; padding: 0.6rem; margin-bottom: 1rem;
       border: 1px solid #ccc; border-radius: 6px; font-size: 0.95rem;
@@ -223,12 +219,11 @@
 
     // --- Tambah MK
     document.getElementById('saveMkBtn').onclick = async () => {
-      const nama = document.getElementById('namaMatkul').value;
-      const kode = document.getElementById('kodeMatkul').value;
+      const nama = document.getElementById('namaMatkul').value.trim();
+      const kode = document.getElementById('kodeMatkul').value.trim();
       const sks = parseInt(document.getElementById('sksMatkul').value);
       if (!nama || !kode || !sks) return alert('Lengkapi semua kolom');
-      if (sks > sksSisa) return alert('SKS melebihi batas');
-
+      if (sks > sksSisa) return alert('SKS melebihi batas sisa semester');
       await fetch('https://ediska-backend.onrender.com/api/matakuliah', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -250,20 +245,21 @@
       renderMatkulRows(allMatkul);
     };
     window.updateMatkul = async (id) => {
-      const nama = document.getElementById(`editNama_${id}`).value;
-      const kode = document.getElementById(`editKode_${id}`).value;
+      const nama = document.getElementById(`editNama_${id}`).value.trim();
+      const kode = document.getElementById(`editKode_${id}`).value.trim();
       const sks = parseInt(document.getElementById(`editSks_${id}`).value);
       if (!nama || !kode || !sks) return false;
-      // Dapatkan SKS sebelum diedit
+
+      // --- SKS logic: saat edit, sisa SKS dihitung dari yang lain
       const mkOld = allMatkul.find(m => m._id === id);
       const sksOld = mkOld ? mkOld.sks : 0;
-      // Cek jika perubahan SKS tidak melebihi batas
       const usedSksOther = allMatkul.filter(m => m._id !== id).reduce((sum, m) => sum + (m.sks || 0), 0);
       const sksBaruTersisa = sksMax - usedSksOther;
       if (sks > sksBaruTersisa) {
         alert('SKS melebihi sisa semester');
         return false;
       }
+
       await fetch(`https://ediska-backend.onrender.com/api/matakuliah/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
