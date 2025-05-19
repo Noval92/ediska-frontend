@@ -1,4 +1,3 @@
-<!-- isi-matakuliah.html -->
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -22,9 +21,7 @@
 
     .info { display: flex; flex-wrap: wrap; justify-content: space-between; background: #e3f2fd; padding: 1rem; font-weight: bold; font-size: 0.95rem; margin-bottom: 1.5rem; border-radius: 8px; }
 
-    .matkul-list {
-      margin-top: 30px;
-    }
+    .matkul-list { margin-top: 30px; }
     .mk-row {
       background: #f9f9f9;
       padding: 1rem 1.2rem;
@@ -34,39 +31,80 @@
       transition: box-shadow 0.2s, transform 0.2s;
       cursor: pointer;
       box-shadow: 0 2px 6px rgba(52,152,219,0.04);
+      position: relative;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
     }
-    .mk-row:hover {
+    .mk-row:hover, .mk-row:focus-within {
       box-shadow: 0 8px 24px rgba(52,152,219,0.12);
       transform: translateY(-2px) scale(1.01);
       background: #e3f2fd;
     }
-    .mk-row .matkul-title {
-      font-size: 1.1rem;
-      font-weight: bold;
-      margin-bottom: 4px;
-      color: #2c3e50;
-    }
-    .mk-row .matkul-info {
-      font-size: 0.97rem;
-      color: #3498db;
-    }
-    .mk-row .matkul-sesi {
+    .matkul-title { font-size: 1.1rem; font-weight: bold; margin-bottom: 4px; color: #2c3e50; }
+    .matkul-info { font-size: 0.97rem; color: #3498db; }
+    .matkul-sesi {
       background: #d0ebff;
       padding: 6px 16px;
       border-radius: 16px;
       font-size: 0.95rem;
-      margin-left: 1rem;
       color: #216bb0;
+      margin-left: 1rem;
+      white-space: nowrap;
     }
+    .mk-actions {
+      display: flex;
+      gap: 0.5em;
+      margin-left: 12px;
+      visibility: hidden;
+    }
+    .mk-row:hover .mk-actions, .mk-row:focus-within .mk-actions, .mk-actions.show {
+      visibility: visible;
+    }
+    .edit-btn, .delete-btn {
+      background: #fff;
+      color: var(--primary);
+      border: 1px solid #3498db;
+      border-radius: 5px;
+      font-size: 0.98em;
+      font-weight: 600;
+      padding: 5px 12px;
+      margin: 0;
+      transition: background 0.2s, color 0.2s;
+    }
+    .edit-btn:hover { background: #3498db; color: #fff; }
+    .delete-btn { border-color: #e74c3c; color: #e74c3c; }
+    .delete-btn:hover { background: #e74c3c; color: #fff; }
+
     #searchInput {
       width: 100%; padding: 0.6rem; margin-bottom: 1rem;
       border: 1px solid #ccc; border-radius: 6px; font-size: 0.95rem;
     }
+    .edit-form-inline {
+      background: #fdf6e3;
+      border: 1px solid #e0c185;
+      border-radius: 7px;
+      padding: 1rem;
+      margin: 10px 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      font-size: 0.97rem;
+    }
+    .edit-form-inline input {
+      width: auto;
+      min-width: 120px;
+    }
+    .edit-form-inline button {
+      padding: 0.4rem 1.1rem;
+      font-size: 1em;
+    }
     @media (max-width: 600px) {
       .container { padding: 1rem; }
       .info { flex-direction: column; gap: 0.5rem; }
-      .mk-row { padding: 1rem 0.5rem; }
-      .mk-row .matkul-sesi { margin-left: 0; margin-top: 6px; display: block; }
+      .mk-row { flex-direction: column; }
+      .mk-actions { visibility: visible; margin-left: 0; margin-top: 7px; }
     }
   </style>
 </head>
@@ -101,7 +139,6 @@
   </footer>
 
   <script>
-    // === User dan Semester
     const user = JSON.parse(localStorage.getItem('user'));
     if (!user || !user._id) window.location = 'login.html';
 
@@ -114,17 +151,14 @@
     const mkRows = document.getElementById('mkRows');
     let sksMax = 0;
     let sksSisa = 0;
-    let semesterAktif = 0;
     let allMatkul = [];
+    let editingId = null; // For inline edit
 
     // === Load Semester Data
     async function loadSemesterData() {
       const res = await fetch(`https://ediska-backend.onrender.com/api/semester/${user._id}`);
       const data = await res.json();
       data.sort((a, b) => b.semester - a.semester);
-      if (data.length > 0) {
-        semesterAktif = data[0].semester;
-      }
       const sem = data.find(s => parseInt(s.semester) === semesterParam);
       if (sem) {
         sksMax = sem.sks || 0;
@@ -143,24 +177,42 @@
       const used = list.reduce((sum, m) => sum + (m.sks || 0), 0);
       sksSisa = sksMax - used;
       sksSisaEl.textContent = sksSisa;
+      await renderMatkulRows(list);
+    }
 
-      // Box tampilan UT: Nama, SKS, Jumlah Sesi (klik = ke isi-sesi)
+    async function renderMatkulRows(list) {
       mkRows.innerHTML = await Promise.all(list.map(async m => {
+        // Inline edit form
+        if (editingId === m._id) {
+          return `
+            <form class="edit-form-inline" onsubmit="return updateMatkul('${m._id}')">
+              <input type="text" id="editNama_${m._id}" value="${m.nama}" required/>
+              <input type="text" id="editKode_${m._id}" value="${m.kode}" required/>
+              <input type="number" id="editSks_${m._id}" value="${m.sks}" required min="1" />
+              <button type="submit">Simpan</button>
+              <button type="button" onclick="cancelEdit()">Batal</button>
+            </form>
+          `;
+        }
+        // Normal list
         const sesi = await fetch(`https://ediska-backend.onrender.com/api/matakuliah/${m._id}/sesi`).then(r => r.json());
         return `
-          <div class="mk-row" onclick="window.location.href='isi-sesi.html?matkul_id=${m._id}'" title="Klik untuk lihat/tambah sesi">
-            <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;">
-              <div>
-                <div class="matkul-title">${m.nama}</div>
-                <div class="matkul-info">${m.sks} SKS</div>
-              </div>
+          <div class="mk-row" tabindex="0">
+            <div onclick="window.location.href='isi-sesi.html?matkul_id=${m._id}'" style="flex:1;min-width:180px;">
+              <div class="matkul-title">${m.nama}</div>
+              <div class="matkul-info">${m.sks} SKS</div>
               <div class="matkul-sesi">Sesi: ${sesi.length}</div>
+            </div>
+            <div class="mk-actions">
+              <button class="edit-btn" onclick="event.stopPropagation();editMatkul('${m._id}')">Edit</button>
+              <button class="delete-btn" onclick="event.stopPropagation();hapusMatkul('${m._id}')">Hapus</button>
             </div>
           </div>
         `;
       })).then(arr => arr.join(''));
     }
 
+    // --- Tambah MK
     document.getElementById('saveMkBtn').onclick = async () => {
       const nama = document.getElementById('namaMatkul').value;
       const kode = document.getElementById('kodeMatkul').value;
@@ -176,30 +228,48 @@
       document.getElementById('namaMatkul').value = '';
       document.getElementById('kodeMatkul').value = '';
       document.getElementById('sksMatkul').value = '';
-      mkRows.innerHTML = '';
       await loadMatkulList();
     };
 
+    // --- Edit MK
+    window.editMatkul = (id) => {
+      editingId = id;
+      renderMatkulRows(allMatkul);
+    };
+    window.cancelEdit = () => {
+      editingId = null;
+      renderMatkulRows(allMatkul);
+    };
+    window.updateMatkul = async (id) => {
+      const nama = document.getElementById(`editNama_${id}`).value;
+      const kode = document.getElementById(`editKode_${id}`).value;
+      const sks = parseInt(document.getElementById(`editSks_${id}`).value);
+      if (!nama || !kode || !sks) return false;
+      await fetch(`https://ediska-backend.onrender.com/api/matakuliah/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nama, kode, sks })
+      });
+      editingId = null;
+      await loadMatkulList();
+      return false;
+    };
+
+    // --- Hapus MK
+    window.hapusMatkul = async (id) => {
+      if (!confirm('Yakin ingin menghapus mata kuliah beserta seluruh sesi di dalamnya?')) return;
+      await fetch(`https://ediska-backend.onrender.com/api/matakuliah/${id}`, { method: 'DELETE' });
+      await loadMatkulList();
+    };
+
+    // --- Filter/Search
     window.filterMatkul = async () => {
       const keyword = document.getElementById('searchInput').value.toLowerCase();
       const filtered = allMatkul.filter(m =>
         m.nama.toLowerCase().includes(keyword) ||
         m.kode.toLowerCase().includes(keyword)
       );
-      mkRows.innerHTML = await Promise.all(filtered.map(async m => {
-        const sesi = await fetch(`https://ediska-backend.onrender.com/api/matakuliah/${m._id}/sesi`).then(r => r.json());
-        return `
-          <div class="mk-row" onclick="window.location.href='isi-sesi.html?matkul_id=${m._id}'" title="Klik untuk lihat/tambah sesi">
-            <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;">
-              <div>
-                <div class="matkul-title">${m.nama}</div>
-                <div class="matkul-info">${m.sks} SKS</div>
-              </div>
-              <div class="matkul-sesi">Sesi: ${sesi.length}</div>
-            </div>
-          </div>
-        `;
-      })).then(arr => arr.join(''));
+      await renderMatkulRows(filtered);
     };
 
     // Init
