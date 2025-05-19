@@ -31,6 +31,7 @@
     .msg-error { color: #d32f2f; margin: 7px 0; text-align: center; font-size: 1.02em; }
     .icon-sukses { color: #388e3c; font-size:1.4em; vertical-align:middle; margin-left:2px;}
     .note-blm-lengkap { color: #d32f2f; font-size:0.95em; margin-left:7px;}
+    .loading { text-align:center; margin:8px 0; }
     @media (max-width: 700px) { .container { max-width: 98vw; padding: 0.5rem; } .judul-blok { font-size: 1.05em; } .sesi-blok { padding: 0.7rem 0.4rem;} }
     footer { position: fixed; bottom: 0; width: 100vw; background: #fff; box-shadow: 0 -2px 16px rgba(44,62,80,0.06); display: flex; justify-content: space-around; padding: 10px 0 6px 0; z-index: 200; left: 0;}
     footer a { text-decoration: none; color: #3498db; font-size: 15px; text-align: center;}
@@ -58,6 +59,7 @@
       <button type="submit" class="btn-submit">Simpan Sesi</button>
       <button type="button" class="btn-batal" style="display:none;margin-left:8px;" onclick="batalEdit()">Batal Edit</button>
       <div id="msg"></div>
+      <div id="loading" class="loading" style="display:none;">⏳ Menyimpan, mohon tunggu...</div>
     </form>
   </div>
   <footer>
@@ -74,6 +76,7 @@ const matkulId = params.get('matkul_id');
 let sesiData = [];
 let pdfIdx = 0, noteIdx = 0, editingSesiId = null;
 
+// === Memuat dan Merender Daftar Sesi ===
 async function loadSesiList() {
   const res = await fetch(`https://ediska-backend.onrender.com/api/matakuliah/${matkulId}/sesi`);
   sesiData = await res.json();
@@ -98,9 +101,7 @@ async function loadSesiList() {
   document.getElementById('urutan-sesi').innerHTML = `Sesi ${sesiData.length+1}`;
 }
 
-window.onload = loadSesiList;
-
-// Tambah Dokumen
+// === Tambah Dokumen ===
 function tambahDokumen(judulVal = '', fileVal = null, sukses = false) {
   if (pdfIdx >= 10) return;
   pdfIdx++;
@@ -111,12 +112,11 @@ function tambahDokumen(judulVal = '', fileVal = null, sukses = false) {
   div.innerHTML = `
     <input type="text" name="pdfJudul[]" placeholder="Judul dokumen" value="${judulVal}" oninput="cekKelComplete(this)">
     <input type="file" name="pdfFile[]" accept=".pdf,.jpg,.jpeg,.png" onchange="tandaiUploadSukses(this)">
-    <span class="icon-upload"></span>
+    <span class="icon-upload">${sukses?'✅':''}</span>
     <button type="button" onclick="this.parentNode.remove();pdfIdx--;">✕</button>
   `;
   document.getElementById('pdfList').appendChild(div);
 }
-// Upload sukses centang
 function tandaiUploadSukses(input) {
   const span = input.parentNode.querySelector('.icon-upload');
   if (input.files && input.files[0]) {
@@ -128,7 +128,7 @@ function tandaiUploadSukses(input) {
   }
 }
 
-// Tambah Note
+// === Tambah Note ===
 function tambahNote(judulVal = '', linkVal = '') {
   if (noteIdx >= 10) return;
   noteIdx++;
@@ -145,7 +145,7 @@ function tambahNote(judulVal = '', linkVal = '') {
   document.getElementById('noteList').appendChild(div);
 }
 
-// Cek Kelengkapan Field
+// === Cek Kelengkapan Field ===
 function cekKelComplete(input) {
   const span = input.parentNode.querySelector('.icon-note, .icon-upload');
   if (!input.value.trim()) {
@@ -155,7 +155,7 @@ function cekKelComplete(input) {
   }
 }
 
-// Edit, Batal, Hapus Sesi (tidak berubah)
+// === Edit/Batal/Hapus Sesi ===
 async function editSesi(sesiId) {
   editingSesiId = sesiId;
   const res = await fetch(`https://ediska-backend.onrender.com/api/matakuliah/sesi/${sesiId}`);
@@ -167,7 +167,7 @@ async function editSesi(sesiId) {
   document.getElementById('pdfList').innerHTML = '';
   pdfIdx = 0;
   if (sesi.pdfJudul && sesi.pdfJudul.length) {
-    sesi.pdfJudul.forEach((j, idx) => tambahDokumen(j, null, false));
+    sesi.pdfJudul.forEach((j, idx) => tambahDokumen(j, null, true));
   }
   document.getElementById('noteList').innerHTML = '';
   noteIdx = 0;
@@ -193,10 +193,11 @@ async function hapusSesi(sesiId) {
   batalEdit(); loadSesiList();
 }
 
-// Submit Form
+// === Submit Form Sesi ===
 document.getElementById('formSesi').onsubmit = async function(e) {
   e.preventDefault();
-  // Validasi: selain nilai, kalau ada pdfJudul/note kosong = error
+
+  // Validasi kelengkapan (selain nilai)
   let adaKosong = false;
   document.querySelectorAll('input[name="pdfJudul[]"]').forEach(inp=>{
     if(!inp.value.trim()) adaKosong = true;
@@ -205,16 +206,31 @@ document.getElementById('formSesi').onsubmit = async function(e) {
     if(!inp.value.trim()) adaKosong = true;
   });
   if(!document.getElementById('pelajaran').value.trim() || !document.getElementById('ringkasan').value.trim()) adaKosong = true;
+
+  // Validasi: tidak boleh double "Hal apa yang dipelajari"
+  const pelajaranVal = document.getElementById('pelajaran').value.trim().toLowerCase();
+  if (!editingSesiId && sesiData.some(s => (s.pelajaran || '').toLowerCase() === pelajaranVal)) {
+    document.getElementById('msg').innerHTML = '<div class="msg-error">Sesi dengan “Hal yang dipelajari” ini sudah ada!</div>';
+    setTimeout(()=>document.getElementById('msg').innerHTML='', 1800);
+    return;
+  }
+
   if(adaKosong) {
     document.getElementById('msg').innerHTML = '<div class="msg-error">Pastikan semua kolom selain nilai sudah terisi!</div>';
     setTimeout(()=>document.getElementById('msg').innerHTML='', 1800);
     return;
   }
+
+  // === Tampilkan loading, disable submit ===
+  document.getElementById('loading').style.display = 'block';
+  document.querySelector('.btn-submit').disabled = true;
+
   const formData = new FormData();
   formData.append('matkulId', matkulId);
   formData.append('pelajaran', document.getElementById('pelajaran').value);
   formData.append('ringkasan', document.getElementById('ringkasan').value);
   formData.append('nilai', document.getElementById('nilai').value);
+
   const pdfJuduls = document.getElementsByName('pdfJudul[]');
   const pdfFiles = document.getElementsByName('pdfFile[]');
   for (let i = 0; i < pdfJuduls.length; i++) {
@@ -234,10 +250,15 @@ document.getElementById('formSesi').onsubmit = async function(e) {
     resp = await fetch(`https://ediska-backend.onrender.com/api/matakuliah/sesi`, { method: 'POST', body: formData });
   }
   batalEdit();
-  loadSesiList();
+  await loadSesiList();
   document.getElementById('msg').innerHTML = `<div class="msg-success">Sesi berhasil disimpan!</div>`;
   setTimeout(()=>document.getElementById('msg').innerHTML='', 1700);
+  // Sembunyikan loading & enable submit
+  document.getElementById('loading').style.display = 'none';
+  document.querySelector('.btn-submit').disabled = false;
 };
+
+window.onload = loadSesiList;
 </script>
 </body>
 </html>
