@@ -86,24 +86,60 @@
       font-weight: bold;
       cursor: pointer;
     }
-    .scroll-section {
-      padding: 0 20px 20px;
+    /* MENU EKSTERNAL */
+    .external-menu-section {
+      padding: 0 20px 24px 20px;
     }
-    .scroll-section h3 {
+    .external-menu-title {
+      font-size: 18px;
+      font-weight: 600;
       margin-bottom: 10px;
     }
-    .scroll-container {
+    .external-menu-container {
       display: flex;
-      overflow-x: auto;
-      gap: 16px;
+      gap: 24px;
+      justify-content: flex-start;
+      flex-wrap: wrap;
     }
-    .scroll-item {
-      background: white;
-      padding: 16px;
-      border-radius: 12px;
-      min-width: 150px;
+    .external-menu-card {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+      padding: 18px 16px 12px 16px;
       text-align: center;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      width: 150px;
+      transition: transform 0.18s;
+    }
+    .external-menu-card:hover {
+      transform: translateY(-4px) scale(1.03);
+      box-shadow: 0 8px 22px rgba(52,152,219,0.16);
+    }
+    .external-menu-card img {
+      width: 68px;
+      height: 68px;
+      object-fit: contain;
+      margin-bottom: 8px;
+      margin-top: 8px;
+    }
+    .external-menu-card span {
+      display: block;
+      margin: 0 auto;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #1976d2;
+      margin-top: 6px;
+    }
+    .external-menu-card a {
+      text-decoration: none;
+      color: inherit;
+    }
+    @media (max-width: 600px) {
+      .container { padding: 1rem; }
+      .external-menu-container { gap: 12px; }
+      .external-menu-card { width: 110px; padding: 12px 6px 8px 6px; }
+      .external-menu-card img { width: 45px; height: 45px;}
+      .grid-card img { width: 55px; height: 55px; }
+      .card, .grid-section { margin: 8px 0; padding: 8px; }
     }
     footer {
       position: fixed;
@@ -167,12 +203,28 @@
     </div>
   </div>
 
-  <div class="scroll-section">
-    <h3>Halaman Lainnya</h3>
-    <div class="scroll-container">
-      <div class="scroll-item"><a href="#">My UT</a></div>
-      <div class="scroll-item"><a href="#">Tuton</a></div>
-      <div class="scroll-item"><a href="#">Web UT</a></div>
+  <!-- MENU EKSTERNAL -->
+  <div class="external-menu-section">
+    <div class="external-menu-title">Akses Layanan UT</div>
+    <div class="external-menu-container">
+      <div class="external-menu-card">
+        <a href="https://admisi-sia.ut.ac.id/auth/login" target="_blank" rel="noopener">
+          <img src="My UT.png" alt="My UT" />
+          <span>My UT</span>
+        </a>
+      </div>
+      <div class="external-menu-card">
+        <a href="https://elearning.ut.ac.id/login/index.php" target="_blank" rel="noopener">
+          <img src="Tuton.png" alt="Tuton" />
+          <span>Tuton</span>
+        </a>
+      </div>
+      <div class="external-menu-card">
+        <a href="https://www.ut.ac.id/" target="_blank" rel="noopener">
+          <img src="Web UT.png" alt="Web UT" />
+          <span>Web UT</span>
+        </a>
+      </div>
     </div>
   </div>
 
