@@ -1,4 +1,3 @@
-<!-- arsip.html -->
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -128,6 +127,16 @@
     .btn-view-sesi:hover {
       background: #1976d2;
     }
+    .debug-id {
+      color: #c0392b;
+      font-size: 0.8em;
+      font-style: italic;
+      background: #fcf3cf;
+      padding: 2px 7px;
+      border-radius: 5px;
+      margin-top: 2px;
+      display: block;
+    }
     @media (max-width: 700px) {
       .container { max-width: 98vw; padding: 0.3rem;}
       th, td { font-size: 11px; padding: 4px 2px; }
@@ -194,8 +203,9 @@ function closePreview(ev) {
   document.getElementById('popup-inner').innerHTML = '';
 }
 
-// === Tambahan: buka arsip-sesi.html untuk 1 sesi
 function viewSesi(matkulId, sesiId) {
+  // Debug ID yang dilempar
+  // alert('matkul_id=' + matkulId + ', sesi_id=' + sesiId);
   window.location.href = `arsip-sesi.html?matkul_id=${matkulId}&sesi_id=${sesiId}`;
 }
 
@@ -243,7 +253,9 @@ async function loadArsip() {
           <td>${mk.nama}</td>
           <td>${mk.kode}</td>
           <td>${mk.sks}</td>
-          <td colspan="6"><i>Belum ada sesi</i></td>
+          <td colspan="6"><i>Belum ada sesi</i>
+            <span class="debug-id">matkul_id: ${mk._id}</span>
+          </td>
         </tr>`;
         continue;
       }
@@ -267,6 +279,7 @@ async function loadArsip() {
         output += `<tr>
           <td>
             <button class="btn-view-sesi" onclick="event.stopPropagation();viewSesi('${mk._id}','${s._id}')" title="Lihat Detail Sesi 👁️">👁️</button>
+            <span class="debug-id">matkul_id: ${mk._id}<br>sesi_id: ${s._id}</span>
           </td>
           <td>${mk.nama}</td>
           <td>${mk.kode}</td>
