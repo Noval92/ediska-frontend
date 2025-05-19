@@ -1,3 +1,4 @@
+<!-- arsip.html -->
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -112,10 +113,26 @@
       color: #d32f2f;
       z-index: 10;
     }
+    .btn-view-sesi {
+      background: #3498db;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 5px 10px;
+      font-size: 1.1em;
+      cursor: pointer;
+      transition: background 0.18s;
+      margin-right: 4px;
+      box-shadow: 0 1px 3px rgba(52,152,219,0.08);
+    }
+    .btn-view-sesi:hover {
+      background: #1976d2;
+    }
     @media (max-width: 700px) {
       .container { max-width: 98vw; padding: 0.3rem;}
       th, td { font-size: 11px; padding: 4px 2px; }
       h2 { font-size: 1.2rem; }
+      .btn-view-sesi { padding: 3px 6px; font-size: 0.96em; }
     }
     footer {
       position: fixed;
@@ -176,6 +193,12 @@ function closePreview(ev) {
   document.getElementById('popup-preview').style.display = 'none';
   document.getElementById('popup-inner').innerHTML = '';
 }
+
+// === Tambahan: buka arsip-sesi.html untuk 1 sesi
+function viewSesi(matkulId, sesiId) {
+  window.open(`arsip-sesi.html?matkul_id=${matkulId}&sesi_id=${sesiId}`, '_blank');
+}
+
 async function loadArsip() {
   const resSem = await fetch(`https://ediska-backend.onrender.com/api/semester/${user._id}`);
   let semesterList = await resSem.json();
@@ -194,6 +217,7 @@ async function loadArsip() {
     <table>
       <thead>
         <tr>
+          <th></th>
           <th>Mata Kuliah</th>
           <th>Kode</th>
           <th>SKS</th>
@@ -215,6 +239,7 @@ async function loadArsip() {
       const sesiList = await resSesi.json();
       if (!sesiList.length) {
         output += `<tr>
+          <td></td>
           <td>${mk.nama}</td>
           <td>${mk.kode}</td>
           <td>${mk.sks}</td>
@@ -238,7 +263,11 @@ async function loadArsip() {
             return `<div style="white-space:nowrap;"><a href="${l}" target="_blank" style="color:#1976d2;text-decoration:underline;">${judul}</a></div>`;
           }).join('');
         }
+        // === Tombol VIEW di kiri
         output += `<tr>
+          <td>
+            <button class="btn-view-sesi" onclick="event.stopPropagation();viewSesi('${mk._id}','${s._id}')" title="Lihat Detail Sesi 👁️">👁️</button>
+          </td>
           <td>${mk.nama}</td>
           <td>${mk.kode}</td>
           <td>${mk.sks}</td>
@@ -254,7 +283,7 @@ async function loadArsip() {
         // Expandable dokumen row (hidden by default)
         if (docs.length > 0) {
           output += `<tr class="dokumen-list-row" id="dokumen-row-${mk._id}_${s._id}" style="display:none;">
-            <td colspan="9" style="text-align:left">
+            <td colspan="10" style="text-align:left">
               <b>Daftar Dokumen:</b><br>
               ${docs.map((f, i) => {
                 let judul = judulDocs[i] || `Dokumen ${i+1}`;
