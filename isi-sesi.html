@@ -6,135 +6,34 @@
   <title>ISI SESI MATA KULIAH</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    body {
-      font-family: 'Poppins', sans-serif;
-      background: #f6f9fb;
-      margin: 0; padding: 0 0 80px 0;
-    }
-    .container {
-      max-width: 520px;
-      margin: 24px auto;
-      background: white;
-      padding: 1.2rem 1.2rem 2.4rem 1.2rem;
-      border-radius: 18px;
-      box-shadow: 0 4px 18px rgba(0,0,0,0.06);
-    }
-    .judul-blok {
-      background: #3498db;
-      color: #fff;
-      text-align: center;
-      font-weight: 600;
-      font-size: 1.4em;
-      border-radius: 12px 12px 0 0;
-      padding: 1.1rem 0 0.7rem 0;
-      margin-bottom: 2rem;
-    }
-    .sesi-blok {
-      border: 2px solid #2196f3;
-      background: #f2fafe;
-      border-radius: 8px;
-      margin: 18px 0 8px 0;
-      padding: 1rem 0.8rem 0.6rem 0.8rem;
-      position: relative;
-    }
-    .sesi-header {
-      font-size: 1.15em;
-      color: #1565c0;
-      font-weight: bold;
-      margin-bottom: 6px;
-    }
-    .sesi-aksi {
-      position: absolute; top: 13px; right: 14px;
-    }
-    .btn-edit, .btn-hapus, .btn-batal {
-      border: none;
-      border-radius: 6px;
-      padding: 5px 12px;
-      font-size: 0.99em;
-      margin-left: 5px;
-      margin-bottom: 3px;
-      cursor: pointer;
-      font-family: inherit;
-      transition: background 0.16s;
-    }
-    .btn-edit { background: #fbc02d; color: #1a1a1a; }
-    .btn-edit:hover { background: #ffd54f; }
-    .btn-hapus { background: #e74c3c; color: #fff; }
-    .btn-hapus:hover { background: #b71c1c; }
-    .btn-batal { background: #bdbdbd; color: #222; }
-    .btn-batal:hover { background: #888; }
-    form {
-      background: #e3f2fd;
-      border-radius: 10px;
-      padding: 1.2rem 1rem 0.6rem 1rem;
-      margin-top: 22px;
-      margin-bottom: 10px;
-      box-shadow: 0 1px 7px rgba(33,150,243,0.04);
-    }
-    .urutan-sesi {
-      margin: 0 0 10px 0;
-      font-weight: bold;
-      font-size: 1.1em;
-      color: #1565c0;
-    }
+    body { font-family: 'Poppins', sans-serif; background: #f6f9fb; margin: 0; padding: 0 0 80px 0; }
+    .container { max-width: 520px; margin: 24px auto; background: white; padding: 1.2rem 1.2rem 2.4rem 1.2rem; border-radius: 18px; box-shadow: 0 4px 18px rgba(0,0,0,0.06);}
+    .judul-blok { background: #3498db; color: #fff; text-align: center; font-weight: 600; font-size: 1.4em; border-radius: 12px 12px 0 0; padding: 1.1rem 0 0.7rem 0; margin-bottom: 2rem; }
+    .sesi-blok { border: 2px solid #2196f3; background: #f2fafe; border-radius: 8px; margin: 18px 0 8px 0; padding: 1rem 0.8rem 0.6rem 0.8rem; position: relative; }
+    .sesi-header { font-size: 1.15em; color: #1565c0; font-weight: bold; margin-bottom: 6px; }
+    .sesi-aksi { position: absolute; top: 13px; right: 14px; }
+    .btn-edit, .btn-hapus, .btn-batal { border: none; border-radius: 6px; padding: 5px 12px; font-size: 0.99em; margin-left: 5px; margin-bottom: 3px; cursor: pointer; font-family: inherit; transition: background 0.16s;}
+    .btn-edit { background: #fbc02d; color: #1a1a1a; } .btn-edit:hover { background: #ffd54f; }
+    .btn-hapus { background: #e74c3c; color: #fff; } .btn-hapus:hover { background: #b71c1c; }
+    .btn-batal { background: #bdbdbd; color: #222; } .btn-batal:hover { background: #888; }
+    form { background: #e3f2fd; border-radius: 10px; padding: 1.2rem 1rem 0.6rem 1rem; margin-top: 22px; margin-bottom: 10px; box-shadow: 0 1px 7px rgba(33,150,243,0.04);}
+    .urutan-sesi { margin: 0 0 10px 0; font-weight: bold; font-size: 1.1em; color: #1565c0; }
     label { display:block; margin:12px 0 6px 0;}
-    input[type=text], input[type=number], textarea {
-      width: 100%;
-      padding: 8px;
-      border: 1px solid #b0bec5;
-      border-radius: 6px;
-      font-size: 1em;
-      margin-bottom: 2px;
-      font-family: inherit;
-    }
+    input[type=text], input[type=number], textarea { width: 100%; padding: 8px; border: 1px solid #b0bec5; border-radius: 6px; font-size: 1em; margin-bottom: 2px; font-family: inherit; }
     textarea { min-height: 56px; resize: vertical;}
-    .pdf-item, .note-item { display: flex; gap: 7px; margin-bottom: 5px; }
+    .pdf-item, .note-item { display: flex; gap: 7px; margin-bottom: 5px; align-items:center;}
     .pdf-item input[type="text"], .note-item input[type="text"] { flex: 1;}
     .pdf-item input[type="file"] { flex: 1.4;}
-    .btn-tambah, .btn-submit {
-      background: #43a047;
-      color: #fff;
-      border: none;
-      border-radius: 7px;
-      padding: 7px 16px;
-      font-size: 1.06em;
-      margin: 8px 0 8px 0;
-      cursor: pointer;
-      transition: background 0.14s;
-    }
-    .btn-tambah { background: #2e7d32; }
-    .btn-tambah:hover { background: #388e3c;}
-    .btn-submit { width: 100%; margin-top: 20px; background: #3498db;}
-    .btn-submit:hover { background: #1976d2;}
-    .msg-success {
-      color: #388e3c; margin: 6px 0; text-align: center; font-size: 1.02em;
-    }
-    .msg-error {
-      color: #d32f2f; margin: 7px 0; text-align: center; font-size: 1.02em;
-    }
-    @media (max-width: 700px) {
-      .container { max-width: 98vw; padding: 0.5rem; }
-      .judul-blok { font-size: 1.05em; }
-      .sesi-blok { padding: 0.7rem 0.4rem;}
-    }
-    footer {
-      position: fixed;
-      bottom: 0;
-      width: 100vw;
-      background: #fff;
-      box-shadow: 0 -2px 16px rgba(44,62,80,0.06);
-      display: flex;
-      justify-content: space-around;
-      padding: 10px 0 6px 0;
-      z-index: 200;
-      left: 0;
-    }
-    footer a {
-      text-decoration: none;
-      color: #3498db;
-      font-size: 15px;
-      text-align: center;
-    }
+    .btn-tambah, .btn-submit { background: #43a047; color: #fff; border: none; border-radius: 7px; padding: 7px 16px; font-size: 1.06em; margin: 8px 0 8px 0; cursor: pointer; transition: background 0.14s;}
+    .btn-tambah { background: #2e7d32; } .btn-tambah:hover { background: #388e3c;}
+    .btn-submit { width: 100%; margin-top: 20px; background: #3498db;} .btn-submit:hover { background: #1976d2;}
+    .msg-success { color: #388e3c; margin: 6px 0; text-align: center; font-size: 1.02em; }
+    .msg-error { color: #d32f2f; margin: 7px 0; text-align: center; font-size: 1.02em; }
+    .icon-sukses { color: #388e3c; font-size:1.4em; vertical-align:middle; margin-left:2px;}
+    .note-blm-lengkap { color: #d32f2f; font-size:0.95em; margin-left:7px;}
+    @media (max-width: 700px) { .container { max-width: 98vw; padding: 0.5rem; } .judul-blok { font-size: 1.05em; } .sesi-blok { padding: 0.7rem 0.4rem;} }
+    footer { position: fixed; bottom: 0; width: 100vw; background: #fff; box-shadow: 0 -2px 16px rgba(44,62,80,0.06); display: flex; justify-content: space-around; padding: 10px 0 6px 0; z-index: 200; left: 0;}
+    footer a { text-decoration: none; color: #3498db; font-size: 15px; text-align: center;}
   </style>
 </head>
 <body>
@@ -142,7 +41,7 @@
     <button onclick="history.back()" style="margin-bottom:12px;background:#bdbdbd;padding:7px 20px;border:none;border-radius:8px;font-size:1em;">← Kembali</button>
     <div class="judul-blok">ISI SESI MATA KULIAH</div>
     <div id="sesi-list"></div>
-    <form id="formSesi">
+    <form id="formSesi" autocomplete="off">
       <div id="urutan-sesi" class="urutan-sesi"></div>
       <label><b>Hal apa yang dipelajari?</b></label>
       <input type="text" id="pelajaran" placeholder="Contoh: Sesi 1 - Instalasi dan konfigurasi ..." required />
@@ -175,7 +74,6 @@ const matkulId = params.get('matkul_id');
 let sesiData = [];
 let pdfIdx = 0, noteIdx = 0, editingSesiId = null;
 
-// TAMPILKAN DAFTAR SESI
 async function loadSesiList() {
   const res = await fetch(`https://ediska-backend.onrender.com/api/matakuliah/${matkulId}/sesi`);
   sesiData = await res.json();
@@ -184,11 +82,11 @@ async function loadSesiList() {
     html += `
       <div class="sesi-blok">
         <div class="sesi-header">Sesi ${i+1}</div>
-        <div><b>Hal yang dipelajari:</b> ${s.pelajaran || '-'}</div>
-        <div><b>Ringkasan:</b> ${s.ringkasan || '-'}</div>
-        <div><b>Dokumen:</b> ${(s.pdfJudul||[]).map((j,idx)=>j?`<a href="https://ediska-backend.onrender.com/${s.pdf[idx]}" target="_blank">${j}</a>`:'').join(', ')||'-'}</div>
-        <div><b>Note/Link:</b> ${(s.videoJudul||[]).map((n,idx)=>s.videoLink&&s.videoLink[idx]?`<a href="${s.videoLink[idx]}" target="_blank">${n}</a>`:n).join(', ')||'-'}</div>
-        <div><b>Nilai:</b> ${s.nilai||'-'}</div>
+        <div><b>Hal yang dipelajari:</b> ${s.pelajaran || '<span class="note-blm-lengkap">Belum Lengkap</span>'}</div>
+        <div><b>Ringkasan:</b> ${s.ringkasan || '<span class="note-blm-lengkap">Belum Lengkap</span>'}</div>
+        <div><b>Dokumen:</b> ${(s.pdfJudul||[]).map((j,idx)=>j?`<a href="https://ediska-backend.onrender.com/${s.pdf[idx]}" target="_blank">${j}</a>`:`<span class="note-blm-lengkap">Belum Lengkap</span>`).join(', ')||'-'}</div>
+        <div><b>Note/Link:</b> ${(s.videoJudul||[]).map((n,idx)=>n?(s.videoLink&&s.videoLink[idx]?`<a href="${s.videoLink[idx]}" target="_blank">${n}</a>`:n):'<span class="note-blm-lengkap">Belum Lengkap</span>').join(', ')||'-'}</div>
+        <div><b>Nilai:</b> ${s.nilai || '-'}</div>
         <div class="sesi-aksi">
           <button type="button" class="btn-edit" onclick="editSesi('${s._id}')">Edit</button>
           <button type="button" class="btn-hapus" onclick="hapusSesi('${s._id}')">Hapus</button>
@@ -197,13 +95,13 @@ async function loadSesiList() {
     `;
   });
   document.getElementById('sesi-list').innerHTML = html;
-  // Urutan sesi otomatis
   document.getElementById('urutan-sesi').innerHTML = `Sesi ${sesiData.length+1}`;
 }
+
 window.onload = loadSesiList;
 
-// TAMBAH DOKUMEN INPUT
-function tambahDokumen(judulVal = '', fileVal = null) {
+// Tambah Dokumen
+function tambahDokumen(judulVal = '', fileVal = null, sukses = false) {
   if (pdfIdx >= 10) return;
   pdfIdx++;
   const id = 'pdf'+pdfIdx;
@@ -211,13 +109,26 @@ function tambahDokumen(judulVal = '', fileVal = null) {
   div.className = 'pdf-item';
   div.id = id;
   div.innerHTML = `
-    <input type="text" name="pdfJudul[]" placeholder="Judul dokumen" value="${judulVal}">
-    <input type="file" name="pdfFile[]" accept=".pdf,.jpg,.jpeg,.png">
+    <input type="text" name="pdfJudul[]" placeholder="Judul dokumen" value="${judulVal}" oninput="cekKelComplete(this)">
+    <input type="file" name="pdfFile[]" accept=".pdf,.jpg,.jpeg,.png" onchange="tandaiUploadSukses(this)">
+    <span class="icon-upload"></span>
     <button type="button" onclick="this.parentNode.remove();pdfIdx--;">✕</button>
   `;
   document.getElementById('pdfList').appendChild(div);
 }
-// TAMBAH NOTE INPUT
+// Upload sukses centang
+function tandaiUploadSukses(input) {
+  const span = input.parentNode.querySelector('.icon-upload');
+  if (input.files && input.files[0]) {
+    span.innerHTML = '✅';
+    span.className = 'icon-sukses';
+  } else {
+    span.innerHTML = '';
+    span.className = 'icon-upload';
+  }
+}
+
+// Tambah Note
 function tambahNote(judulVal = '', linkVal = '') {
   if (noteIdx >= 10) return;
   noteIdx++;
@@ -226,14 +137,25 @@ function tambahNote(judulVal = '', linkVal = '') {
   div.className = 'note-item';
   div.id = id;
   div.innerHTML = `
-    <input type="text" name="videoJudul[]" placeholder="Judul Note/Video" value="${judulVal}">
+    <input type="text" name="videoJudul[]" placeholder="Judul Note/Video" value="${judulVal}" oninput="cekKelComplete(this)">
     <input type="text" name="videoLink[]" placeholder="Isi Note atau link (boleh teks saja)" value="${linkVal}">
+    <span class="icon-note"></span>
     <button type="button" onclick="this.parentNode.remove();noteIdx--;">✕</button>
   `;
   document.getElementById('noteList').appendChild(div);
 }
 
-// EDIT SESI
+// Cek Kelengkapan Field
+function cekKelComplete(input) {
+  const span = input.parentNode.querySelector('.icon-note, .icon-upload');
+  if (!input.value.trim()) {
+    if (span) span.innerHTML = '<span class="note-blm-lengkap">Belum Lengkap</span>';
+  } else {
+    if (span && span.className === 'icon-note') span.innerHTML = '';
+  }
+}
+
+// Edit, Batal, Hapus Sesi (tidak berubah)
 async function editSesi(sesiId) {
   editingSesiId = sesiId;
   const res = await fetch(`https://ediska-backend.onrender.com/api/matakuliah/sesi/${sesiId}`);
@@ -242,28 +164,19 @@ async function editSesi(sesiId) {
   document.getElementById('pelajaran').value = sesi.pelajaran || '';
   document.getElementById('ringkasan').value = sesi.ringkasan || '';
   document.getElementById('nilai').value = sesi.nilai || '';
-  // PDF judul
   document.getElementById('pdfList').innerHTML = '';
   pdfIdx = 0;
   if (sesi.pdfJudul && sesi.pdfJudul.length) {
-    sesi.pdfJudul.forEach((j, idx) => {
-      tambahDokumen(j, null);
-    });
+    sesi.pdfJudul.forEach((j, idx) => tambahDokumen(j, null, false));
   }
-  // Note/link
   document.getElementById('noteList').innerHTML = '';
   noteIdx = 0;
   if (sesi.videoJudul && sesi.videoJudul.length) {
-    sesi.videoJudul.forEach((n, idx) => {
-      tambahNote(n, sesi.videoLink[idx]||'');
-    });
+    sesi.videoJudul.forEach((n, idx) => tambahNote(n, sesi.videoLink[idx]||''));
   }
-  // Tampilkan tombol Batal Edit
   document.querySelector('.btn-batal').style.display = 'inline-block';
   document.querySelector('.btn-submit').innerText = 'Simpan Perubahan';
 }
-
-// BATAL EDIT
 function batalEdit() {
   editingSesiId = null;
   document.getElementById('formSesi').reset();
@@ -274,53 +187,52 @@ function batalEdit() {
   document.querySelector('.btn-batal').style.display = 'none';
   document.querySelector('.btn-submit').innerText = 'Simpan Sesi';
 }
-
-// HAPUS SESI
 async function hapusSesi(sesiId) {
   if (!confirm('Yakin hapus sesi ini?')) return;
   await fetch(`https://ediska-backend.onrender.com/api/matakuliah/sesi/${sesiId}`, { method: 'DELETE' });
-  batalEdit();
-  loadSesiList();
+  batalEdit(); loadSesiList();
 }
 
-// SUBMIT FORM: TAMBAH/EDIT
+// Submit Form
 document.getElementById('formSesi').onsubmit = async function(e) {
   e.preventDefault();
+  // Validasi: selain nilai, kalau ada pdfJudul/note kosong = error
+  let adaKosong = false;
+  document.querySelectorAll('input[name="pdfJudul[]"]').forEach(inp=>{
+    if(!inp.value.trim()) adaKosong = true;
+  });
+  document.querySelectorAll('input[name="videoJudul[]"]').forEach(inp=>{
+    if(!inp.value.trim()) adaKosong = true;
+  });
+  if(!document.getElementById('pelajaran').value.trim() || !document.getElementById('ringkasan').value.trim()) adaKosong = true;
+  if(adaKosong) {
+    document.getElementById('msg').innerHTML = '<div class="msg-error">Pastikan semua kolom selain nilai sudah terisi!</div>';
+    setTimeout(()=>document.getElementById('msg').innerHTML='', 1800);
+    return;
+  }
   const formData = new FormData();
   formData.append('matkulId', matkulId);
   formData.append('pelajaran', document.getElementById('pelajaran').value);
   formData.append('ringkasan', document.getElementById('ringkasan').value);
   formData.append('nilai', document.getElementById('nilai').value);
-
-  // PDF upload
   const pdfJuduls = document.getElementsByName('pdfJudul[]');
   const pdfFiles = document.getElementsByName('pdfFile[]');
   for (let i = 0; i < pdfJuduls.length; i++) {
     formData.append('pdfJudul[]', pdfJuduls[i].value);
     if (pdfFiles[i]?.files[0]) formData.append('pdfFile[]', pdfFiles[i].files[0]);
   }
-  // Note & Link
   const notes = document.getElementsByName('videoJudul[]');
   const links = document.getElementsByName('videoLink[]');
   for (let i = 0; i < notes.length; i++) {
     formData.append('videoJudul[]', notes[i].value);
     formData.append('videoLink[]', links[i].value);
   }
-
-  // Submit tambah/edit
   let resp;
   if (editingSesiId) {
-    resp = await fetch(`https://ediska-backend.onrender.com/api/matakuliah/sesi/${editingSesiId}`, {
-      method: 'PUT',
-      body: formData
-    });
+    resp = await fetch(`https://ediska-backend.onrender.com/api/matakuliah/sesi/${editingSesiId}`, { method: 'PUT', body: formData });
   } else {
-    resp = await fetch(`https://ediska-backend.onrender.com/api/matakuliah/sesi`, {
-      method: 'POST',
-      body: formData
-    });
+    resp = await fetch(`https://ediska-backend.onrender.com/api/matakuliah/sesi`, { method: 'POST', body: formData });
   }
-  // Success
   batalEdit();
   loadSesiList();
   document.getElementById('msg').innerHTML = `<div class="msg-success">Sesi berhasil disimpan!</div>`;
