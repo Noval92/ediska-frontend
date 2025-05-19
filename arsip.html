@@ -118,7 +118,7 @@
       border: none;
       border-radius: 6px;
       padding: 5px 10px;
-      font-size: 1.1em;
+      font-size: 1.2em;
       cursor: pointer;
       transition: background 0.18s;
       margin-right: 4px;
@@ -141,7 +141,7 @@
       .container { max-width: 98vw; padding: 0.3rem;}
       th, td { font-size: 11px; padding: 4px 2px; }
       h2 { font-size: 1.2rem; }
-      .btn-view-sesi { padding: 3px 6px; font-size: 0.96em; }
+      .btn-view-sesi { padding: 3px 6px; font-size: 1em; }
     }
     footer {
       position: fixed;
@@ -204,15 +204,13 @@ function closePreview(ev) {
 }
 
 function viewSesi(matkulId, sesiId) {
-  // Debug ID yang dilempar
-  // alert('matkul_id=' + matkulId + ', sesi_id=' + sesiId);
+  // MatkulId dan sesiId selalu diambil dari value mk._id dan s._id (bukan text!)
   window.location.href = `arsip-sesi.html?matkul_id=${matkulId}&sesi_id=${sesiId}`;
 }
 
 async function loadArsip() {
   const resSem = await fetch(`https://ediska-backend.onrender.com/api/semester/${user._id}`);
   let semesterList = await resSem.json();
-  // Sort by semester ASC
   semesterList = semesterList.sort((a, b) => a.semester - b.semester);
   if (!semesterList || semesterList.length == 0) {
     document.getElementById('arsipContent').innerHTML = '<div style="padding:2rem;text-align:center;">Tidak ada data.</div>';
@@ -259,9 +257,7 @@ async function loadArsip() {
         </tr>`;
         continue;
       }
-      let sesiIdx = 0;
       for (const s of sesiList) {
-        sesiIdx++;
         // Dokumen file array
         let docs = Array.isArray(s.pdf) ? s.pdf : [];
         let judulDocs = Array.isArray(s.pdfJudul) ? s.pdfJudul : [];
@@ -275,10 +271,10 @@ async function loadArsip() {
             return `<div style="white-space:nowrap;"><a href="${l}" target="_blank" style="color:#1976d2;text-decoration:underline;">${judul}</a></div>`;
           }).join('');
         }
-        // === Tombol VIEW di kiri
+        // === Tombol VIEW di kiri pakai ikon 📖
         output += `<tr>
           <td>
-            <button class="btn-view-sesi" onclick="event.stopPropagation();viewSesi('${mk._id}','${s._id}')" title="Lihat Detail Sesi 👁️">👁️</button>
+            <button class="btn-view-sesi" onclick="event.stopPropagation();viewSesi('${mk._id}','${s._id}')" title="Buka Detail Arsip Sesi 📖">📖</button>
             <span class="debug-id">matkul_id: ${mk._id}<br>sesi_id: ${s._id}</span>
           </td>
           <td>${mk.nama}</td>
