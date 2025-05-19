@@ -3,10 +3,163 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Arsip Sesi - Detail</title>
+  <title>Arsip Detail Sesi</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    /* ... (style tetap persis seperti yang kamu kirim, ga perlu diulang di sini) ... */
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f5f8fc;
+      margin: 0;
+      padding: 0 0 80px 0;
+    }
+    .container {
+      max-width: 540px;
+      margin: 2.5rem auto 0 auto;
+      background: #fff;
+      padding: 1.6rem 1rem 1rem 1rem;
+      border-radius: 16px;
+      box-shadow: 0 6px 20px rgba(44, 62, 80, 0.11);
+    }
+    .back-btn {
+      display: inline-block;
+      background: #95a5a6;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 16px;
+      margin-bottom: 1.2rem;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.2s;
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+    .back-btn:hover { background: #636e72; }
+    h2 {
+      text-align: center;
+      background: #3498db;
+      color: #fff;
+      padding: 1rem 0.5rem;
+      border-radius: 12px 12px 0 0;
+      margin: 0 0 1.5rem 0;
+      font-size: 1.25rem;
+      letter-spacing: 1px;
+    }
+    .matkul-info {
+      background: #e3f2fd;
+      border-radius: 7px;
+      padding: 10px 15px;
+      margin-bottom: 1.3rem;
+      font-size: 1.11em;
+      font-weight: 600;
+    }
+    .sesi-detail-label {
+      font-weight: 600;
+      color: #1976d2;
+      margin-top: 16px;
+      margin-bottom: 4px;
+      display: block;
+      font-size: 1em;
+    }
+    .sesi-detail-value {
+      margin-bottom: 0.7rem;
+      font-size: 1.05em;
+      color: #222;
+      word-break: break-word;
+      line-height: 1.6;
+    }
+    .doc-list, .link-list {
+      padding-left: 17px;
+      margin-bottom: 1rem;
+    }
+    .doc-btn, .link-btn {
+      background: #3498db;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      padding: 4px 13px;
+      font-size: 1em;
+      cursor: pointer;
+      margin-bottom: 4px;
+      margin-right: 7px;
+      transition: background 0.14s;
+      font-weight: 500;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .doc-btn:hover, .link-btn:hover {
+      background: #1976d2;
+    }
+    .nilai-box {
+      font-size: 1.13em;
+      font-weight: bold;
+      background: #e3f2fd;
+      display: inline-block;
+      padding: 7px 22px;
+      border-radius: 20px;
+      margin-bottom: 15px;
+      margin-top: 10px;
+      color: #1976d2;
+      letter-spacing: 1px;
+    }
+    /* Preview pop-up */
+    .preview-popup {
+      display: none;
+      position: fixed;
+      left: 0; top: 0; width: 100vw; height: 100vh;
+      z-index: 9999;
+      background: rgba(0,0,0,0.46);
+      justify-content: center;
+      align-items: center;
+    }
+    .preview-popup-inner {
+      background: #fff;
+      border-radius: 10px;
+      max-width: 95vw;
+      max-height: 87vh;
+      overflow: auto;
+      padding: 1rem;
+      position: relative;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+    }
+    .close-preview {
+      position: absolute; top: 10px; right: 18px;
+      font-size: 1.4rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #d32f2f;
+      z-index: 10;
+    }
+    @media (max-width: 650px) {
+      .container { max-width: 98vw; padding: 0.6rem; }
+      h2 { font-size: 1.07rem; }
+      .nilai-box { font-size: 1em; }
+    }
+    footer {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      background: #fff;
+      box-shadow: 0 -1px 7px rgba(0,0,0,0.07);
+      display: flex;
+      justify-content: space-around;
+      padding: 9px 0 3px 0;
+      z-index: 100;
+    }
+    footer a {
+      text-decoration: none;
+      color: #3498db;
+      font-size: 14px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .footer-ico {
+      font-size: 1.35em;
+      margin-bottom: -3px;
+    }
   </style>
 </head>
 <body>
@@ -22,16 +175,17 @@
     </div>
   </div>
   <footer>
-    <a href="dashboard.html">🏠<br>Beranda</a>
-    <a href="semester.html">🎓<br>Semester</a>
-    <a href="arsip.html">📚<br>Arsip</a>
-    <a href="profil.html">👤<br>Profil</a>
-    <a href="login.html" onclick="localStorage.clear()">🚪<br>Log Out</a>
+    <a href="dashboard.html"><span class="footer-ico">📖</span>Beranda</a>
+    <a href="semester.html"><span class="footer-ico">📘</span>Semester</a>
+    <a href="arsip.html"><span class="footer-ico">📚</span>Arsip</a>
+    <a href="profil.html"><span class="footer-ico">👤</span>Profil</a>
+    <a href="login.html" onclick="localStorage.clear()"><span class="footer-ico">🚪</span>Log Out</a>
   </footer>
 <script>
 const user = JSON.parse(localStorage.getItem('user'));
 if (!user || !user._id) window.location = 'login.html';
 
+// Ambil parameter matkul_id dan sesi_id dari URL
 const params = new URLSearchParams(location.search);
 const matkulId = params.get('matkul_id');
 const sesiId = params.get('sesi_id');
@@ -42,11 +196,11 @@ function popupPreview(filePath) {
   const url = filePath.startsWith('http') ? filePath : `https://ediska-backend.onrender.com/${filePath}`;
   popupInner.innerHTML = '';
   if (/\.(jpg|jpeg|png|gif)$/i.test(url)) {
-    popupInner.innerHTML = `<img src="${url}" style="max-width:85vw;max-height:75vh;border-radius:7px;" />`;
+    popupInner.innerHTML = `<img src="${url}" style="max-width:88vw;max-height:73vh;border-radius:7px;" />`;
   } else if (url.endsWith('.pdf')) {
-    popupInner.innerHTML = `<iframe src="${url}#toolbar=0" style="width:80vw;height:70vh;" allowfullscreen></iframe>`;
+    popupInner.innerHTML = `<iframe src="${url}#toolbar=0" style="width:87vw;height:70vh;" allowfullscreen></iframe>`;
   } else {
-    popupInner.innerHTML = `<a href="${url}" target="_blank" style="font-size:1.2rem;color:#1976d2;">Download File</a>`;
+    popupInner.innerHTML = `<a href="${url}" target="_blank" style="font-size:1.1rem;color:#1976d2;">Download File</a>`;
   }
   popup.style.display = 'flex';
 }
@@ -94,11 +248,12 @@ async function loadDetail() {
     </div>
     <span class="sesi-detail-label">Subject / Sesi</span>
     <div class="sesi-detail-value">${sesi.pelajaran || '-'}</div>
+
     <span class="sesi-detail-label">Ringkasan Belajar</span>
     <div class="sesi-detail-value">${sesi.ringkasan ? sesi.ringkasan.replace(/\n/g,"<br>") : '<i>(Belum ada ringkasan)</i>'}</div>
   `;
 
-  // Dokumen
+  // Jika ada dokumen:
   let docs = Array.isArray(sesi.pdf) ? sesi.pdf : [];
   let judulDocs = Array.isArray(sesi.pdfJudul) ? sesi.pdfJudul : [];
   if (docs.length) {
@@ -108,11 +263,12 @@ async function loadDetail() {
         let judul = judulDocs[i] || `Dokumen ${i+1}`;
         if (/\.(pdf|jpg|jpeg|png|gif)$/i.test(f)) {
           return `<li>
-            <button class="doc-btn" onclick="popupPreview('${f}')">${judul}</button>
+            <button class="doc-btn" onclick="popupPreview('${f}')">Buka</button>
+            <span style="margin-left:6px">${judul}</span>
           </li>`;
         } else {
           return `<li>
-            <a href="https://ediska-backend.onrender.com/${f}" download class="doc-download-link">${judul} (Download)</a>
+            <a href="https://ediska-backend.onrender.com/${f}" download class="doc-btn">${judul} (Download)</a>
           </li>`;
         }
       }).join('') +
@@ -124,7 +280,7 @@ async function loadDetail() {
     html += `<span class="sesi-detail-label">Note / Link Video</span>
       <ul class="link-list">` +
       sesi.videoLink.map((l, i) => {
-        let judul = sesi.videoJudul && sesi.videoJudul[i] ? sesi.videoJudul[i] : `Note/Link ${i+1}`;
+        let judul = sesi.videoJudul && sesi.videoJudul[i] ? sesi.videoJudul[i] : `Link ${i+1}`;
         return `<li>
           <a href="${l}" class="link-btn" target="_blank">${judul}</a>
         </li>`;
@@ -133,7 +289,7 @@ async function loadDetail() {
   }
 
   // Nilai
-  if (sesi.nilai) {
+  if (typeof sesi.nilai !== "undefined" && sesi.nilai !== null) {
     html += `<div class="nilai-box">Nilai: ${sesi.nilai}</div>`;
   }
 
