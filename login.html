@@ -3,164 +3,133 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Login | E-DISKA</title>
+  <title>Login E-Diska</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
     body {
-      background: #f1f5f9;
-      font-family: 'Poppins', sans-serif;
-      margin: 0; padding: 0;
-      min-height: 100vh;
-      display: flex; align-items: center; justify-content: center;
+      font-family:'Poppins',sans-serif;
+      background: linear-gradient(135deg,#f5f7fa,#c3cfe2);
+      margin:0; height:100vh;
+      display:flex; align-items:center; justify-content:center;
     }
-    .login-container {
-      background: #fff;
-      padding: 36px 30px 28px 30px;
-      border-radius: 18px;
-      box-shadow: 0 4px 18px rgba(52,152,219,0.13);
-      max-width: 360px;
-      width: 98vw;
-      margin: 24px 0;
-      display: flex; flex-direction: column; align-items: center;
+    .container {
+      background:#fff; padding:30px;
+      border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.1);
+      width:320px;
     }
-    .login-logo {
-      width: 58px; height: 58px; margin-bottom: 12px;
-      display: block;
+    h1 { text-align:center; margin-bottom:8px; }
+    h4 { text-align:center; margin-bottom:24px; color:#666; font-weight:normal; }
+    input {
+      width:100%; padding:12px; margin-bottom:16px;
+      border:1px solid #ccc; border-radius:8px; font-size:15px;
     }
-    .login-title {
-      font-weight: 600;
-      font-size: 1.45em;
-      color: #3498db;
-      margin-bottom: 22px;
-      letter-spacing: 1px;
+    button {
+      width:100%; padding:12px;
+      background:#3498db; color:#fff;
+      border:none; border-radius:8px; font-size:16px; cursor:pointer;
     }
-    .login-form {
-      width: 100%;
-      display: flex; flex-direction: column;
-      gap: 12px;
-    }
-    label {
-      font-weight: 500;
-      font-size: 1em;
-      color: #222;
-      margin-bottom: 3px;
-    }
-    input[type="text"], input[type="password"] {
-      padding: 9px 11px;
-      border-radius: 7px;
-      border: 1.1px solid #b0bec5;
-      font-size: 1em;
-      width: 100%;
-      transition: border .17s;
-      outline: none;
-      margin-bottom: 2px;
-    }
-    input:focus {
-      border-color: #3498db;
-      box-shadow: 0 0 0 2px #3498db24;
-    }
-    .login-btn {
-      background: #3498db;
-      color: #fff;
-      border: none;
-      border-radius: 7px;
-      padding: 11px 0;
-      font-size: 1.13em;
-      font-weight: 600;
-      margin-top: 8px;
-      cursor: pointer;
-      transition: background .17s;
-      width: 100%;
-      box-shadow: 0 1px 4px #3498db18;
-    }
-    .login-btn:hover { background: #1976d2; }
-    .error-msg {
-      color: #d32f2f;
-      background: #ffebee;
-      border-radius: 7px;
-      padding: 7px 13px;
-      margin-top: 11px;
-      font-size: .98em;
+    button:hover { background:#2980b9; }
+    .remember { display:flex; align-items:center; margin-bottom:16px; }
+    .remember input { margin-right:8px; }
+    .link { text-align:center; margin-top:16px; }
+    .link a { color:#3498db; text-decoration:none; }
+    .loader {
       display: none;
-    }
-    .login-bottom {
-      margin-top: 23px;
-      width: 100%;
       text-align: center;
-      font-size: .98em;
-      color: #1976d2;
+      margin-top: 10px;
     }
-    .login-bottom a {
-      color: #1976d2;
-      text-decoration: underline;
-      margin-left: 3px;
-      font-weight: 500;
-      cursor: pointer;
+    .spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #3498db;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
     }
-    @media (max-width: 480px) {
-      .login-container {padding: 16px 6vw;}
-      .login-title {font-size: 1.12em;}
-      .login-logo {width: 40px;height:40px;}
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
   </style>
 </head>
 <body>
-  <div class="login-container">
-    <!-- Tambah logo E-Diska jika ada -->
-    <!-- <img class="login-logo" src="logo-ediska.png" alt="E-DISKA Logo"/> -->
-    <div class="login-title">Login E-DISKA</div>
-    <form class="login-form" id="formLogin" autocomplete="off">
-      <div>
-        <label for="username">Username</label>
-        <input id="username" type="text" autocomplete="username" placeholder="Username" required />
+  <div class="container">
+    <h1>Login E-Diska</h1>
+    <h4>Capstone Project 71 – Kelompok 1</h4>
+    <form id="loginForm" autocomplete="on">
+      <input
+        type="text"
+        id="username"
+        name="username"
+        placeholder="Username"
+        required
+        autocomplete="username"
+      />
+      <input
+        type="password"
+        id="password"
+        name="password"
+        placeholder="Password"
+        required
+        autocomplete="current-password"
+      />
+      <div class="remember">
+        <input type="checkbox" id="rememberMe" name="rememberMe">
+        <label for="rememberMe">Ingat saya</label>
       </div>
-      <div>
-        <label for="password">Password</label>
-        <input id="password" type="password" autocomplete="current-password" placeholder="Password" required />
-      </div>
-      <button type="submit" class="login-btn">Login</button>
-      <div class="error-msg" id="errMsg"></div>
+      <button type="submit">Masuk</button>
+      <div class="loader" id="loader"><div class="spinner"></div></div>
     </form>
-    <div class="login-bottom">
-      Belum punya akun?
-      <a href="register.html">Daftar di sini</a>
+    <div class="link">
+      Belum punya akun? <a href="signup.html">Daftar</a>
     </div>
-    <!-- Opsi login Google (jika backend support) -->
-    <!--
-    <div class="login-bottom" style="margin-top:9px;">
-      <a href="/api/auth/google" style="color:#e74c3c;font-weight:600;">Login dengan Google</a>
-    </div>
-    -->
   </div>
+
   <script>
-    document.getElementById('formLogin').onsubmit = async function(e) {
+    document.getElementById('loginForm').addEventListener('submit', async e => {
       e.preventDefault();
       const username = document.getElementById('username').value.trim();
       const password = document.getElementById('password').value;
-      const errMsg = document.getElementById('errMsg');
-      errMsg.style.display = 'none';
-
-      // POST ke backend login
-      const res = await fetch('https://ediska-backend.onrender.com/api/auth/login', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ username, password })
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        localStorage.setItem('user', JSON.stringify(data));
-        window.location = 'dashboard.html';
-      } else {
-        let msg = 'Username atau password salah!';
-        try {
-          const json = await res.json();
-          if (json && json.message) msg = json.message;
-        } catch{}
-        errMsg.textContent = msg;
-        errMsg.style.display = 'block';
+      const remember = document.getElementById('rememberMe').checked;
+      const loader = document.getElementById('loader');
+      loader.style.display = 'block';
+      try {
+        const res = await fetch('https://ediska-backend.onrender.com/api/auth/login', {
+          method: 'POST',
+          mode: 'cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+        const result = await res.json();
+        loader.style.display = 'none';
+        if (res.ok && result.user) {
+          localStorage.setItem('user', JSON.stringify(result.user));
+          if (remember) {
+            localStorage.setItem('rememberedUser', JSON.stringify({ username, password }));
+          } else {
+            localStorage.removeItem('rememberedUser');
+          }
+          window.location.href = 'dashboard.html';
+        } else {
+          alert('Gagal login: ' + (result.error || 'Periksa username & password'));
+        }
+      } catch (err) {
+        loader.style.display = 'none';
+        console.error('Login fetch error:', err);
+        alert('Gagal login: koneksi bermasalah?');
       }
-    };
+    });
+
+    window.addEventListener('load', () => {
+      const creds = localStorage.getItem('rememberedUser');
+      if (creds) {
+        const { username, password } = JSON.parse(creds);
+        document.getElementById('username').value = username;
+        document.getElementById('password').value = password;
+        document.getElementById('rememberMe').checked = true;
+      }
+    });
   </script>
 </body>
 </html>
