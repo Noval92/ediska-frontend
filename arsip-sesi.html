@@ -231,7 +231,8 @@ async function loadDetail() {
         if (/\.(pdf|jpg|jpeg|png|gif)$/i.test(f)) {
           return `<li>
             <button class="doc-btn" onclick="popupPreview('${f}')">Preview</button>
-            <a href="https://ediska-backend.onrender.com/${f}" target="_blank" class="doc-download-link">${judul}</a>
+            <button class="doc-btn" onclick="popupPreview('${f}')">${judul}</button>
+
           </li>`;
         } else {
           return `<li>
