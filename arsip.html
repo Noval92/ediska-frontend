@@ -196,7 +196,8 @@ function closePreview(ev) {
 
 // === Tambahan: buka arsip-sesi.html untuk 1 sesi
 function viewSesi(matkulId, sesiId) {
-window.location.href = `arsip-sesi.html?matkul_id=${matkulId}&sesi_id=${sesiId}`;
+  window.location.href = `arsip-sesi.html?matkul_id=${matkulId}&sesi_id=${sesiId}`;
+}
 
 async function loadArsip() {
   const resSem = await fetch(`https://ediska-backend.onrender.com/api/semester/${user._id}`);
