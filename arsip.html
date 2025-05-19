@@ -127,16 +127,8 @@
     .btn-view-sesi:hover {
       background: #1976d2;
     }
-    .debug-id {
-      color: #c0392b;
-      font-size: 0.8em;
-      font-style: italic;
-      background: #fcf3cf;
-      padding: 2px 7px;
-      border-radius: 5px;
-      margin-top: 2px;
-      display: block;
-    }
+    /* .debug-id { display: none !important; } */ /* Kalau mau benar-benar dihilangkan */
+    .debug-id { display: none; }
     @media (max-width: 700px) {
       .container { max-width: 98vw; padding: 0.3rem;}
       th, td { font-size: 11px; padding: 4px 2px; }
@@ -204,10 +196,10 @@ function closePreview(ev) {
 }
 
 function viewSesi(matkulId, sesiId) {
-  // MatkulId dan sesiId selalu diambil dari value mk._id dan s._id (bukan text!)
   window.location.href = `arsip-sesi.html?matkul_id=${matkulId}&sesi_id=${sesiId}`;
 }
 
+// -- REVISI UTAMA
 async function loadArsip() {
   const resSem = await fetch(`https://ediska-backend.onrender.com/api/semester/${user._id}`);
   let semesterList = await resSem.json();
@@ -242,21 +234,22 @@ async function loadArsip() {
     const resMk = await fetch(`https://ediska-backend.onrender.com/api/matakuliah?userId=${user._id}&semester=${sem.semester}`);
     const mkList = await resMk.json();
     for (const mk of mkList) {
-      // fetch sesi per matkul
+      // fetch sesi per matkul YANG SUDAH TERSIMPAN
       const resSesi = await fetch(`https://ediska-backend.onrender.com/api/matakuliah/${mk._id}/sesi`);
-      const sesiList = await resSesi.json();
+      let sesiList = await resSesi.json();
+      sesiList = sesiList.filter(s => !!s._id && s.pelajaran); // filter yg sudah tersimpan benar
+
       if (!sesiList.length) {
         output += `<tr>
           <td></td>
           <td>${mk.nama}</td>
           <td>${mk.kode}</td>
           <td>${mk.sks}</td>
-          <td colspan="6"><i>Belum ada sesi</i>
-            <span class="debug-id">matkul_id: ${mk._id}</span>
-          </td>
+          <td colspan="6"><i>Belum ada sesi</i></td>
         </tr>`;
         continue;
       }
+      let sesiKe = 1;
       for (const s of sesiList) {
         // Dokumen file array
         let docs = Array.isArray(s.pdf) ? s.pdf : [];
@@ -268,19 +261,19 @@ async function loadArsip() {
         if (s.videoLink && Array.isArray(s.videoLink) && s.videoLink.length > 0) {
           noteHtml = s.videoLink.map((l, i) => {
             let judul = s.videoJudul && s.videoJudul[i] ? s.videoJudul[i] : `Note/Link ${i+1}`;
-            return `<div style="white-space:nowrap;"><a href="${l}" target="_blank" style="color:#1976d2;text-decoration:underline;">${judul}</a></div>`;
+            return l.startsWith("http") ?
+              `<div style="white-space:nowrap;"><a href="${l}" target="_blank" style="color:#1976d2;text-decoration:underline;">${judul}</a></div>`
+              : `<span>${judul}: ${l}</span>`;
           }).join('');
         }
-        // === Tombol VIEW di kiri pakai ikon 📖
         output += `<tr>
           <td>
             <button class="btn-view-sesi" onclick="event.stopPropagation();viewSesi('${mk._id}','${s._id}')" title="Buka Detail Arsip Sesi 📖">📖</button>
-            <span class="debug-id">matkul_id: ${mk._id}<br>sesi_id: ${s._id}</span>
           </td>
           <td>${mk.nama}</td>
           <td>${mk.kode}</td>
           <td>${mk.sks}</td>
-          <td>${s.pelajaran || '-'}</td>
+          <td>Sesi ${sesiKe++}</td>
           <td>${s.pelajaran || '-'}</td>
           <td>${s.ringkasan || '-'}</td>
           <td>
