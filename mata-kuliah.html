@@ -145,6 +145,11 @@
     const semesterParamRaw = new URLSearchParams(location.search).get('semester');
     const semesterParam = semesterParamRaw ? parseInt(semesterParamRaw) : null;
 
+    if (!semesterParam) {
+      alert('Akses halaman ini harus lewat Semester, parameter semester wajib ada!');
+      window.location = 'semester.html';
+    }
+
     const semesterInfo = document.getElementById('semesterInfo');
     const sksMaxEl = document.getElementById('sksMax');
     const sksSisaEl = document.getElementById('sksSisa');
@@ -171,13 +176,17 @@
 
     // === Load Mata Kuliah List
     async function loadMatkulList() {
-      const res = await fetch(`https://ediska-backend.onrender.com/api/matakuliah?userId=${user._id}&semester=${semesterParam}`);
-      const list = await res.json();
-      allMatkul = list;
-      const used = list.reduce((sum, m) => sum + (m.sks || 0), 0);
-      sksSisa = sksMax - used;
-      sksSisaEl.textContent = sksSisa;
-      await renderMatkulRows(list);
+      try {
+        const res = await fetch(`https://ediska-backend.onrender.com/api/matakuliah?userId=${user._id}&semester=${semesterParam}`);
+        const list = await res.json();
+        allMatkul = list;
+        const used = list.reduce((sum, m) => sum + (m.sks || 0), 0);
+        sksSisa = sksMax - used;
+        sksSisaEl.textContent = sksSisa;
+        await renderMatkulRows(list);
+      } catch (err) {
+        mkRows.innerHTML = `<div style="color:#e74c3c">Gagal load data Mata Kuliah.</div>`;
+      }
     }
 
     async function renderMatkulRows(list) {
