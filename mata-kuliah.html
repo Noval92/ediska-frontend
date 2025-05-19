@@ -205,7 +205,7 @@
             </div>
             <div class="mk-actions">
               <button class="edit-btn" onclick="event.stopPropagation();editMatkul('${m._id}')">Edit</button>
-              <button class="delete-btn" onclick="event.stopPropagation();hapusMatkul('${m._id}')">Hapus</button>
+              <button class="delete-btn" onclick="event.stopPropagation();hapusMatkul('${m._id}', ${m.sks})">Hapus</button>
             </div>
           </div>
         `;
@@ -245,6 +245,16 @@
       const kode = document.getElementById(`editKode_${id}`).value;
       const sks = parseInt(document.getElementById(`editSks_${id}`).value);
       if (!nama || !kode || !sks) return false;
+      // Dapatkan SKS sebelum diedit
+      const mkOld = allMatkul.find(m => m._id === id);
+      const sksOld = mkOld ? mkOld.sks : 0;
+      // Cek jika perubahan SKS tidak melebihi batas
+      const usedSksOther = allMatkul.filter(m => m._id !== id).reduce((sum, m) => sum + (m.sks || 0), 0);
+      const sksBaruTersisa = sksMax - usedSksOther;
+      if (sks > sksBaruTersisa) {
+        alert('SKS melebihi sisa semester');
+        return false;
+      }
       await fetch(`https://ediska-backend.onrender.com/api/matakuliah/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -255,8 +265,8 @@
       return false;
     };
 
-    // --- Hapus MK
-    window.hapusMatkul = async (id) => {
+    // --- Hapus MK (SKS kembali ke sisa)
+    window.hapusMatkul = async (id, sks) => {
       if (!confirm('Yakin ingin menghapus mata kuliah beserta seluruh sesi di dalamnya?')) return;
       await fetch(`https://ediska-backend.onrender.com/api/matakuliah/${id}`, { method: 'DELETE' });
       await loadMatkulList();
