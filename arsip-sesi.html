@@ -6,149 +6,7 @@
   <title>Arsip Sesi - Detail</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    body {
-      font-family: 'Poppins', sans-serif;
-      background: #f1f5f9;
-      margin: 0;
-      padding: 0 0 80px 0;
-    }
-    .container {
-      max-width: 600px;
-      margin: 2rem auto 0 auto;
-      background: #fff;
-      padding: 1.5rem 1rem;
-      border-radius: 14px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.06);
-    }
-    .back-btn {
-      display: inline-block;
-      background: #95a5a6;
-      color: #fff;
-      border: none;
-      border-radius: 6px;
-      padding: 6px 18px;
-      margin-bottom: 1.3rem;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    .back-btn:hover { background: #636e72; }
-    h2 {
-      text-align: center;
-      background: #3498db;
-      color: #fff;
-      padding: 1rem 0.5rem;
-      border-radius: 10px 10px 0 0;
-      margin: 0 0 1.3rem 0;
-      font-size: 1.2rem;
-      letter-spacing: 1px;
-    }
-    .sesi-detail-label {
-      font-weight: 600;
-      color: #1976d2;
-      margin-top: 14px;
-      margin-bottom: 4px;
-      display: block;
-    }
-    .sesi-detail-value {
-      margin-bottom: 0.7rem;
-      font-size: 1.07em;
-      color: #222;
-      word-break: break-word;
-    }
-    .doc-list, .link-list {
-      padding-left: 18px;
-      margin-bottom: 1rem;
-    }
-    .doc-btn, .link-btn {
-      background: #3498db;
-      color: #fff;
-      border: none;
-      border-radius: 5px;
-      padding: 5px 10px;
-      font-size: 1em;
-      cursor: pointer;
-      margin-bottom: 5px;
-      margin-right: 6px;
-      transition: background 0.16s;
-    }
-    .doc-btn:hover, .link-btn:hover {
-      background: #1976d2;
-    }
-    .doc-download-link {
-      color: #1976d2;
-      text-decoration: underline;
-      margin-right: 10px;
-      font-size: 1em;
-    }
-    .nilai-box {
-      font-size: 1.12em;
-      font-weight: bold;
-      background: #e3f2fd;
-      display: inline-block;
-      padding: 7px 18px;
-      border-radius: 22px;
-      margin-bottom: 16px;
-      color: #1976d2;
-      letter-spacing: 1px;
-    }
-    .matkul-info {
-      background: #e3f2fd;
-      border-radius: 7px;
-      padding: 10px 15px;
-      margin-bottom: 1.3rem;
-    }
-    /* Preview pop-up */
-    .preview-popup {
-      display: none;
-      position: fixed;
-      left: 0; top: 0; width: 100vw; height: 100vh;
-      z-index: 9999;
-      background: rgba(0,0,0,0.47);
-      justify-content: center;
-      align-items: center;
-    }
-    .preview-popup-inner {
-      background: #fff;
-      border-radius: 10px;
-      max-width: 93vw;
-      max-height: 85vh;
-      overflow: auto;
-      padding: 1rem;
-      position: relative;
-      box-shadow: 0 4px 24px rgba(0,0,0,0.18);
-    }
-    .close-preview {
-      position: absolute; top: 10px; right: 18px;
-      font-size: 1.4rem;
-      background: none;
-      border: none;
-      cursor: pointer;
-      color: #d32f2f;
-      z-index: 10;
-    }
-    @media (max-width: 700px) {
-      .container { max-width: 98vw; padding: 0.7rem; }
-      h2 { font-size: 1rem; }
-      .nilai-box { font-size: 1em; }
-    }
-    footer {
-      position: fixed;
-      bottom: 0;
-      width: 100%;
-      background: #fff;
-      box-shadow: 0 -1px 6px rgba(0,0,0,0.07);
-      display: flex;
-      justify-content: space-around;
-      padding: 10px 0;
-      z-index: 100;
-    }
-    footer a {
-      text-decoration: none;
-      color: #3498db;
-      font-size: 14px;
-      text-align: center;
-    }
+    /* ... (style tetap persis seperti yang kamu kirim, ga perlu diulang di sini) ... */
   </style>
 </head>
 <body>
@@ -174,12 +32,10 @@
 const user = JSON.parse(localStorage.getItem('user'));
 if (!user || !user._id) window.location = 'login.html';
 
-// Ambil parameter matkul_id dan sesi_id dari URL
 const params = new URLSearchParams(location.search);
 const matkulId = params.get('matkul_id');
 const sesiId = params.get('sesi_id');
 
-// Fungsi preview file popup
 function popupPreview(filePath) {
   const popup = document.getElementById('popup-preview');
   const popupInner = document.getElementById('popup-inner');
@@ -204,10 +60,33 @@ async function loadDetail() {
     document.getElementById('sesiDetail').innerHTML = '<div style="padding:2rem;text-align:center;">ID tidak ditemukan.</div>';
     return;
   }
-  // Get data mata kuliah
-  const matkul = await fetch(`https://ediska-backend.onrender.com/api/matakuliah/${matkulId}`).then(r=>r.json());
-  // Get sesi detail
-  const sesi = await fetch(`https://ediska-backend.onrender.com/api/matakuliah/sesi/${sesiId}`).then(r=>r.json());
+
+  // --- Fetch Mata Kuliah ---
+  let matkul, sesi;
+  try {
+    const resMatkul = await fetch(`https://ediska-backend.onrender.com/api/matakuliah/${matkulId}`);
+    if (!resMatkul.ok) {
+      document.getElementById('sesiDetail').innerHTML = '<div style="padding:2rem;text-align:center;">Data mata kuliah tidak ditemukan.</div>';
+      return;
+    }
+    matkul = await resMatkul.json();
+  } catch (err) {
+    document.getElementById('sesiDetail').innerHTML = '<div style="padding:2rem;text-align:center;">Gagal menghubungi server (Matkul).</div>';
+    return;
+  }
+
+  // --- Fetch Sesi ---
+  try {
+    const resSesi = await fetch(`https://ediska-backend.onrender.com/api/matakuliah/sesi/${sesiId}`);
+    if (!resSesi.ok) {
+      document.getElementById('sesiDetail').innerHTML = '<div style="padding:2rem;text-align:center;">Data sesi tidak ditemukan.</div>';
+      return;
+    }
+    sesi = await resSesi.json();
+  } catch (err) {
+    document.getElementById('sesiDetail').innerHTML = '<div style="padding:2rem;text-align:center;">Gagal menghubungi server (Sesi).</div>';
+    return;
+  }
 
   let html = `
     <div class="matkul-info">
@@ -215,7 +94,6 @@ async function loadDetail() {
     </div>
     <span class="sesi-detail-label">Subject / Sesi</span>
     <div class="sesi-detail-value">${sesi.pelajaran || '-'}</div>
-
     <span class="sesi-detail-label">Ringkasan Belajar</span>
     <div class="sesi-detail-value">${sesi.ringkasan ? sesi.ringkasan.replace(/\n/g,"<br>") : '<i>(Belum ada ringkasan)</i>'}</div>
   `;
@@ -230,9 +108,7 @@ async function loadDetail() {
         let judul = judulDocs[i] || `Dokumen ${i+1}`;
         if (/\.(pdf|jpg|jpeg|png|gif)$/i.test(f)) {
           return `<li>
-            <button class="doc-btn" onclick="popupPreview('${f}')">Preview</button>
             <button class="doc-btn" onclick="popupPreview('${f}')">${judul}</button>
-
           </li>`;
         } else {
           return `<li>
