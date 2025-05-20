@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>ISI SESI MATA KULIAH</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.0.4/dist/tesseract.min.js"></script>
   <style>
     body { font-family: 'Poppins', sans-serif; background: #f6f9fb; margin: 0; padding: 0 0 80px 0; }
     .container { max-width: 520px; margin: 24px auto; background: white; padding: 1.2rem 1.2rem 2.4rem 1.2rem; border-radius: 18px; box-shadow: 0 4px 18px rgba(0,0,0,0.06);}
@@ -32,6 +34,8 @@
     .icon-sukses { color: #388e3c; font-size:1.4em; vertical-align:middle; margin-left:2px;}
     .note-blm-lengkap { color: #d32f2f; font-size:0.95em; margin-left:7px;}
     .loading { text-align:center; margin:8px 0; }
+    .ocr-box { background: #f5f6fa; border-radius:8px; padding:10px; margin:10px 0 0 0; min-height:50px; color:#2c3e50;}
+    .ocr-title { margin: 6px 0 2px 0; font-size: 1.05em; color: #216bb0; }
     @media (max-width: 700px) { .container { max-width: 98vw; padding: 0.5rem; } .judul-blok { font-size: 1.05em; } .sesi-blok { padding: 0.7rem 0.4rem;} }
     footer { position: fixed; bottom: 0; width: 100vw; background: #fff; box-shadow: 0 -2px 16px rgba(44,62,80,0.06); display: flex; justify-content: space-around; padding: 10px 0 6px 0; z-index: 200; left: 0;}
     footer a { text-decoration: none; color: #3498db; font-size: 15px; text-align: center;}
@@ -51,6 +55,12 @@
       <label><b>Upload Dokumen (max 10)</b></label>
       <div id="pdfList"></div>
       <button type="button" onclick="tambahDokumen()" class="btn-tambah">+ Tambah Dokumen</button>
+
+      <!-- === UPLOAD PDF OCR === -->
+      <label><b>Upload PDF OCR</b></label>
+      <input type="file" id="ocrPdfInput" accept=".pdf" />
+      <div id="ocrResult" class="ocr-box"></div>
+
       <label><b>Link / Note (max 10)</b></label>
       <div id="noteList"></div>
       <button type="button" onclick="tambahNote()" class="btn-tambah">+ Tambah Note</button>
@@ -259,6 +269,39 @@ document.getElementById('formSesi').onsubmit = async function(e) {
 };
 
 window.onload = loadSesiList;
+
+// === OCR PDF Feature ===
+document.getElementById('ocrPdfInput').addEventListener('change', function(e) {
+  const file = e.target.files[0];
+  const ocrResultBox = document.getElementById('ocrResult');
+  if (!file) return ocrResultBox.innerHTML = "";
+  ocrResultBox.innerHTML = "<span class='ocr-title'>Memproses PDF dan OCR, mohon tunggu...</span>";
+
+  const reader = new FileReader();
+  reader.onload = async function() {
+    try {
+      const typedarray = new Uint8Array(reader.result);
+      const pdf = await pdfjsLib.getDocument({data: typedarray}).promise;
+      let fullText = "";
+      for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+        const page = await pdf.getPage(pageNum);
+        const viewport = page.getViewport({scale: 1.5});
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+        await page.render({canvasContext: context, viewport}).promise;
+        ocrResultBox.innerHTML = `<span class='ocr-title'>Proses OCR halaman ${pageNum}/${pdf.numPages}...</span>`;
+        const result = await Tesseract.recognize(canvas, 'ind+eng', { logger: m => {} });
+        fullText += result.data.text + '\n\n';
+      }
+      ocrResultBox.innerHTML = `<b>Hasil OCR:</b><br><pre style="white-space: pre-wrap">${fullText}</pre>`;
+    } catch (err) {
+      ocrResultBox.innerHTML = `<span style="color:#d32f2f">Gagal OCR PDF: ${err.message}</span>`;
+    }
+  };
+  reader.readAsArrayBuffer(file);
+});
 </script>
 </body>
 </html>
