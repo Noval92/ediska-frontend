@@ -114,7 +114,7 @@ async function loadDetailSesi() {
     <div class="sesi-detail-blok">
       <div class="sesi-header">${sesi.pelajaran ? sesi.pelajaran : '(Tanpa Judul Sesi)'}</div>
       <div class="detail-row"><span class="detail-label">Ringkasan:</span> ${sesi.ringkasan || '-'}</div>
-      <div class="detail-row"><span class="detail-label">Ringkasan OCR:</span> <div class="ocr-block" style="margin-top:2px;">${sesi.ocrText ? sesi.ocrText.replace(/\n/g,"<br>") : '-'}</div></div>
+      <div class="detail-row"><span class="detail-label">Ringkasan OCR:</span> <div class="ocr-block" style="margin-top:2px;">${sesi.ringkasanOCR ? sesi.ringkasanOCR.replace(/\n/g,"<br>") : '-'}</div></div>
       <div class="detail-row"><span class="detail-label">Dokumen:</span> ${dokumenList}</div>
       <div class="detail-row"><span class="detail-label">Note/Link:</span> ${noteHtml}</div>
       <div class="detail-row"><span class="detail-label">Nilai:</span> ${sesi.nilai || '-'}</div>
