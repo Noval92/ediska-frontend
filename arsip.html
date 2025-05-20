@@ -43,10 +43,21 @@
       align-items: center;
       cursor: pointer;
     }
+    .table-responsive {
+      width: 100%;
+      overflow-x: auto;
+      /* scrollbar untuk mobile */
+      -webkit-overflow-scrolling: touch;
+      margin-bottom: 1.5rem;
+      background: #fff;
+      border-radius: 0 0 12px 12px;
+      box-shadow: 0 1px 3px rgba(44,62,80,0.06);
+    }
     table {
       width: 100%;
+      min-width: 1100px; /* biar scroll aktif kalau kolom banyak */
       border-collapse: collapse;
-      margin-bottom: 1.5rem;
+      margin-bottom: 0;
     }
     th, td {
       border: 1px solid #e2e2e2;
@@ -133,6 +144,8 @@
       th, td { font-size: 11px; padding: 4px 2px; }
       h2 { font-size: 1.2rem; }
       .btn-view-sesi { padding: 3px 6px; font-size: 1em; }
+      .table-responsive { border-radius: 0 0 8px 8px; }
+      table { min-width: 860px;}
     }
     footer {
       position: fixed;
@@ -193,18 +206,11 @@ function closePreview(ev) {
   document.getElementById('popup-preview').style.display = 'none';
   document.getElementById('popup-inner').innerHTML = '';
 }
-function showOCRPreview(matkulId, sesiId) {
-  fetch(`https://ediska-backend.onrender.com/api/matakuliah/sesi/${sesiId}`)
-    .then(res => res.json())
-    .then(sesi => {
-      const ocrText = sesi.ringkasanOCR ? sesi.ringkasanOCR.replace(/\n/g, '<br>') : '(Belum Ada Ringkasan OCR)';
-      document.getElementById('popup-inner').innerHTML = `<div style="font-weight:600;font-size:1.1em;margin-bottom:10px;">Ringkasan OCR</div><div style="max-width:68vw;white-space:pre-wrap;">${ocrText}</div>`;
-      document.getElementById('popup-preview').style.display = 'flex';
-    });
-}
+
 function viewSesi(matkulId, sesiId) {
   window.location.href = `arsip-sesi.html?matkul_id=${matkulId}&sesi_id=${sesiId}`;
 }
+
 async function loadArsip() {
   const resSem = await fetch(`https://ediska-backend.onrender.com/api/semester/${user._id}`);
   let semesterList = await resSem.json();
@@ -218,8 +224,7 @@ async function loadArsip() {
     output += `<div class="semester-title" onclick="toggleSemester(this)">
       SEMESTER ${sem.semester} (${sem.tahun} ${sem.ganjilgenap == '1' ? 'Ganjil' : 'Genap'}) <span style="font-weight:normal;font-size:1.3em;">[-]</span>
     </div>
-    <div class="semester-table">
-    <table>
+    <div class="table-responsive"><table>
       <thead>
         <tr>
           <th></th>
@@ -244,6 +249,7 @@ async function loadArsip() {
       const resSesi = await fetch(`https://ediska-backend.onrender.com/api/matakuliah/${mk._id}/sesi`);
       let sesiList = await resSesi.json();
       sesiList = sesiList.filter(s => !!s._id && s.pelajaran); // filter yg sudah tersimpan benar
+
       if (!sesiList.length) {
         output += `<tr>
           <td></td>
@@ -271,16 +277,6 @@ async function loadArsip() {
               : `<span>${judul}: ${l}</span>`;
           }).join('');
         }
-        // Ringkasan OCR preview
-        let ringkasanOCRshort = '-';
-        if (s.ringkasanOCR && s.ringkasanOCR.trim()) {
-          if (s.ringkasanOCR.length > 100) {
-            ringkasanOCRshort = s.ringkasanOCR.substring(0, 100).replace(/\n/g, ' ') +
-              `... <button onclick="showOCRPreview('${mk._id}','${s._id}')" class="dokumen-toggle" style="color:#1976d2;">Lihat Semua</button>`;
-          } else {
-            ringkasanOCRshort = s.ringkasanOCR.replace(/\n/g, ' ');
-          }
-        }
         output += `<tr>
           <td>
             <button class="btn-view-sesi" onclick="event.stopPropagation();viewSesi('${mk._id}','${s._id}')" title="Buka Detail Arsip Sesi 📖">📖</button>
@@ -290,8 +286,8 @@ async function loadArsip() {
           <td>${mk.sks}</td>
           <td>Sesi ${sesiKe++}</td>
           <td>${s.pelajaran || '-'}</td>
-          <td>${s.ringkasan || '-'}</td>
-          <td>${ringkasanOCRshort}</td>
+          <td style="max-width:260px;overflow:auto;word-break:break-word;">${s.ringkasan || '-'}</td>
+          <td style="max-width:260px;overflow:auto;word-break:break-word;">${s.ringkasanOCR ? `<pre style="white-space:pre-wrap">${s.ringkasanOCR}</pre>` : '-'}</td>
           <td>
             ${dokumenSummary} ${expandBtn}
           </td>
@@ -318,6 +314,7 @@ async function loadArsip() {
   }
   document.getElementById('arsipContent').innerHTML = output;
 }
+// Toggle semester table (minimize)
 function toggleSemester(div) {
   const tableDiv = div.nextElementSibling;
   if (!tableDiv) return;
@@ -329,6 +326,7 @@ function toggleSemester(div) {
     div.querySelector('span').textContent = '[+]';
   }
 }
+// Toggle dokumen per sesi (expand row)
 function toggleDokumen(btn, rowId) {
   const row = document.getElementById('dokumen-row-' + rowId);
   if (!row) return;
