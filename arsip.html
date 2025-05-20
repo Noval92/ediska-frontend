@@ -6,152 +6,31 @@
   <title>ARSIP AKADEMIK</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    body {
-      font-family: 'Poppins', sans-serif;
-      background: #f1f5f9;
-      margin: 0;
-      padding: 0 0 80px 0;
-    }
-    .container {
-      max-width: 1024px;
-      margin: 30px auto 0 auto;
-      background: white;
-      padding: 1rem;
-      border-radius: 16px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.06);
-    }
-    h2 {
-      text-align: center;
-      background: #3498db;
-      color: #fff;
-      margin: 0 0 1.5rem 0;
-      padding: 1.2rem 0;
-      border-radius: 12px 12px 0 0;
-      font-size: 2rem;
-      letter-spacing: 1px;
-    }
-    .semester-title {
-      background: #2692d6;
-      color: #fff;
-      margin: 2.2rem 0 0 0;
-      padding: 0.7rem 1rem;
-      border-radius: 10px 10px 0 0;
-      font-weight: bold;
-      font-size: 1.2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      cursor: pointer;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 1.5rem;
-    }
-    th, td {
-      border: 1px solid #e2e2e2;
-      padding: 8px 6px;
-      text-align: center;
-      font-size: 14px;
-    }
-    th {
-      background: #e3f2fd;
-      font-weight: 700;
-      color: #222;
-    }
+    body { font-family: 'Poppins', sans-serif; background: #f1f5f9; margin: 0; padding: 0 0 80px 0;}
+    .container { max-width: 1024px; margin: 30px auto 0 auto; background: white; padding: 1rem; border-radius: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.06);}
+    h2 { text-align: center; background: #3498db; color: #fff; margin: 0 0 1.5rem 0; padding: 1.2rem 0; border-radius: 12px 12px 0 0; font-size: 2rem; letter-spacing: 1px;}
+    .semester-title { background: #2692d6; color: #fff; margin: 2.2rem 0 0 0; padding: 0.7rem 1rem; border-radius: 10px 10px 0 0; font-weight: bold; font-size: 1.2rem; display: flex; justify-content: space-between; align-items: center; cursor: pointer;}
+    table { width: 100%; border-collapse: collapse; margin-bottom: 1.5rem;}
+    th, td { border: 1px solid #e2e2e2; padding: 8px 6px; text-align: center; font-size: 14px;}
+    th { background: #e3f2fd; font-weight: 700; color: #222;}
     tr:nth-child(even) { background: #f8fbfd; }
-    .dokumen-toggle {
-      cursor: pointer;
-      background: none;
-      border: none;
-      color: #1976d2;
-      font-weight: 500;
-      font-size: 1em;
-      padding: 0;
-      margin-left: 8px;
-      vertical-align: middle;
-    }
-    .dokumen-list-row {
-      background: #f6faff;
-    }
-    .dokumen-link {
-      color: #1976d2;
-      text-decoration: underline;
-      cursor: pointer;
-      background: none;
-      border: none;
-      font-size: 1em;
-      padding: 0;
-      margin-right: 12px;
-    }
-    .preview-popup {
-      display: none;
-      position: fixed;
-      left: 0; top: 0; width: 100vw; height: 100vh;
-      z-index: 9999;
-      background: rgba(0,0,0,0.44);
-      justify-content: center;
-      align-items: center;
-    }
-    .preview-popup-inner {
-      background: #fff;
-      border-radius: 10px;
-      max-width: 90vw;
-      max-height: 85vh;
-      overflow: auto;
-      padding: 1rem;
-      position: relative;
-      box-shadow: 0 4px 24px rgba(0,0,0,0.16);
-    }
-    .close-preview {
-      position: absolute; top: 10px; right: 18px;
-      font-size: 1.5rem;
-      background: none;
-      border: none;
-      cursor: pointer;
-      color: #d32f2f;
-      z-index: 10;
-    }
-    .btn-view-sesi {
-      background: #3498db;
-      color: #fff;
-      border: none;
-      border-radius: 6px;
-      padding: 5px 10px;
-      font-size: 1.2em;
-      cursor: pointer;
-      transition: background 0.18s;
-      margin-right: 4px;
-      box-shadow: 0 1px 3px rgba(52,152,219,0.08);
-    }
-    .btn-view-sesi:hover {
-      background: #1976d2;
-    }
-    /* .debug-id { display: none !important; } */ /* Kalau mau benar-benar dihilangkan */
-    .debug-id { display: none; }
+    .dokumen-toggle { cursor: pointer; background: none; border: none; color: #1976d2; font-weight: 500; font-size: 1em; padding: 0; margin-left: 8px; vertical-align: middle;}
+    .dokumen-list-row { background: #f6faff;}
+    .dokumen-link { color: #1976d2; text-decoration: underline; cursor: pointer; background: none; border: none; font-size: 1em; padding: 0; margin-right: 12px;}
+    .preview-popup { display: none; position: fixed; left: 0; top: 0; width: 100vw; height: 100vh; z-index: 9999; background: rgba(0,0,0,0.44); justify-content: center; align-items: center;}
+    .preview-popup-inner { background: #fff; border-radius: 10px; max-width: 90vw; max-height: 85vh; overflow: auto; padding: 1rem; position: relative; box-shadow: 0 4px 24px rgba(0,0,0,0.16);}
+    .close-preview { position: absolute; top: 10px; right: 18px; font-size: 1.5rem; background: none; border: none; cursor: pointer; color: #d32f2f; z-index: 10;}
+    .btn-view-sesi { background: #3498db; color: #fff; border: none; border-radius: 6px; padding: 5px 10px; font-size: 1.1em; cursor: pointer; transition: background 0.18s; margin-right: 4px; box-shadow: 0 1px 3px rgba(52,152,219,0.08);}
+    .btn-view-sesi:hover { background: #1976d2;}
+    .debug-id { display:none; }
     @media (max-width: 700px) {
       .container { max-width: 98vw; padding: 0.3rem;}
       th, td { font-size: 11px; padding: 4px 2px; }
       h2 { font-size: 1.2rem; }
-      .btn-view-sesi { padding: 3px 6px; font-size: 1em; }
+      .btn-view-sesi { padding: 3px 6px; font-size: 0.96em; }
     }
-    footer {
-      position: fixed;
-      bottom: 0;
-      width: 100%;
-      background: #fff;
-      box-shadow: 0 -1px 6px rgba(0,0,0,0.07);
-      display: flex;
-      justify-content: space-around;
-      padding: 10px 0;
-      z-index: 100;
-    }
-    footer a {
-      text-decoration: none;
-      color: #3498db;
-      font-size: 14px;
-      text-align: center;
-    }
+    footer { position: fixed; bottom: 0; width: 100%; background: #fff; box-shadow: 0 -1px 6px rgba(0,0,0,0.07); display: flex; justify-content: space-around; padding: 10px 0; z-index: 100;}
+    footer a { text-decoration: none; color: #3498db; font-size: 14px; text-align: center;}
   </style>
 </head>
 <body>
@@ -199,7 +78,8 @@ function viewSesi(matkulId, sesiId) {
   window.location.href = `arsip-sesi.html?matkul_id=${matkulId}&sesi_id=${sesiId}`;
 }
 
-// -- REVISI UTAMA
+// === LANJUT KE BAGIAN 2 DI BAWAH INI ===
+
 async function loadArsip() {
   const resSem = await fetch(`https://ediska-backend.onrender.com/api/semester/${user._id}`);
   let semesterList = await resSem.json();
@@ -224,6 +104,7 @@ async function loadArsip() {
           <th>Sesi</th>
           <th>Subject</th>
           <th>Ringkasan</th>
+          <th>Ringkasan OCR</th>
           <th>Dokumen</th>
           <th>Note/Link</th>
           <th>Nilai</th>
@@ -234,23 +115,22 @@ async function loadArsip() {
     const resMk = await fetch(`https://ediska-backend.onrender.com/api/matakuliah?userId=${user._id}&semester=${sem.semester}`);
     const mkList = await resMk.json();
     for (const mk of mkList) {
-      // fetch sesi per matkul YANG SUDAH TERSIMPAN
+      // fetch sesi per matkul
       const resSesi = await fetch(`https://ediska-backend.onrender.com/api/matakuliah/${mk._id}/sesi`);
-      let sesiList = await resSesi.json();
-      sesiList = sesiList.filter(s => !!s._id && s.pelajaran); // filter yg sudah tersimpan benar
-
+      const sesiList = await resSesi.json();
       if (!sesiList.length) {
         output += `<tr>
           <td></td>
           <td>${mk.nama}</td>
           <td>${mk.kode}</td>
           <td>${mk.sks}</td>
-          <td colspan="6"><i>Belum ada sesi</i></td>
+          <td colspan="7"><i>Belum ada sesi</i></td>
         </tr>`;
         continue;
       }
-      let sesiKe = 1;
+      let sesiIdx = 0;
       for (const s of sesiList) {
+        sesiIdx++;
         // Dokumen file array
         let docs = Array.isArray(s.pdf) ? s.pdf : [];
         let judulDocs = Array.isArray(s.pdfJudul) ? s.pdfJudul : [];
@@ -261,21 +141,21 @@ async function loadArsip() {
         if (s.videoLink && Array.isArray(s.videoLink) && s.videoLink.length > 0) {
           noteHtml = s.videoLink.map((l, i) => {
             let judul = s.videoJudul && s.videoJudul[i] ? s.videoJudul[i] : `Note/Link ${i+1}`;
-            return l.startsWith("http") ?
-              `<div style="white-space:nowrap;"><a href="${l}" target="_blank" style="color:#1976d2;text-decoration:underline;">${judul}</a></div>`
-              : `<span>${judul}: ${l}</span>`;
+            return `<div style="white-space:nowrap;"><a href="${l}" target="_blank" style="color:#1976d2;text-decoration:underline;">${judul}</a></div>`;
           }).join('');
         }
+        // === Tombol VIEW di kiri
         output += `<tr>
           <td>
-            <button class="btn-view-sesi" onclick="event.stopPropagation();viewSesi('${mk._id}','${s._id}')" title="Buka Detail Arsip Sesi 📖">📖</button>
+            <button class="btn-view-sesi" onclick="event.stopPropagation();viewSesi('${mk._id}','${s._id}')" title="Lihat Detail Sesi 📖">📖</button>
           </td>
           <td>${mk.nama}</td>
           <td>${mk.kode}</td>
           <td>${mk.sks}</td>
-          <td>Sesi ${sesiKe++}</td>
+          <td>Sesi ${sesiIdx}</td>
           <td>${s.pelajaran || '-'}</td>
           <td>${s.ringkasan || '-'}</td>
+          <td>${s.ocrText ? s.ocrText.substring(0,120).replace(/\n/g,"<br>") + (s.ocrText.length > 120 ? '...' : '') : '-'}</td>
           <td>
             ${dokumenSummary} ${expandBtn}
           </td>
@@ -285,7 +165,7 @@ async function loadArsip() {
         // Expandable dokumen row (hidden by default)
         if (docs.length > 0) {
           output += `<tr class="dokumen-list-row" id="dokumen-row-${mk._id}_${s._id}" style="display:none;">
-            <td colspan="10" style="text-align:left">
+            <td colspan="11" style="text-align:left">
               <b>Daftar Dokumen:</b><br>
               ${docs.map((f, i) => {
                 let judul = judulDocs[i] || `Dokumen ${i+1}`;
