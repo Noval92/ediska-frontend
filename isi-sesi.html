@@ -34,8 +34,8 @@
     .icon-sukses { color: #388e3c; font-size:1.4em; vertical-align:middle; margin-left:2px;}
     .note-blm-lengkap { color: #d32f2f; font-size:0.95em; margin-left:7px;}
     .loading { text-align:center; margin:8px 0; }
-    .ocr-box { background: #f5f6fa; border-radius:8px; padding:10px; margin:10px 0 0 0; min-height:50px; color:#2c3e50;}
     .ocr-title { margin: 6px 0 2px 0; font-size: 1.05em; color: #216bb0; }
+    .ocr-box { background: #f5f6fa; border-radius:8px; padding:10px; margin:10px 0 0 0; min-height:50px; color:#2c3e50;}
     @media (max-width: 700px) { .container { max-width: 98vw; padding: 0.5rem; } .judul-blok { font-size: 1.05em; } .sesi-blok { padding: 0.7rem 0.4rem;} }
     footer { position: fixed; bottom: 0; width: 100vw; background: #fff; box-shadow: 0 -2px 16px rgba(44,62,80,0.06); display: flex; justify-content: space-around; padding: 10px 0 6px 0; z-index: 200; left: 0;}
     footer a { text-decoration: none; color: #3498db; font-size: 15px; text-align: center;}
@@ -57,9 +57,10 @@
       <button type="button" onclick="tambahDokumen()" class="btn-tambah">+ Tambah Dokumen</button>
 
       <!-- === UPLOAD PDF OCR === -->
-      <label><b>Upload PDF OCR</b></label>
+      <label><b>Upload PDF OCR <span style="font-weight:normal;font-size:0.97em;color:#888;">(opsional)</span></b></label>
       <input type="file" id="ocrPdfInput" accept=".pdf" />
-      <div id="ocrResult" class="ocr-box"></div>
+      <textarea id="ocrResult" class="ocr-box" placeholder="Hasil OCR akan muncul di sini dan bisa diedit..."></textarea>
+      <label class="ocr-title" id="ocrStatus"></label>
 
       <label><b>Link / Note (max 10)</b></label>
       <div id="noteList"></div>
@@ -97,6 +98,7 @@ async function loadSesiList() {
         <div class="sesi-header">Sesi ${i+1}</div>
         <div><b>Hal yang dipelajari:</b> ${s.pelajaran || '<span class="note-blm-lengkap">Belum Lengkap</span>'}</div>
         <div><b>Ringkasan:</b> ${s.ringkasan || '<span class="note-blm-lengkap">Belum Lengkap</span>'}</div>
+        <div><b>Ringkasan OCR:</b> ${s.ringkasanOCR ? '<pre style="white-space:pre-wrap">'+s.ringkasanOCR+'</pre>' : '<span class="note-blm-lengkap">Belum Ada</span>'}</div>
         <div><b>Dokumen:</b> ${(s.pdfJudul||[]).map((j,idx)=>j?`<a href="https://ediska-backend.onrender.com/${s.pdf[idx]}" target="_blank">${j}</a>`:`<span class="note-blm-lengkap">Belum Lengkap</span>`).join(', ')||'-'}</div>
         <div><b>Note/Link:</b> ${(s.videoJudul||[]).map((n,idx)=>n?(s.videoLink&&s.videoLink[idx]?`<a href="${s.videoLink[idx]}" target="_blank">${n}</a>`:n):'<span class="note-blm-lengkap">Belum Lengkap</span>').join(', ')||'-'}</div>
         <div><b>Nilai:</b> ${s.nilai || '-'}</div>
@@ -173,6 +175,7 @@ async function editSesi(sesiId) {
   document.getElementById('urutan-sesi').innerHTML = 'Edit Sesi';
   document.getElementById('pelajaran').value = sesi.pelajaran || '';
   document.getElementById('ringkasan').value = sesi.ringkasan || '';
+  document.getElementById('ocrResult').value = sesi.ringkasanOCR || '';
   document.getElementById('nilai').value = sesi.nilai || '';
   document.getElementById('pdfList').innerHTML = '';
   pdfIdx = 0;
@@ -192,6 +195,8 @@ function batalEdit() {
   document.getElementById('formSesi').reset();
   document.getElementById('pdfList').innerHTML = '';
   document.getElementById('noteList').innerHTML = '';
+  document.getElementById('ocrResult').value = '';
+  document.getElementById('ocrStatus').innerHTML = '';
   document.getElementById('urutan-sesi').innerHTML = `Sesi ${sesiData.length+1}`;
   pdfIdx = 0; noteIdx = 0;
   document.querySelector('.btn-batal').style.display = 'none';
@@ -207,7 +212,7 @@ async function hapusSesi(sesiId) {
 document.getElementById('formSesi').onsubmit = async function(e) {
   e.preventDefault();
 
-  // Validasi kelengkapan (selain nilai)
+  // Validasi kelengkapan (selain nilai dan OCR)
   let adaKosong = false;
   document.querySelectorAll('input[name="pdfJudul[]"]').forEach(inp=>{
     if(!inp.value.trim()) adaKosong = true;
@@ -226,7 +231,7 @@ document.getElementById('formSesi').onsubmit = async function(e) {
   }
 
   if(adaKosong) {
-    document.getElementById('msg').innerHTML = '<div class="msg-error">Pastikan semua kolom selain nilai sudah terisi!</div>';
+    document.getElementById('msg').innerHTML = '<div class="msg-error">Pastikan semua kolom selain nilai dan OCR sudah terisi!</div>';
     setTimeout(()=>document.getElementById('msg').innerHTML='', 1800);
     return;
   }
@@ -239,6 +244,7 @@ document.getElementById('formSesi').onsubmit = async function(e) {
   formData.append('matkulId', matkulId);
   formData.append('pelajaran', document.getElementById('pelajaran').value);
   formData.append('ringkasan', document.getElementById('ringkasan').value);
+  formData.append('ringkasanOCR', document.getElementById('ocrResult').value);
   formData.append('nilai', document.getElementById('nilai').value);
 
   const pdfJuduls = document.getElementsByName('pdfJudul[]');
@@ -273,9 +279,14 @@ window.onload = loadSesiList;
 // === OCR PDF Feature ===
 document.getElementById('ocrPdfInput').addEventListener('change', function(e) {
   const file = e.target.files[0];
+  const ocrStatus = document.getElementById('ocrStatus');
   const ocrResultBox = document.getElementById('ocrResult');
-  if (!file) return ocrResultBox.innerHTML = "";
-  ocrResultBox.innerHTML = "<span class='ocr-title'>Memproses PDF dan OCR, mohon tunggu...</span>";
+  if (!file) {
+    ocrStatus.innerHTML = "";
+    ocrResultBox.value = "";
+    return;
+  }
+  ocrStatus.innerHTML = "Memproses PDF dan OCR, mohon tunggu...";
 
   const reader = new FileReader();
   reader.onload = async function() {
@@ -291,13 +302,15 @@ document.getElementById('ocrPdfInput').addEventListener('change', function(e) {
         canvas.height = viewport.height;
         canvas.width = viewport.width;
         await page.render({canvasContext: context, viewport}).promise;
-        ocrResultBox.innerHTML = `<span class='ocr-title'>Proses OCR halaman ${pageNum}/${pdf.numPages}...</span>`;
+        ocrStatus.innerHTML = `Proses OCR halaman ${pageNum}/${pdf.numPages}...`;
         const result = await Tesseract.recognize(canvas, 'ind+eng', { logger: m => {} });
         fullText += result.data.text + '\n\n';
       }
-      ocrResultBox.innerHTML = `<b>Hasil OCR:</b><br><pre style="white-space: pre-wrap">${fullText}</pre>`;
+      ocrStatus.innerHTML = "<span style='color:#388e3c'>OCR selesai! Silakan edit jika diperlukan.</span>";
+      ocrResultBox.value = fullText;
     } catch (err) {
-      ocrResultBox.innerHTML = `<span style="color:#d32f2f">Gagal OCR PDF: ${err.message}</span>`;
+      ocrStatus.innerHTML = `<span style="color:#d32f2f">Gagal OCR PDF: ${err.message}</span>`;
+      ocrResultBox.value = "";
     }
   };
   reader.readAsArrayBuffer(file);
