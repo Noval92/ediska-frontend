@@ -134,6 +134,21 @@
       font-size: 14px;
       text-align: center;
     }
+    .truncate-ocr {
+      max-height: 60px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      position: relative;
+      white-space: pre-line;
+      transition: max-height 0.25s;
+    }
+    .expand-btn {
+      color: #1976d2;
+      cursor: pointer;
+      font-size: 0.92em;
+      display: inline-block;
+      margin-top: 2px;
+    }
   </style>
 </head>
 <body>
@@ -177,6 +192,7 @@ function closePreview(ev) {
   document.getElementById('popup-inner').innerHTML = '';
 }
 
+// -- REKAP SEMESTER DENGAN KOLOM RINGKASAN OCR --
 async function loadRekapSemester() {
   const semesterParam = new URLSearchParams(location.search).get('semester');
   if (!semesterParam) {
@@ -208,6 +224,7 @@ async function loadRekapSemester() {
         <th>Sesi</th>
         <th>Subject</th>
         <th>Ringkasan</th>
+        <th>Ringkasan OCR</th>
         <th>Dokumen</th>
         <th>Note/Link</th>
         <th>Nilai</th>
@@ -224,7 +241,7 @@ async function loadRekapSemester() {
         <td>${mk.nama}</td>
         <td>${mk.kode}</td>
         <td>${mk.sks}</td>
-        <td colspan="6"><i>Belum ada sesi</i></td>
+        <td colspan="7"><i>Belum ada sesi</i></td>
       </tr>`;
       continue;
     }
@@ -244,6 +261,14 @@ async function loadRekapSemester() {
           return `<div style="white-space:nowrap;"><a href="${l}" target="_blank" style="color:#1976d2;text-decoration:underline;">${judul}</a></div>`;
         }).join('');
       }
+      // RINGKASAN OCR dengan expand/collapse
+      let ocrVal = s.ringkasanOCR ? s.ringkasanOCR : '';
+      let ocrCell = ocrVal
+        ? `<div class="truncate-ocr" id="ocr-${s._id}">${ocrVal.substring(0,350).replace(/\n/g,'<br>')}
+            ${ocrVal.length>350?`... <span class="expand-btn" onclick="expandOcr('${s._id}','${encodeURIComponent(ocrVal)}')">[expand]</span>`:''}
+           </div>`
+        : '-';
+
       output += `<tr>
         <td>${mk.nama}</td>
         <td>${mk.kode}</td>
@@ -251,6 +276,7 @@ async function loadRekapSemester() {
         <td>${s.pelajaran || '-'}</td>
         <td>${s.pelajaran || '-'}</td>
         <td>${s.ringkasan || '-'}</td>
+        <td>${ocrCell}</td>
         <td>
           ${dokumenSummary} ${expandBtn}
         </td>
@@ -260,7 +286,7 @@ async function loadRekapSemester() {
       // Expandable dokumen row (hidden by default)
       if (docs.length > 0) {
         output += `<tr class="dokumen-list-row" id="dokumen-row-${mk._id}_${s._id}" style="display:none;">
-          <td colspan="9" style="text-align:left">
+          <td colspan="10" style="text-align:left">
             <b>Daftar Dokumen:</b><br>
             ${docs.map((f, i) => {
               let judul = judulDocs[i] || `Dokumen ${i+1}`;
@@ -275,6 +301,18 @@ async function loadRekapSemester() {
   }
   output += `</tbody></table>`;
   document.getElementById('arsipContent').innerHTML = output;
+}
+
+// Expand/collapse ringkasan OCR
+function expandOcr(id, text) {
+  const div = document.getElementById('ocr-'+id);
+  const raw = decodeURIComponent(text);
+  div.innerHTML = `<div style="white-space:pre-line;max-height:500px;overflow:auto">${raw}</div><span class="expand-btn" onclick="collapseOcr('${id}','${encodeURIComponent(raw)}')">[collapse]</span>`;
+}
+function collapseOcr(id, text) {
+  const div = document.getElementById('ocr-'+id);
+  const raw = decodeURIComponent(text);
+  div.innerHTML = `${raw.substring(0,350).replace(/\n/g,'<br>')}... <span class="expand-btn" onclick="expandOcr('${id}','${encodeURIComponent(raw)}')">[expand]</span>`;
 }
 
 // Toggle dokumen per sesi (expand row)
