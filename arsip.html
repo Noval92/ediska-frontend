@@ -46,7 +46,6 @@
     .table-responsive {
       width: 100%;
       overflow-x: auto;
-      /* scrollbar untuk mobile */
       -webkit-overflow-scrolling: touch;
       margin-bottom: 1.5rem;
       background: #fff;
@@ -55,7 +54,7 @@
     }
     table {
       width: 100%;
-      min-width: 1100px; /* biar scroll aktif kalau kolom banyak */
+      min-width: 1100px; /* min width biar scroll aktif kalau kolom banyak */
       border-collapse: collapse;
       margin-bottom: 0;
     }
@@ -64,6 +63,7 @@
       padding: 8px 6px;
       text-align: center;
       font-size: 14px;
+      vertical-align: top;
     }
     th {
       background: #e3f2fd;
@@ -139,13 +139,35 @@
       background: #1976d2;
     }
     .debug-id { display: none; }
+    /* ---- Ellipsis/expandable ringkasan ---- */
+    .long-text {
+      max-width: 250px;
+      min-width: 90px;
+      white-space: pre-line;
+      word-break: break-word;
+      cursor: pointer;
+      position: relative;
+      line-height: 1.4;
+      margin: 0 auto;
+      display: inline-block;
+      text-align: left;
+    }
+    .text-ellipsis { color: #888; }
+    .text-expand-btn {
+      background: none;
+      color: #1976d2;
+      border: none;
+      cursor: pointer;
+      font-size: 0.97em;
+      padding: 0 3px;
+    }
     @media (max-width: 700px) {
       .container { max-width: 98vw; padding: 0.3rem;}
       th, td { font-size: 11px; padding: 4px 2px; }
       h2 { font-size: 1.2rem; }
       .btn-view-sesi { padding: 3px 6px; font-size: 1em; }
+      .long-text { max-width: 120px; }
       .table-responsive { border-radius: 0 0 8px 8px; }
-      table { min-width: 860px;}
     }
     footer {
       position: fixed;
@@ -224,7 +246,8 @@ async function loadArsip() {
     output += `<div class="semester-title" onclick="toggleSemester(this)">
       SEMESTER ${sem.semester} (${sem.tahun} ${sem.ganjilgenap == '1' ? 'Ganjil' : 'Genap'}) <span style="font-weight:normal;font-size:1.3em;">[-]</span>
     </div>
-    <div class="table-responsive"><table>
+    <div class="table-responsive semester-table">
+    <table>
       <thead>
         <tr>
           <th></th>
@@ -285,9 +308,21 @@ async function loadArsip() {
           <td>${mk.kode}</td>
           <td>${mk.sks}</td>
           <td>Sesi ${sesiKe++}</td>
-          <td>${s.pelajaran || '-'}</td>
-          <td style="max-width:260px;overflow:auto;word-break:break-word;">${s.ringkasan || '-'}</td>
-          <td style="max-width:260px;overflow:auto;word-break:break-word;">${s.ringkasanOCR ? `<pre style="white-space:pre-wrap">${s.ringkasanOCR}</pre>` : '-'}</td>
+          <td>${escapeHtml(s.pelajaran) || '-'}</td>
+          <td>
+            <div class="long-text" onclick="toggleText(this)">
+              <span class="text-short">${s.ringkasan ? escapeHtml(s.ringkasan).slice(0, 360).replace(/\n/g,"<br>") : '-'}</span>
+              ${s.ringkasan && s.ringkasan.length > 360 ? '<span class="text-ellipsis">... <button class="text-expand-btn">Selengkapnya</button></span>' : ''}
+              <span class="text-full" style="display:none">${escapeHtml(s.ringkasan).replace(/\n/g,"<br>")}</span>
+            </div>
+          </td>
+          <td>
+            <div class="long-text" onclick="toggleText(this)">
+              <span class="text-short">${s.ringkasanOCR ? escapeHtml(s.ringkasanOCR).slice(0, 360).replace(/\n/g,"<br>") : '-'}</span>
+              ${s.ringkasanOCR && s.ringkasanOCR.length > 360 ? '<span class="text-ellipsis">... <button class="text-expand-btn">Selengkapnya</button></span>' : ''}
+              <span class="text-full" style="display:none">${escapeHtml(s.ringkasanOCR).replace(/\n/g,"<br>")}</span>
+            </div>
+          </td>
           <td>
             ${dokumenSummary} ${expandBtn}
           </td>
@@ -338,6 +373,41 @@ function toggleDokumen(btn, rowId) {
     btn.textContent = '[+]';
   }
 }
+
+// === Minimize/maximize untuk ringkasan panjang ===
+function toggleText(el) {
+  const shortSpan = el.querySelector('.text-short');
+  const fullSpan = el.querySelector('.text-full');
+  const ellipsis = el.querySelector('.text-ellipsis');
+  if (!fullSpan) return;
+  if (fullSpan.style.display === 'none') {
+    shortSpan.style.display = 'none';
+    if (ellipsis) ellipsis.style.display = 'none';
+    fullSpan.style.display = '';
+    el.insertAdjacentHTML('beforeend', `<button class="text-expand-btn" onclick="event.stopPropagation();minimizeText(this)">Minimize</button>`);
+  }
+}
+function minimizeText(btn) {
+  const el = btn.closest('.long-text');
+  el.querySelector('.text-short').style.display = '';
+  if (el.querySelector('.text-ellipsis')) el.querySelector('.text-ellipsis').style.display = '';
+  el.querySelector('.text-full').style.display = 'none';
+  btn.remove();
+}
+// Escape HTML untuk mencegah XSS:
+function escapeHtml(text) {
+  if (!text) return '';
+  return text.replace(/[&<>"']/g, function(m) {
+    return ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#39;'
+    })[m];
+  });
+}
+
 document.addEventListener('DOMContentLoaded', loadArsip);
 </script>
 </body>
