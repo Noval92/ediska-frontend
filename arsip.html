@@ -54,7 +54,7 @@
     }
     table {
       width: 100%;
-      min-width: 1100px; /* min width biar scroll aktif kalau kolom banyak */
+      min-width: 1000px;
       border-collapse: collapse;
       margin-bottom: 0;
     }
@@ -138,36 +138,45 @@
     .btn-view-sesi:hover {
       background: #1976d2;
     }
-    .debug-id { display: none; }
-    /* ---- Ellipsis/expandable ringkasan ---- */
-    .long-text {
-      max-width: 250px;
-      min-width: 90px;
-      white-space: pre-line;
-      word-break: break-word;
-      cursor: pointer;
+
+    /* --- RINGKASAN & RINGKASAN OCR MINIMIZE --- */
+    .ringkasan-box, .ringkasan-ocr-box {
+      max-height: 72px; /* ~3 baris */
+      overflow: hidden;
       position: relative;
-      line-height: 1.4;
-      margin: 0 auto;
-      display: inline-block;
+      transition: max-height 0.2s;
       text-align: left;
+      white-space: pre-line;
+      background: transparent;
     }
-    .text-ellipsis { color: #888; }
-    .text-expand-btn {
-      background: none;
+    .ringkasan-box.expanded, .ringkasan-ocr-box.expanded {
+      max-height: 700px;
+    }
+    .show-more-btn {
       color: #1976d2;
+      background: none;
       border: none;
+      padding: 0;
+      margin-top: 3px;
       cursor: pointer;
-      font-size: 0.97em;
-      padding: 0 3px;
+      font-size: 0.95em;
+      text-align: left;
+      display: block;
     }
+    .ringkasan-fade {
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 28px;
+      background: linear-gradient(to top, #fff 70%, transparent 100%);
+      pointer-events: none;
+      display: block;
+    }
+    /* Responsive */
     @media (max-width: 700px) {
       .container { max-width: 98vw; padding: 0.3rem;}
-      th, td { font-size: 11px; padding: 4px 2px; }
+      th, td { font-size: 12px; padding: 6px 2px; }
       h2 { font-size: 1.2rem; }
       .btn-view-sesi { padding: 3px 6px; font-size: 1em; }
-      .long-text { max-width: 120px; }
-      .table-responsive { border-radius: 0 0 8px 8px; }
     }
     footer {
       position: fixed;
@@ -233,6 +242,19 @@ function viewSesi(matkulId, sesiId) {
   window.location.href = `arsip-sesi.html?matkul_id=${matkulId}&sesi_id=${sesiId}`;
 }
 
+// === MINIMIZE/MAXIMIZE RINGKASAN ===
+function toggleRingkasan(btn, id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (el.classList.contains('expand')) {
+    el.classList.remove('expand');
+    btn.innerText = 'Lihat Semua';
+  } else {
+    el.classList.add('expand');
+    btn.innerText = 'Tutup';
+  }
+}
+
 async function loadArsip() {
   const resSem = await fetch(`https://ediska-backend.onrender.com/api/semester/${user._id}`);
   let semesterList = await resSem.json();
@@ -246,7 +268,7 @@ async function loadArsip() {
     output += `<div class="semester-title" onclick="toggleSemester(this)">
       SEMESTER ${sem.semester} (${sem.tahun} ${sem.ganjilgenap == '1' ? 'Ganjil' : 'Genap'}) <span style="font-weight:normal;font-size:1.3em;">[-]</span>
     </div>
-    <div class="table-responsive semester-table">
+    <div class="table-responsive">
     <table>
       <thead>
         <tr>
@@ -272,7 +294,6 @@ async function loadArsip() {
       const resSesi = await fetch(`https://ediska-backend.onrender.com/api/matakuliah/${mk._id}/sesi`);
       let sesiList = await resSesi.json();
       sesiList = sesiList.filter(s => !!s._id && s.pelajaran); // filter yg sudah tersimpan benar
-
       if (!sesiList.length) {
         output += `<tr>
           <td></td>
@@ -300,6 +321,17 @@ async function loadArsip() {
               : `<span>${judul}: ${l}</span>`;
           }).join('');
         }
+        // Ringkasan dan OCR dengan minimize
+        let ringkasanId = `ringkasan_${s._id}`;
+        let ocrId = `ringkasanOCR_${s._id}`;
+        let ringkasan = s.ringkasan ? 
+          `<div class="ringkasan-minimize" id="${ringkasanId}">${s.ringkasan}</div>` +
+          (s.ringkasan.length > 120 ? `<div><a href="javascript:void(0)" onclick="toggleRingkasan(this, '${ringkasanId}')">Lihat Semua</a></div>` : '') 
+          : '-';
+        let ringkasanOCR = s.ringkasanOCR ? 
+          `<div class="ringkasan-minimize" id="${ocrId}">${s.ringkasanOCR}</div>` +
+          (s.ringkasanOCR.length > 120 ? `<div><a href="javascript:void(0)" onclick="toggleRingkasan(this, '${ocrId}')">Lihat Semua</a></div>` : '')
+          : '-';
         output += `<tr>
           <td>
             <button class="btn-view-sesi" onclick="event.stopPropagation();viewSesi('${mk._id}','${s._id}')" title="Buka Detail Arsip Sesi 📖">📖</button>
@@ -308,21 +340,9 @@ async function loadArsip() {
           <td>${mk.kode}</td>
           <td>${mk.sks}</td>
           <td>Sesi ${sesiKe++}</td>
-          <td>${escapeHtml(s.pelajaran) || '-'}</td>
-          <td>
-            <div class="long-text" onclick="toggleText(this)">
-              <span class="text-short">${s.ringkasan ? escapeHtml(s.ringkasan).slice(0, 360).replace(/\n/g,"<br>") : '-'}</span>
-              ${s.ringkasan && s.ringkasan.length > 360 ? '<span class="text-ellipsis">... <button class="text-expand-btn">Selengkapnya</button></span>' : ''}
-              <span class="text-full" style="display:none">${escapeHtml(s.ringkasan).replace(/\n/g,"<br>")}</span>
-            </div>
-          </td>
-          <td>
-            <div class="long-text" onclick="toggleText(this)">
-              <span class="text-short">${s.ringkasanOCR ? escapeHtml(s.ringkasanOCR).slice(0, 360).replace(/\n/g,"<br>") : '-'}</span>
-              ${s.ringkasanOCR && s.ringkasanOCR.length > 360 ? '<span class="text-ellipsis">... <button class="text-expand-btn">Selengkapnya</button></span>' : ''}
-              <span class="text-full" style="display:none">${escapeHtml(s.ringkasanOCR).replace(/\n/g,"<br>")}</span>
-            </div>
-          </td>
+          <td>${s.pelajaran || '-'}</td>
+          <td style="max-width:180px;">${ringkasan}</td>
+          <td style="max-width:180px;">${ringkasanOCR}</td>
           <td>
             ${dokumenSummary} ${expandBtn}
           </td>
@@ -373,41 +393,6 @@ function toggleDokumen(btn, rowId) {
     btn.textContent = '[+]';
   }
 }
-
-// === Minimize/maximize untuk ringkasan panjang ===
-function toggleText(el) {
-  const shortSpan = el.querySelector('.text-short');
-  const fullSpan = el.querySelector('.text-full');
-  const ellipsis = el.querySelector('.text-ellipsis');
-  if (!fullSpan) return;
-  if (fullSpan.style.display === 'none') {
-    shortSpan.style.display = 'none';
-    if (ellipsis) ellipsis.style.display = 'none';
-    fullSpan.style.display = '';
-    el.insertAdjacentHTML('beforeend', `<button class="text-expand-btn" onclick="event.stopPropagation();minimizeText(this)">Minimize</button>`);
-  }
-}
-function minimizeText(btn) {
-  const el = btn.closest('.long-text');
-  el.querySelector('.text-short').style.display = '';
-  if (el.querySelector('.text-ellipsis')) el.querySelector('.text-ellipsis').style.display = '';
-  el.querySelector('.text-full').style.display = 'none';
-  btn.remove();
-}
-// Escape HTML untuk mencegah XSS:
-function escapeHtml(text) {
-  if (!text) return '';
-  return text.replace(/[&<>"']/g, function(m) {
-    return ({
-      '&': '&amp;',
-      '<': '&lt;',
-      '>': '&gt;',
-      '"': '&quot;',
-      "'": '&#39;'
-    })[m];
-  });
-}
-
 document.addEventListener('DOMContentLoaded', loadArsip);
 </script>
 </body>
