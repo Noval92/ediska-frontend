@@ -167,7 +167,7 @@
       if (result._id || result.success) {
         alert('Profil berhasil diupdate');
         // Update localStorage
-        const getData = await fetch(`https://ediska-backend.onrender.com/api/students/${user._id}`);
+        const getData = await fetch(`https://ediska-backend.onrender.com/api/users/${user._id}`);
         const dataBaru = await getData.json();
         localStorage.setItem('user', JSON.stringify(dataBaru));
         window.location.reload();
