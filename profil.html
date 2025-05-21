@@ -12,9 +12,18 @@
     .form-group { margin-bottom: 18px; }
     label { font-weight: 600; }
     input, select { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ccc; font-size: 15px; margin-top: 6px;}
-    button { width: 100%; background: #3498db; color: #fff; padding: 12px; border: none; border-radius: 8px; font-weight: 600; margin-top: 16px; cursor: pointer;}
-    .photo-preview { text-align: center; margin-bottom: 18px;}
+    button { width: 100%; background: #3498db; color: #fff; padding: 12px; border: none; border-radius: 8px; font-weight: 600; margin-top: 16px; cursor: pointer; transition: background 0.2s;}
+    button[disabled] { background: #d0e6f8; color: #888; cursor: not-allowed;}
+    .photo-preview { text-align: center; margin-bottom: 18px; position:relative;}
     .photo-preview img { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 2px solid #3498db; }
+    .status-icon {
+      position: absolute; right: 0; top: 5px;
+      width: 28px; height: 28px; border-radius: 50%;
+      background: #eee; display: flex; justify-content: center; align-items: center; font-size: 1.3rem;
+      border: 2px solid #fff; box-shadow: 0 0 4px #0001;
+    }
+    .status-icon.success { background: #25c481; color: #fff;}
+    .status-icon.fail { background: #eaeaea; color: #aaa;}
     .footer { position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; border-top: 1px solid #eee; display: flex; justify-content: space-around; padding: 8px 0;}
     .footer a { color: #3498db; text-decoration: none; font-size: 15px; text-align: center;}
   </style>
@@ -22,9 +31,10 @@
 <body>
   <div class="container">
     <h2>Profil Mahasiswa</h2>
-    <form id="profilForm" enctype="multipart/form-data">
+    <form id="profilForm" enctype="multipart/form-data" autocomplete="off">
       <div class="photo-preview">
         <img id="previewFoto" src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="Foto Profil">
+        <span id="fotoStatus" class="status-icon fail" title="Foto belum diupload">⏺</span>
       </div>
       <div class="form-group">
         <label>Nama Lengkap</label>
@@ -59,7 +69,7 @@
         <label>Foto Profil</label>
         <input type="file" name="foto" id="foto" accept="image/*">
       </div>
-      <button type="submit">Simpan</button>
+      <button type="submit" id="saveBtn" disabled>Simpan</button>
     </form>
   </div>
   <div class="footer">
@@ -70,40 +80,82 @@
     <a href="login.html" onclick="localStorage.clear()">🚪<br>Logout</a>
   </div>
   <script>
+    // Helper: cek perubahaan form
+    let lastData = {};
+    let fotoChanged = false;
+
     // Fetch user data dari localStorage
     const user = JSON.parse(localStorage.getItem('user'));
     if (!user || !user._id) window.location = 'login.html';
 
     // Tampilkan data ke form
     async function loadProfile() {
-      // Ambil data terbaru dari server
       const res = await fetch(`https://ediska-backend.onrender.com/api/students/${user._id}`);
       const data = await res.json();
-
       document.getElementById('nama').value = data.nama || '';
       document.getElementById('nim').value = data.nim || '';
       document.getElementById('email').value = data.email || '';
       document.getElementById('nohp').value = data.nohp || '';
       document.getElementById('domisili').value = data.domisili || '';
       document.getElementById('semester').value = data.semester || '';
-
       if (data.foto) {
         document.getElementById('previewFoto').src = data.foto.startsWith('http') ? data.foto : `https://ediska-backend.onrender.com/${data.foto}`;
+        document.getElementById('fotoStatus').className = 'status-icon success';
+        document.getElementById('fotoStatus').textContent = '✔';
+        document.getElementById('fotoStatus').title = "Foto sudah diupload";
+      } else {
+        document.getElementById('fotoStatus').className = 'status-icon fail';
+        document.getElementById('fotoStatus').textContent = '⏺';
+        document.getElementById('fotoStatus').title = "Foto belum diupload";
       }
+      // Simpan state terakhir
+      lastData = {
+        nama: data.nama || '',
+        nim: data.nim || '',
+        nohp: data.nohp || '',
+        domisili: data.domisili || '',
+        semester: data.semester || '',
+        foto: data.foto || ''
+      };
+      fotoChanged = false;
+      document.getElementById('saveBtn').disabled = true;
     }
 
-    // Preview Foto
+    // Preview Foto & deteksi perubahan
     document.getElementById('foto').addEventListener('change', function (e) {
-      const reader = new FileReader();
-      reader.onload = function () {
-        document.getElementById("previewFoto").src = reader.result;
-      };
-      if (e.target.files[0]) reader.readAsDataURL(e.target.files[0]);
+      if (e.target.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function () {
+          document.getElementById("previewFoto").src = reader.result;
+          document.getElementById('fotoStatus').className = 'status-icon success';
+          document.getElementById('fotoStatus').textContent = '✔';
+          document.getElementById('fotoStatus').title = "Siap diupload";
+        };
+        reader.readAsDataURL(e.target.files[0]);
+        fotoChanged = true;
+        document.getElementById('saveBtn').disabled = false;
+      }
+    });
+
+    // Deteksi perubahan di input
+    document.querySelectorAll('#profilForm input, #profilForm select').forEach(inp => {
+      inp.addEventListener('input', () => {
+        const isChanged =
+          document.getElementById('nama').value !== lastData.nama ||
+          document.getElementById('nim').value !== lastData.nim ||
+          document.getElementById('nohp').value !== lastData.nohp ||
+          document.getElementById('domisili').value !== lastData.domisili ||
+          document.getElementById('semester').value !== lastData.semester ||
+          fotoChanged;
+        document.getElementById('saveBtn').disabled = !isChanged;
+      });
     });
 
     // Submit Edit Profil
     document.getElementById('profilForm').onsubmit = async function (e) {
       e.preventDefault();
+      document.getElementById('saveBtn').textContent = 'Menyimpan...';
+      document.getElementById('saveBtn').disabled = true;
       const fd = new FormData(this);
 
       const res = await fetch(`https://ediska-backend.onrender.com/api/students/${user._id}`, {
@@ -121,6 +173,8 @@
         window.location.reload();
       } else {
         alert(result.message || result.error || 'Gagal update profil!');
+        document.getElementById('saveBtn').textContent = 'Simpan';
+        document.getElementById('saveBtn').disabled = false;
       }
     }
 
