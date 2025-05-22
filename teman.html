@@ -1,4 +1,71 @@
-<!DOCTYPE html><html><head><link rel="stylesheet" href="css/style.css"></head>
-<body><nav><a href="dashboard.html">Dashboard</a><a href="profil.html">Profil</a><a href="teman.html">Teman</a><a href="logout.html">Logout</a></nav>
-<input id="searchUser" placeholder="Cari teman..."><div id="searchResult"></div><div id="friendList"></div>
-<script src="js/teman.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tambah Teman - E-DISKA</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    body { font-family: 'Poppins', sans-serif; background: #f5f7fa; margin: 0; }
+    nav {
+      background: #1976d2;
+      padding: 12px 24px;
+      color: white;
+      font-size: 18px;
+      display: flex;
+      gap: 28px;
+    }
+    nav a { color: white; text-decoration: none; font-weight: 600;}
+    nav a:hover { text-decoration: underline; }
+
+    .container { max-width: 700px; margin: 32px auto; background: #fff; border-radius: 16px; box-shadow: 0 6px 32px rgba(25, 118, 210, 0.07); padding: 32px 24px; }
+    h2 { margin-top: 0; font-weight: 600; }
+    .search-row { display: flex; gap: 12px; margin-bottom: 28px;}
+    #searchUser { flex: 1; padding: 9px 14px; border-radius: 8px; border: 1px solid #d1d5db; font-size: 16px;}
+    .friend-card, .result-card {
+      display: flex; align-items: center; background: #f5f7fa; border-radius: 12px;
+      margin-bottom: 16px; padding: 14px 16px; box-shadow: 0 1px 6px rgba(52, 152, 219, 0.07);
+      gap: 18px;
+    }
+    .friend-card img, .result-card img { width: 54px; height: 54px; border-radius: 50%; object-fit: cover; }
+    .friend-info { flex: 1;}
+    .friend-info span { font-size: 15px; color: #1976d2; }
+    .friend-info .nim { font-size: 13px; color: #888; }
+    .friend-info .semester { font-size: 13px; color: #888; }
+    .btn-add, .btn-chat, .btn-accept {
+      padding: 7px 18px; border: none; border-radius: 6px; background: #1976d2;
+      color: white; font-weight: bold; cursor: pointer; font-size: 14px;
+      transition: background .18s;
+    }
+    .btn-add:hover, .btn-chat:hover, .btn-accept:hover { background: #1253a4; }
+    @media (max-width: 600px) {
+      .container { padding: 14px 4px; }
+      nav { font-size: 16px; gap: 12px;}
+      #searchUser { font-size: 14px; }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="profil.html">Profil</a>
+    <a href="teman.html">Teman</a>
+    <a href="logout.html">Logout</a>
+  </nav>
+  <div class="container">
+    <h2>Tambah Teman</h2>
+    <div class="search-row">
+      <input id="searchUser" placeholder="Cari nama/NIM teman...">
+    </div>
+    <div id="searchResult"></div>
+
+    <h3>Permintaan Pertemanan</h3>
+    <div id="requestList"></div>
+
+    <h3>Daftar Teman</h3>
+    <div id="friendList"></div>
+  </div>
+  <script src="js/teman.js"></script>
+</body>
+</html>
