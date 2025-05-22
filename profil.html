@@ -81,104 +81,104 @@
   </div>
   <script>
     // Helper: cek perubahaan form
-    let lastData = {};
-    let fotoChanged = false;
+  let lastData = {};
+  let fotoChanged = false;
 
-    // Fetch user data dari localStorage
-    const user = JSON.parse(localStorage.getItem('user'));
-    if (!user || !user._id) window.location = 'login.html';
+  // Fetch user data dari localStorage
+  const user = JSON.parse(localStorage.getItem('user'));
+  if (!user || !user._id) window.location = 'login.html';
 
-    // Tampilkan data ke form
-    async function loadProfile() {
-      const res = await fetch(`https://ediska-backend.onrender.com/api/students/${user._id}`);
-      const data = await res.json();
-      document.getElementById('nama').value = data.nama || '';
-      document.getElementById('nim').value = data.nim || '';
-      document.getElementById('email').value = data.email || '';
-      document.getElementById('nohp').value = data.nohp || '';
-      document.getElementById('domisili').value = data.domisili || '';
-      document.getElementById('semester').value = data.semester || '';
-      if (data.foto) {
-        document.getElementById('previewFoto').src = data.foto.startsWith('http') ? data.foto : `https://ediska-backend.onrender.com/${data.foto}`;
+  // Tampilkan data ke form
+  async function loadProfile() {
+    const res = await fetch(`https://ediska-backend.onrender.com/api/users/${user._id}`);
+    const data = await res.json();
+    document.getElementById('nama').value = data.nama || '';
+    document.getElementById('nim').value = data.nim || '';
+    document.getElementById('email').value = data.email || '';
+    document.getElementById('nohp').value = data.nohp || '';
+    document.getElementById('domisili').value = data.domisili || '';
+    document.getElementById('semester').value = data.semester || '';
+    if (data.foto) {
+      document.getElementById('previewFoto').src = data.foto.startsWith('http') ? data.foto : `https://ediska-backend.onrender.com/${data.foto}`;
+      document.getElementById('fotoStatus').className = 'status-icon success';
+      document.getElementById('fotoStatus').textContent = '✔';
+      document.getElementById('fotoStatus').title = "Foto sudah diupload";
+    } else {
+      document.getElementById('fotoStatus').className = 'status-icon fail';
+      document.getElementById('fotoStatus').textContent = '⏺';
+      document.getElementById('fotoStatus').title = "Foto belum diupload";
+    }
+    lastData = {
+      nama: data.nama || '',
+      nim: data.nim || '',
+      nohp: data.nohp || '',
+      domisili: data.domisili || '',
+      semester: data.semester || '',
+      foto: data.foto || ''
+    };
+    fotoChanged = false;
+    document.getElementById('saveBtn').disabled = true;
+  }
+
+  // Preview Foto & deteksi perubahan
+  document.getElementById('foto').addEventListener('change', function (e) {
+    if (e.target.files[0]) {
+      const reader = new FileReader();
+      reader.onload = function () {
+        document.getElementById("previewFoto").src = reader.result;
         document.getElementById('fotoStatus').className = 'status-icon success';
         document.getElementById('fotoStatus').textContent = '✔';
-        document.getElementById('fotoStatus').title = "Foto sudah diupload";
-      } else {
-        document.getElementById('fotoStatus').className = 'status-icon fail';
-        document.getElementById('fotoStatus').textContent = '⏺';
-        document.getElementById('fotoStatus').title = "Foto belum diupload";
-      }
-      // Simpan state terakhir
-      lastData = {
-        nama: data.nama || '',
-        nim: data.nim || '',
-        nohp: data.nohp || '',
-        domisili: data.domisili || '',
-        semester: data.semester || '',
-        foto: data.foto || ''
+        document.getElementById('fotoStatus').title = "Siap diupload";
       };
-      fotoChanged = false;
-      document.getElementById('saveBtn').disabled = true;
+      reader.readAsDataURL(e.target.files[0]);
+      fotoChanged = true;
+      document.getElementById('saveBtn').disabled = false;
     }
+  });
 
-    // Preview Foto & deteksi perubahan
-    document.getElementById('foto').addEventListener('change', function (e) {
-      if (e.target.files[0]) {
-        const reader = new FileReader();
-        reader.onload = function () {
-          document.getElementById("previewFoto").src = reader.result;
-          document.getElementById('fotoStatus').className = 'status-icon success';
-          document.getElementById('fotoStatus').textContent = '✔';
-          document.getElementById('fotoStatus').title = "Siap diupload";
-        };
-        reader.readAsDataURL(e.target.files[0]);
-        fotoChanged = true;
-        document.getElementById('saveBtn').disabled = false;
-      }
+  // Deteksi perubahan di input
+  document.querySelectorAll('#profilForm input, #profilForm select').forEach(inp => {
+    inp.addEventListener('input', () => {
+      const isChanged =
+        document.getElementById('nama').value !== lastData.nama ||
+        document.getElementById('nim').value !== lastData.nim ||
+        document.getElementById('nohp').value !== lastData.nohp ||
+        document.getElementById('domisili').value !== lastData.domisili ||
+        document.getElementById('semester').value !== lastData.semester ||
+        fotoChanged;
+      document.getElementById('saveBtn').disabled = !isChanged;
     });
+  });
 
-    // Deteksi perubahan di input
-    document.querySelectorAll('#profilForm input, #profilForm select').forEach(inp => {
-      inp.addEventListener('input', () => {
-        const isChanged =
-          document.getElementById('nama').value !== lastData.nama ||
-          document.getElementById('nim').value !== lastData.nim ||
-          document.getElementById('nohp').value !== lastData.nohp ||
-          document.getElementById('domisili').value !== lastData.domisili ||
-          document.getElementById('semester').value !== lastData.semester ||
-          fotoChanged;
-        document.getElementById('saveBtn').disabled = !isChanged;
-      });
+  // Submit Edit Profil
+  document.getElementById('profilForm').onsubmit = async function (e) {
+    e.preventDefault();
+    document.getElementById('saveBtn').textContent = 'Menyimpan...';
+    document.getElementById('saveBtn').disabled = true;
+    const fd = new FormData(this);
+
+    const res = await fetch(`https://ediska-backend.onrender.com/api/users/${user._id}`, {
+      method: 'PUT',
+      body: fd
     });
+    const result = await res.json();
 
-    // Submit Edit Profil
-    document.getElementById('profilForm').onsubmit = async function (e) {
-      e.preventDefault();
-      document.getElementById('saveBtn').textContent = 'Menyimpan...';
-      document.getElementById('saveBtn').disabled = true;
-      const fd = new FormData(this);
-
-      const res = await fetch(`https://ediska-backend.onrender.com/api/students/${user._id}`, {
-        method: 'PUT',
-        body: fd
-      });
-      const result = await res.json();
-
-      if (result._id || result.success) {
-        alert('Profil berhasil diupdate');
-        // Update localStorage
-        const getData = await fetch(`https://ediska-backend.onrender.com/api/users/${user._id}`);
-        const dataBaru = await getData.json();
-        localStorage.setItem('user', JSON.stringify(dataBaru));
-        window.location.reload();
-      } else {
-        alert(result.message || result.error || 'Gagal update profil!');
-        document.getElementById('saveBtn').textContent = 'Simpan';
-        document.getElementById('saveBtn').disabled = false;
-      }
+    if (result._id || result.success) {
+      alert('Profil berhasil diupdate');
+      // Update localStorage
+      const getData = await fetch(`https://ediska-backend.onrender.com/api/users/${user._id}`);
+      const dataBaru = await getData.json();
+      localStorage.setItem('user', JSON.stringify(dataBaru));
+      window.location.reload();
+    } else {
+      alert(result.message || result.error || 'Gagal update profil!');
+      document.getElementById('saveBtn').textContent = 'Simpan';
+      document.getElementById('saveBtn').disabled = false;
     }
+  }
 
-    loadProfile();
+  loadProfile();
+
   </script>
 </body>
 </html>
