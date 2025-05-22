@@ -237,26 +237,36 @@
   </footer>
 
   <script>
-    const user = JSON.parse(localStorage.getItem('user'));
-    if (!user) location.href = 'login.html';
+  const user = JSON.parse(localStorage.getItem('user'));
+  if (!user) location.href = 'login.html';
 
-    document.getElementById('namaUser').textContent = user.nama;
-    document.getElementById('emailUser').textContent = user.email;
-    document.getElementById('nimUser').textContent = user.nim;
-    document.getElementById('domisiliUser').textContent = user.domisili;
-    if (user.foto) document.getElementById('fotoProfil').src = '/' + user.foto;
+  document.getElementById('namaUser').textContent = user.nama;
+  document.getElementById('emailUser').textContent = user.email;
+  document.getElementById('nimUser').textContent = user.nim;
+  document.getElementById('domisiliUser').textContent = user.domisili;
 
-    // Hitung jumlah semester dan SKS dari backend
-    async function loadAkademik() {
-      const res = await fetch(`https://ediska-backend.onrender.com/api/semester/${user._id}`);
-      const list = await res.json();
-      document.getElementById('jumlahSemester').textContent = list.length;
-      const totalSKS = list.reduce((sum, s) => sum + (s.sks || 0), 0);
-      document.getElementById('jumlahSKS').textContent = totalSKS;
-    }
+  const fotoProfil = document.getElementById('fotoProfil');
+  if (user.foto) {
+    fotoProfil.src = user.foto.startsWith('http') 
+      ? user.foto
+      : `https://ediska-backend.onrender.com/${user.foto}`;
+  } else {
+    fotoProfil.src = 'https://cdn-icons-png.flaticon.com/512/149/149071.png';
+  }
 
-    loadAkademik();
-  </script>
+  // Hitung jumlah semester dan SKS dari backend
+  async function loadAkademik() {
+    const res = await fetch(`https://ediska-backend.onrender.com/api/semester/${user._id}`);
+    const list = await res.json();
+    document.getElementById('jumlahSemester').textContent = list.length;
+    const totalSKS = list.reduce((sum, s) => sum + (s.sks || 0), 0);
+    document.getElementById('jumlahSKS').textContent = totalSKS;
+  }
+
+  loadAkademik();
+</script>
+
+
 
 </body>
 </html>
