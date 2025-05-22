@@ -4,7 +4,6 @@ document.getElementById('searchUser').addEventListener('input', async function()
   if (q.length < 2) { document.getElementById('searchResult').innerHTML = ''; return; }
   const res = await fetch(`/api/users?search=${q}`);
   const users = await res.json();
-  // Filter: jangan tampilkan diri sendiri
   const myId = localStorage.getItem('userId');
   document.getElementById('searchResult').innerHTML = users.filter(u => u._id !== myId).map(u => `
     <div class="result-card">
@@ -27,8 +26,26 @@ async function addFriend(friendId) {
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify({ userId, friendId })
   });
-  if (res.ok) alert('Permintaan dikirim!');
+  if (res.ok) { alert('Permintaan dikirim!'); loadRecommendations(); }
   else alert('Sudah pernah mengirim permintaan atau error.');
+}
+
+// --- REKOMENDASI TEMAN ---
+async function loadRecommendations() {
+  const userId = localStorage.getItem('userId');
+  const res = await fetch(`/api/friends/recommend/${userId}`);
+  const users = await res.json();
+  document.getElementById('recommendList').innerHTML = users.length ? users.map(u => `
+    <div class="recommend-card">
+      <img src="${u.foto || 'https://cdn-icons-png.flaticon.com/512/149/149071.png'}">
+      <div class="friend-info">
+        <span>${u.nama}</span>
+        <div class="nim">NIM: ${u.nim}</div>
+        <div class="semester">Semester: ${u.semester || '-'}</div>
+      </div>
+      <button class="btn-plus" title="Tambah Teman" onclick="addFriend('${u._id}')">+</button>
+    </div>
+  `).join('') : '<div style="color:#888;">Tidak ada rekomendasi.</div>';
 }
 
 // --- LIST REQUEST MASUK (PERMINTAAN) ---
@@ -56,7 +73,7 @@ async function acceptFriend(friendId) {
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify({ userId, friendId })
   });
-  if (res.ok) { alert('Sekarang sudah berteman!'); loadFriends(); loadRequests(); }
+  if (res.ok) { alert('Sekarang sudah berteman!'); loadFriends(); loadRequests(); loadRecommendations(); }
 }
 
 // --- LIST TEMAN SUDAH DITERIMA ---
@@ -83,6 +100,7 @@ function chatWith(friendId) {
 }
 
 window.onload = function() {
+  loadRecommendations();
   loadRequests();
   loadFriends();
 }
