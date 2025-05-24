@@ -16,10 +16,34 @@
     .detail-label { font-weight: 600; color: #2175bb; min-width:90px; display:inline-block;}
     .doc-link { color: #1976d2; text-decoration: underline; margin-right: 8px; cursor: pointer;}
     .note-link { color: #1976d2; text-decoration: underline;}
-    .ocr-block { background: #faf5e6; border-radius: 7px; padding: 11px; margin: 8px 0 0 0; color: #222; font-size:1em; position:relative; transition: max-height 0.2s;}
-    .ocr-min { max-height: 40px; overflow: hidden; }
-    .ocr-action-wrap { display: flex; justify-content: center; margin-top:4px; }
-    .expand-btn { color: #1976d2; cursor: pointer; font-size: 0.97em; background: none; border: none; outline: none; margin: 0 auto; display:inline-block;}
+    .ocr-block { background: #faf5e6; border-radius: 7px; padding: 11px 11px 6px 11px; margin: 8px 0 0 0; color: #222; font-size:1em; position:relative;}
+    .ocr-text { 
+      white-space: pre-line; 
+      transition: max-height 0.2s; 
+      overflow: hidden; 
+      max-height: 40px; 
+      margin-bottom: 5px;
+      line-height: 1.5;
+    }
+    .ocr-block.expanded .ocr-text {
+      max-height: 1000px; /* Besar supaya semua tampil */
+      overflow: auto;
+    }
+    .ocr-action-wrap { 
+      display: flex; 
+      justify-content: center; 
+      margin-top: 4px;
+    }
+    .expand-btn { 
+      color: #1976d2; 
+      cursor: pointer; 
+      font-size: 0.97em; 
+      background: none; 
+      border: none; 
+      outline: none; 
+      margin: 0 auto; 
+      display: inline-block;
+    }
     .expand-btn:hover { text-decoration: underline;}
     .ocr-empty { color: #888; font-style: italic;}
     @media (max-width:700px){
@@ -77,18 +101,18 @@ function closePreview(ev) {
   document.getElementById('popup-inner').innerHTML = '';
 }
 
-// OCR GLOBAL STATE
+// State OCR
 let ocrExpanded = false;
 let ocrValue = '';
 
-function renderOcr() {
-  const safeVal = (ocrValue || '').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g, '<br>');
+function renderOcrBlock() {
+  // Handle jika kosong
   if (!ocrValue || ocrValue.trim() === '') {
-    return `<div class="ocr-block ocr-min ocr-empty" id="ocr-content">(Tidak ada Ringkasan OCR)</div>`;
+    return `<div class="ocr-block ocr-empty"><i>(Tidak ada Ringkasan OCR)</i></div>`;
   }
   return `
-    <div class="ocr-block ${ocrExpanded ? '' : 'ocr-min'}" id="ocr-content">
-      ${safeVal}
+    <div class="ocr-block${ocrExpanded ? ' expanded' : ''}" id="ocr-block">
+      <div class="ocr-text">${ocrValue.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
       <div class="ocr-action-wrap">
         <button class="expand-btn" id="toggle-ocr-btn">
           [${ocrExpanded ? 'minimize' : 'expand'}]
@@ -97,15 +121,14 @@ function renderOcr() {
     </div>
   `;
 }
-
 function attachOcrListener() {
   const btn = document.getElementById('toggle-ocr-btn');
   if (btn) {
     btn.addEventListener('click', function(e) {
       e.preventDefault();
       ocrExpanded = !ocrExpanded;
-      document.getElementById('ocr-content').outerHTML = renderOcr();
-      attachOcrListener(); // Attach lagi setelah replace!
+      document.getElementById('ocr-block').outerHTML = renderOcrBlock();
+      attachOcrListener();
     });
   }
 }
@@ -148,14 +171,14 @@ async function loadDetailSesi() {
   // Soal dan Jawaban
   let soal = sesi.pelajaran || '-';
   let jawaban = sesi.ringkasan || '-';
-  ocrValue = sesi.ringkasanOCR ? sesi.ringkasanOCR : '';
+  ocrValue = sesi.ringkasanOCR ? sesi.ringkasanOCR.replace(/\n/g,'<br>') : '';
   ocrExpanded = false;
 
   document.getElementById('detailSesi').innerHTML = `
     <div class="sesi-detail-blok">
       <div class="soal-blok"><span class="detail-label">Soal:</span> ${soal}</div>
       <div class="jawaban-blok"><span class="detail-label">Jawaban:</span> ${jawaban}</div>
-      <div class="detail-row"><span class="detail-label">Ringkasan OCR:</span> ${renderOcr()}</div>
+      <div class="detail-row"><span class="detail-label">Ringkasan OCR:</span> ${renderOcrBlock()}</div>
       <div class="detail-row"><span class="detail-label">Dokumen:</span> ${dokumenList}</div>
       <div class="detail-row"><span class="detail-label">Note/Link:</span> ${noteHtml}</div>
       <div class="detail-row"><span class="detail-label">Nilai:</span> ${sesi.nilai || '-'}</div>
