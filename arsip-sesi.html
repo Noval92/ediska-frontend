@@ -58,6 +58,7 @@ const urlParams = new URLSearchParams(window.location.search);
 const matkulId = urlParams.get('matkul_id');
 const sesiId = urlParams.get('sesi_id');
 
+// Fungsi Preview
 function popupPreview(filePath) {
   const popup = document.getElementById('popup-preview');
   const popupInner = document.getElementById('popup-inner');
@@ -77,31 +78,32 @@ function closePreview(ev) {
   document.getElementById('popup-inner').innerHTML = '';
 }
 
-let isOcrExpanded = false;
+// Fungsi Toggle OCR
+let ocrExpanded = false;
 function toggleOcr(valEnc) {
   const ocrDiv = document.getElementById('ocr-content');
   const val = decodeURIComponent(valEnc);
-  if (!isOcrExpanded) {
+  if (!ocrExpanded) {
     ocrDiv.classList.remove('ocr-min');
     ocrDiv.innerHTML = val.replace(/\n/g, "<br>") +
       `<span class="expand-btn" onclick="toggleOcr('${encodeURIComponent(val)}')">[collapse]</span>`;
-    isOcrExpanded = true;
+    ocrExpanded = true;
   } else {
     const shortVal = val.length > 350 ? val.substring(0, 350) + '...' : val;
     ocrDiv.classList.add('ocr-min');
     ocrDiv.innerHTML = shortVal.replace(/\n/g, "<br>") +
       (val.length > 350 ? `<span class="expand-btn" onclick="toggleOcr('${encodeURIComponent(val)}')">[expand]</span>` : '');
-    isOcrExpanded = false;
+    ocrExpanded = false;
   }
 }
 
-// Ambil dan render detail sesi
+// Render Sesi
 async function loadDetailSesi() {
   if (!matkulId || !sesiId) {
     document.getElementById('detailSesi').innerHTML = '<div style="padding:2rem;text-align:center;">Data tidak ditemukan.</div>';
     return;
   }
-  // Info matkul
+  // Info Matkul
   const resMatkul = await fetch(`https://ediska-backend.onrender.com/api/matakuliah/${matkulId}`);
   const mk = await resMatkul.json();
   document.getElementById('infoMatkul').innerHTML = `
@@ -109,7 +111,7 @@ async function loadDetailSesi() {
       <b>${mk.nama || '-'}</b> | Kode: ${mk.kode || '-'} | SKS: ${mk.sks || '-'}
     </div>
   `;
-  // Sesi
+  // Info Sesi
   let sesi = null;
   try {
     const resSesi = await fetch(`https://ediska-backend.onrender.com/api/matakuliah/sesi/${sesiId}`);
@@ -157,6 +159,7 @@ async function loadDetailSesi() {
       ${shortOcr.replace(/\n/g,"<br>")}
       ${isLong ? `<span class="expand-btn" onclick="toggleOcr('${encodeURIComponent(ocr)}')">[expand]</span>` : ''}
     </div>`;
+    ocrExpanded = false; // RESET setiap render
   }
 
   document.getElementById('detailSesi').innerHTML = `
@@ -169,7 +172,6 @@ async function loadDetailSesi() {
       <div class="detail-row"><span class="detail-label">Nilai:</span> ${sesi.nilai || '-'}</div>
     </div>
   `;
-  isOcrExpanded = false;
 }
 document.addEventListener('DOMContentLoaded', loadDetailSesi);
 </script>
