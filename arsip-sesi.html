@@ -76,8 +76,8 @@ function closePreview(ev) {
   document.getElementById('popup-inner').innerHTML = '';
 }
 
-// Fungsi expand/collapse OCR (min/max)
-function renderOcr(val, expanded=false) {
+// Fungsi render OCR (selalu ada tombol expand/minimize walaupun 1 karakter)
+function renderOcr(val, expanded) {
   const safeVal = (val || '').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g, '<br>');
   if (!val || val.trim() === '') {
     return `<div class="ocr-block ocr-min" id="ocr-content"><i>(Tidak ada Ringkasan OCR)</i></div>`;
@@ -94,11 +94,11 @@ function renderOcr(val, expanded=false) {
     </div>`;
   }
 }
-function toggleOcr(expand) {
-  const sesiOcrVal = window._ocrValueGlobal || "";
+function toggleOcr(expanded) {
+  const ocrVal = window._ocrValueGlobal || "";
   const ocrDiv = document.getElementById('ocr-content');
   if (!ocrDiv) return;
-  ocrDiv.outerHTML = renderOcr(sesiOcrVal, expand);
+  ocrDiv.outerHTML = renderOcr(ocrVal, expanded);
 }
 
 // Ambil dan render detail sesi
@@ -140,7 +140,6 @@ async function loadDetailSesi() {
   let soal = sesi.pelajaran || '-';
   let jawaban = sesi.ringkasan || '-';
   let ocr = sesi.ringkasanOCR ? sesi.ringkasanOCR : '';
-  // Global untuk tombol
   window._ocrValueGlobal = ocr;
 
   document.getElementById('detailSesi').innerHTML = `
