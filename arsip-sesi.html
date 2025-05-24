@@ -16,10 +16,12 @@
     .detail-label { font-weight: 600; color: #2175bb; min-width:90px; display:inline-block;}
     .doc-link { color: #1976d2; text-decoration: underline; margin-right: 8px; cursor: pointer;}
     .note-link { color: #1976d2; text-decoration: underline;}
-    .ocr-block { background: #faf5e6; border-radius: 7px; padding: 11px; margin: 8px 0 0 0; color: #222; font-size:1em; position:relative;}
-    .ocr-min { max-height: 40px; overflow: hidden; text-overflow: ellipsis; white-space: pre-line;}
-    .expand-btn { color: #1976d2; cursor: pointer; font-size: 0.97em; margin-left: 12px;}
+    .ocr-block { background: #faf5e6; border-radius: 7px; padding: 11px; margin: 8px 0 0 0; color: #222; font-size:1em; position:relative; transition: max-height 0.2s;}
+    .ocr-min { max-height: 48px; overflow: hidden; }
+    .ocr-action-wrap { text-align:center; margin-top:4px; }
+    .expand-btn { color: #1976d2; cursor: pointer; font-size: 0.97em; background: none; border: none; outline: none; margin: 0 auto; display:inline-block;}
     .expand-btn:hover { text-decoration: underline;}
+    .ocr-empty { color: #888; font-style: italic;}
     @media (max-width:700px){
       .container{max-width:98vw;padding:0.3rem;}
       h2{font-size:1.05em;}
@@ -75,29 +77,29 @@ function closePreview(ev) {
   document.getElementById('popup-inner').innerHTML = '';
 }
 
-// --- RENDER OCR DENGAN EXPAND / COLLAPSE ---
-function renderOcr(val, expanded) {
-  const safeVal = (val || '').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g, '<br>');
-  if (!val || val.trim() === '') {
-    return `<div class="ocr-block ocr-min" id="ocr-content"><i>(Tidak ada Ringkasan OCR)</i></div>`;
+// --- OCR EXPAND/COLLAPSE
+let isOcrExpanded = false;
+function renderOcr(val) {
+  val = val || '';
+  const safeVal = val.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g, '<br>');
+  if (!val.trim()) {
+    return `<div class="ocr-block ocr-min ocr-empty" id="ocr-content">(Tidak ada Ringkasan OCR)</div>`;
   }
-  if (expanded) {
-    return `<div class="ocr-block" id="ocr-content">
+  return `
+    <div class="ocr-block ${isOcrExpanded ? '' : 'ocr-min'}" id="ocr-content">
       ${safeVal}
-      <span class="expand-btn" onclick="toggleOcr(false)">[minimize]</span>
-    </div>`;
-  } else {
-    return `<div class="ocr-block ocr-min" id="ocr-content">
-      ${safeVal}
-      <span class="expand-btn" onclick="toggleOcr(true)">[expand]</span>
-    </div>`;
-  }
+      <div class="ocr-action-wrap">
+        <button class="expand-btn" onclick="toggleOcr()">
+          [${isOcrExpanded ? 'minimize' : 'expand'}]
+        </button>
+      </div>
+    </div>
+  `;
 }
-function toggleOcr(expanded) {
+function toggleOcr() {
+  isOcrExpanded = !isOcrExpanded;
   const ocrVal = window._ocrValueGlobal || "";
-  const ocrDiv = document.getElementById('ocr-content');
-  if (!ocrDiv) return;
-  ocrDiv.outerHTML = renderOcr(ocrVal, expanded);
+  document.getElementById('ocr-content').outerHTML = renderOcr(ocrVal);
 }
 
 // --- LOAD DETAIL SESI ---
@@ -140,12 +142,13 @@ async function loadDetailSesi() {
   let jawaban = sesi.ringkasan || '-';
   let ocr = sesi.ringkasanOCR ? sesi.ringkasanOCR : '';
   window._ocrValueGlobal = ocr;
+  isOcrExpanded = false;
 
   document.getElementById('detailSesi').innerHTML = `
     <div class="sesi-detail-blok">
       <div class="soal-blok"><span class="detail-label">Soal:</span> ${soal}</div>
       <div class="jawaban-blok"><span class="detail-label">Jawaban:</span> ${jawaban}</div>
-      <div class="detail-row"><span class="detail-label">Ringkasan OCR:</span> ${renderOcr(ocr, false)}</div>
+      <div class="detail-row"><span class="detail-label">Ringkasan OCR:</span> ${renderOcr(ocr)}</div>
       <div class="detail-row"><span class="detail-label">Dokumen:</span> ${dokumenList}</div>
       <div class="detail-row"><span class="detail-label">Note/Link:</span> ${noteHtml}</div>
       <div class="detail-row"><span class="detail-label">Nilai:</span> ${sesi.nilai || '-'}</div>
