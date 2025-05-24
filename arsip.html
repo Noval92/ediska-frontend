@@ -203,13 +203,14 @@ function popupPreview(filePath) {
 
   let url = filePath;
 
-  // Jika Cloudinary image dan perlu diakses sebagai file raw
+  // 👉 Kalau URL Cloudinary dan masih /image/upload, ubah ke /raw/upload
   if (filePath.startsWith('http') && filePath.includes('res.cloudinary.com')) {
     if (filePath.includes('/image/upload/')) {
       url = filePath.replace('/image/upload/', '/raw/upload/');
     }
-  } else if (!filePath.startsWith('http')) {
-    // Jika bukan URL lengkap, tambahkan prefix backend
+  } 
+  // 👉 Kalau bukan URL lengkap (hanya path lokal), tambahkan backend prefix
+  else if (!filePath.startsWith('http')) {
     url = `https://ediska-backend.onrender.com/${filePath}`;
   }
 
@@ -225,6 +226,7 @@ function popupPreview(filePath) {
 
   popup.style.display = 'flex';
 }
+
 function closePreview(ev) {
   document.getElementById('popup-preview').style.display = 'none';
   document.getElementById('popup-inner').innerHTML = '';
