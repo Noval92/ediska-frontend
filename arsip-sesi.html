@@ -12,7 +12,6 @@
     .back-btn { margin-bottom: 18px; background: #bdbdbd; padding: 7px 22px; border: none; border-radius: 8px; font-size: 1em; cursor: pointer;}
     .info-box { background: #e3f2fd; border-radius: 7px; padding: 16px; margin-bottom: 28px; font-size: 1.07em;}
     .sesi-detail-blok { border: 2px solid #2196f3; background: #f2fafe; border-radius: 9px; margin: 20px 0 12px 0; padding: 1.1rem 1rem 0.7rem 1rem; }
-    .sesi-header { font-size: 1.18em; color: #1565c0; font-weight: bold; margin-bottom: 8px;}
     .soal-blok, .jawaban-blok {margin: 10px 0 15px 0;}
     .detail-label { font-weight: 600; color: #2175bb; min-width:90px; display:inline-block;}
     .doc-link { color: #1976d2; text-decoration: underline; margin-right: 8px; cursor: pointer;}
@@ -79,24 +78,20 @@ function closePreview(ev) {
 }
 
 let isOcrExpanded = false;
-function toggleOcr(val) {
+function toggleOcr(valEnc) {
   const ocrDiv = document.getElementById('ocr-content');
+  const val = decodeURIComponent(valEnc);
   if (!isOcrExpanded) {
     ocrDiv.classList.remove('ocr-min');
-    ocrDiv.innerHTML = val.replace(/\n/g, "<br>") + `<span class="expand-btn" onclick="toggleOcr('${encodeURIComponent(val)}')">[collapse]</span>`;
+    ocrDiv.innerHTML = val.replace(/\n/g, "<br>") +
+      `<span class="expand-btn" onclick="toggleOcr('${encodeURIComponent(val)}')">[collapse]</span>`;
     isOcrExpanded = true;
   } else {
     const shortVal = val.length > 350 ? val.substring(0, 350) + '...' : val;
     ocrDiv.classList.add('ocr-min');
-    ocrDiv.innerHTML = shortVal.replace(/\n/g, "<br>") + (val.length > 350 ? `<span class="expand-btn" onclick="toggleOcr('${encodeURIComponent(val)}')">[expand]</span>` : '');
+    ocrDiv.innerHTML = shortVal.replace(/\n/g, "<br>") +
+      (val.length > 350 ? `<span class="expand-btn" onclick="toggleOcr('${encodeURIComponent(val)}')">[expand]</span>` : '');
     isOcrExpanded = false;
-  }
-}
-function decodeOcr(val) {
-  try {
-    return decodeURIComponent(val);
-  } catch {
-    return val;
   }
 }
 
@@ -115,8 +110,21 @@ async function loadDetailSesi() {
     </div>
   `;
   // Sesi
-  const resSesi = await fetch(`https://ediska-backend.onrender.com/api/matakuliah/sesi/${sesiId}`);
-  const sesi = await resSesi.json();
+  let sesi = null;
+  try {
+    const resSesi = await fetch(`https://ediska-backend.onrender.com/api/matakuliah/sesi/${sesiId}`);
+    sesi = await resSesi.json();
+  } catch {
+    sesi = null;
+  }
+  if (!sesi || !sesi._id) {
+    document.getElementById('detailSesi').innerHTML = `
+      <div class="sesi-detail-blok">
+        <div style="text-align:center;color:#c00;padding:1.5rem;">Tidak ada data sesi!</div>
+      </div>
+    `;
+    return;
+  }
   let docs = Array.isArray(sesi.pdf) ? sesi.pdf : [];
   let judulDocs = Array.isArray(sesi.pdfJudul) ? sesi.pdfJudul : [];
   let noteHtml = '-';
@@ -141,23 +149,15 @@ async function loadDetailSesi() {
   let ocr = sesi.ringkasanOCR ? sesi.ringkasanOCR : '';
 
   // OCR block minimize/maximize
-  let isOcrExpanded = false;
-function toggleOcr(valEnc) {
-  const ocrDiv = document.getElementById('ocr-content');
-  const val = decodeURIComponent(valEnc);
-  if (!isOcrExpanded) {
-    ocrDiv.classList.remove('ocr-min');
-    ocrDiv.innerHTML = val.replace(/\n/g, "<br>") +
-      `<span class="expand-btn" onclick="toggleOcr('${encodeURIComponent(val)}')">[collapse]</span>`;
-    isOcrExpanded = true;
-  } else {
-    const shortVal = val.length > 350 ? val.substring(0, 350) + '...' : val;
-    ocrDiv.classList.add('ocr-min');
-    ocrDiv.innerHTML = shortVal.replace(/\n/g, "<br>") +
-      `<span class="expand-btn" onclick="toggleOcr('${encodeURIComponent(val)}')">[expand]</span>`;
-    isOcrExpanded = false;
+  let ocrHtml = '-';
+  if (ocr) {
+    const isLong = ocr.length > 350;
+    const shortOcr = isLong ? ocr.substring(0, 350) + '...' : ocr;
+    ocrHtml = `<div id="ocr-content" class="ocr-block ocr-min">
+      ${shortOcr.replace(/\n/g,"<br>")}
+      ${isLong ? `<span class="expand-btn" onclick="toggleOcr('${encodeURIComponent(ocr)}')">[expand]</span>` : ''}
+    </div>`;
   }
-}
 
   document.getElementById('detailSesi').innerHTML = `
     <div class="sesi-detail-blok">
