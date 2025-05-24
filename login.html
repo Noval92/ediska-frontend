@@ -51,6 +51,21 @@
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
+
+    /* === Tambahan untuk checkbox center === */
+    .remember-wrap {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+    .remember-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 1em;
+      font-weight: 400;
+    }
+    /* ======================= */
   </style>
 </head>
 <body>
@@ -74,10 +89,14 @@
         required
         autocomplete="current-password"
       />
-      <div class="remember">
-        <input type="checkbox" id="rememberMe" name="rememberMe">
-        <label for="rememberMe">Ingat saya</label>
+      <!-- Tambahan: checkbox center -->
+      <div class="remember-wrap">
+        <label class="remember-label">
+          <input type="checkbox" id="rememberMe" name="rememberMe">
+          Ingat saya
+        </label>
       </div>
+      <!-- End tambahan -->
       <button type="submit">Masuk</button>
       <div class="loader" id="loader"><div class="spinner"></div></div>
     </form>
