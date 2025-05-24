@@ -322,12 +322,23 @@ for (const s of sesiList) {
     output += `<tr class="dokumen-list-row" id="dokumen-row-${mk._id}_${s._id}" style="display:none;">
       <td colspan="11" style="text-align:left">
         <b>Daftar Dokumen:</b><br>
-        ${docs.map((f, i) => {
-          let judul = judulDocs[i] || `Dokumen ${i+1}`;
-          if (/\.(pdf|jpg|jpeg|png|gif)$/i.test(f))
-            return `<button class="dokumen-link" onclick="popupPreview('${f}')">${judul}</button>`;
-          return `<a class="dokumen-link" href="https://ediska-backend.onrender.com/${f}" download>${judul}</a>`;
-        }).join('')}
+${docs.map((f, i) => {
+  let judul = judulDocs[i] || `Dokumen ${i+1}`;
+  let url = f;
+  if (f.startsWith('http') && f.includes('res.cloudinary.com')) {
+    if (f.includes('/image/upload/')) {
+      url = f.replace('/image/upload/', '/raw/upload/');
+    }
+  } else if (!f.startsWith('http')) {
+    url = `https://ediska-backend.onrender.com/${f}`;
+  }
+
+  if (/\.(pdf|jpg|jpeg|png|gif)$/i.test(url)) {
+    return `<button class="dokumen-link" onclick="popupPreview('${url}')">${judul}</button>`;
+  }
+  return `<a class="dokumen-link" href="${url}" download>${judul}</a>`;
+}).join('')}
+
       </td>
     </tr>`;
   }
