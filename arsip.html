@@ -236,20 +236,21 @@ async function loadArsip() {
     <div class="table-responsive">
     <table>
       <thead>
-        <tr>
-          <th></th>
-          <th>Mata Kuliah</th>
-          <th>Kode</th>
-          <th>SKS</th>
-          <th>Sesi</th>
-          <th>Subject</th>
-          <th>Ringkasan</th>
-          <th>Ringkasan OCR</th>
-          <th>Dokumen</th>
-          <th>Note/Link</th>
-          <th>Nilai</th>
-        </tr>
-      </thead>
+  <tr>
+    <th></th>
+    <th>Mata Kuliah</th>
+    <th>Kode</th>
+    <th>SKS</th>
+    <th>Sesi</th>
+    <th>Soal</th>
+    <th>Jawaban</th>
+    <th>Ringkasan OCR</th>
+    <th>Dokumen</th>
+    <th>Note/Link</th>
+    <th>Nilai</th>
+  </tr>
+</thead>
+
       <tbody>`;
     // fetch matkul per semester
     const resMk = await fetch(`https://ediska-backend.onrender.com/api/matakuliah?userId=${user._id}&semester=${sem.semester}`);
@@ -269,58 +270,59 @@ async function loadArsip() {
         </tr>`;
         continue;
       }
-      let sesiKe = 1;
-      for (const s of sesiList) {
-        // Dokumen file array
-        let docs = Array.isArray(s.pdf) ? s.pdf : [];
-        let judulDocs = Array.isArray(s.pdfJudul) ? s.pdfJudul : [];
-        let dokumenSummary = docs.length > 0 ? `${docs.length} dokumen` : '-';
-        let expandBtn = docs.length > 0 ? `<button class="dokumen-toggle" onclick="event.stopPropagation();toggleDokumen(this, '${mk._id}_${s._id}')">[+]</button>` : '';
-        // Note/link
-        let noteHtml = '-';
-        if (s.videoLink && Array.isArray(s.videoLink) && s.videoLink.length > 0) {
-          noteHtml = s.videoLink.map((l, i) => {
-            let judul = s.videoJudul && s.videoJudul[i] ? s.videoJudul[i] : `Note/Link ${i+1}`;
-            return l.startsWith("http") ?
-              `<div style="white-space:nowrap;"><a href="${l}" target="_blank" style="color:#1976d2;text-decoration:underline;">${judul}</a></div>`
-              : `<span>${judul}: ${l}</span>`;
-          }).join('');
-        }
-        output += `<tr>
-          <td>
-            <button class="btn-view-sesi" onclick="event.stopPropagation();viewSesi('${mk._id}','${s._id}')" title="Buka Detail Arsip Sesi 📖">📖</button>
-          </td>
-          <td>${mk.nama}</td>
-          <td>${mk.kode}</td>
-          <td>${mk.sks}</td>
-          <td>Sesi ${sesiKe++}</td>
-          <td>${s.pelajaran || '-'}</td>
-          <td style="max-width:180px;">
-            <div class="ringkasan-fixed">${s.ringkasan || '-'}</div>
-          </td>
-          <td style="max-width:180px;">
-            <div class="ringkasan-fixed">${s.ringkasanOCR || '-'}</div>
-          </td>
-          <td>
-            ${dokumenSummary} ${expandBtn}
-          </td>
-          <td>${noteHtml}</td>
-          <td>${s.nilai || '-'}</td>
-        </tr>`;
-        if (docs.length > 0) {
-          output += `<tr class="dokumen-list-row" id="dokumen-row-${mk._id}_${s._id}" style="display:none;">
-            <td colspan="11" style="text-align:left">
-              <b>Daftar Dokumen:</b><br>
-              ${docs.map((f, i) => {
-                let judul = judulDocs[i] || `Dokumen ${i+1}`;
-                if (/\.(pdf|jpg|jpeg|png|gif)$/i.test(f))
-                  return `<button class="dokumen-link" onclick="popupPreview('${f}')">${judul}</button>`;
-                return `<a class="dokumen-link" href="https://ediska-backend.onrender.com/${f}" download>${judul}</a>`;
-              }).join('')}
-            </td>
-          </tr>`;
-        }
-      }
+let sesiKe = 1;
+for (const s of sesiList) {
+  // Dokumen file array
+  let docs = Array.isArray(s.pdf) ? s.pdf : [];
+  let judulDocs = Array.isArray(s.pdfJudul) ? s.pdfJudul : [];
+  let dokumenSummary = docs.length > 0 ? `${docs.length} dokumen` : '-';
+  let expandBtn = docs.length > 0 ? `<button class="dokumen-toggle" onclick="event.stopPropagation();toggleDokumen(this, '${mk._id}_${s._id}')">[+]</button>` : '';
+  // Note/link
+  let noteHtml = '-';
+  if (s.videoLink && Array.isArray(s.videoLink) && s.videoLink.length > 0) {
+    noteHtml = s.videoLink.map((l, i) => {
+      let judul = s.videoJudul && s.videoJudul[i] ? s.videoJudul[i] : `Note/Link ${i+1}`;
+      return l.startsWith("http") ?
+        `<div style="white-space:nowrap;"><a href="${l}" target="_blank" style="color:#1976d2;text-decoration:underline;">${judul}</a></div>`
+        : `<span>${judul}: ${l}</span>`;
+    }).join('');
+  }
+  output += `<tr>
+    <td>
+      <button class="btn-view-sesi" onclick="event.stopPropagation();viewSesi('${mk._id}','${s._id}')" title="Buka Detail Arsip Sesi 📖">📖</button>
+    </td>
+    <td>${mk.nama}</td>
+    <td>${mk.kode}</td>
+    <td>${mk.sks}</td>
+    <td>Sesi ${sesiKe++}</td>
+    <td>${s.pelajaran || '-'}</td>
+    <td style="max-width:180px;">
+      <div class="ringkasan-fixed">${s.ringkasan || '-'}</div>
+    </td>
+    <td style="max-width:180px;">
+      <div class="ringkasan-fixed">${s.ringkasanOCR || '-'}</div>
+    </td>
+    <td>
+      ${dokumenSummary} ${expandBtn}
+    </td>
+    <td>${noteHtml}</td>
+    <td>${s.nilai || '-'}</td>
+  </tr>`;
+  if (docs.length > 0) {
+    output += `<tr class="dokumen-list-row" id="dokumen-row-${mk._id}_${s._id}" style="display:none;">
+      <td colspan="11" style="text-align:left">
+        <b>Daftar Dokumen:</b><br>
+        ${docs.map((f, i) => {
+          let judul = judulDocs[i] || `Dokumen ${i+1}`;
+          if (/\.(pdf|jpg|jpeg|png|gif)$/i.test(f))
+            return `<button class="dokumen-link" onclick="popupPreview('${f}')">${judul}</button>`;
+          return `<a class="dokumen-link" href="https://ediska-backend.onrender.com/${f}" download>${judul}</a>`;
+        }).join('')}
+      </td>
+    </tr>`;
+  }
+}
+
     }
     output += `</tbody></table></div>`;
   }

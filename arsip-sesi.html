@@ -13,11 +13,13 @@
     .info-box { background: #e3f2fd; border-radius: 7px; padding: 16px; margin-bottom: 28px; font-size: 1.07em;}
     .sesi-detail-blok { border: 2px solid #2196f3; background: #f2fafe; border-radius: 9px; margin: 20px 0 12px 0; padding: 1.1rem 1rem 0.7rem 1rem; }
     .sesi-header { font-size: 1.18em; color: #1565c0; font-weight: bold; margin-bottom: 8px;}
-    .detail-row { margin-bottom: 12px;}
-    .detail-label { display: inline-block; min-width: 120px; font-weight: 600; color: #222;}
+    .soal-blok, .jawaban-blok {margin: 10px 0 15px 0;}
+    .detail-label { font-weight: 600; color: #2175bb; min-width:90px; display:inline-block;}
     .doc-link { color: #1976d2; text-decoration: underline; margin-right: 8px; cursor: pointer;}
     .note-link { color: #1976d2; text-decoration: underline;}
-    .ocr-block { background: #faf5e6; border-radius: 7px; padding: 11px; margin: 12px 0 0 0; color: #222; font-size:1em;}
+    .ocr-block { background: #faf5e6; border-radius: 7px; padding: 11px; margin: 8px 0 0 0; color: #222; font-size:1em; position:relative;}
+    .ocr-min { max-height: 90px; overflow: hidden; white-space: pre-line;}
+    .expand-btn { color: #1976d2; cursor: pointer; font-size: 0.97em; margin-left: 10px;}
     .preview-popup { display: none; position: fixed; left: 0; top: 0; width: 100vw; height: 100vh; z-index: 9999; background: rgba(0,0,0,0.44); justify-content: center; align-items: center;}
     .preview-popup-inner { background: #fff; border-radius: 10px; max-width: 90vw; max-height: 85vh; overflow: auto; padding: 1rem; position: relative; box-shadow: 0 4px 24px rgba(0,0,0,0.16);}
     .close-preview { position: absolute; top: 10px; right: 18px; font-size: 1.5rem; background: none; border: none; cursor: pointer; color: #d32f2f; z-index: 10;}
@@ -76,6 +78,28 @@ function closePreview(ev) {
   document.getElementById('popup-inner').innerHTML = '';
 }
 
+let isOcrExpanded = false;
+function toggleOcr(val) {
+  const ocrDiv = document.getElementById('ocr-content');
+  if (!isOcrExpanded) {
+    ocrDiv.classList.remove('ocr-min');
+    ocrDiv.innerHTML = val.replace(/\n/g, "<br>") + `<span class="expand-btn" onclick="toggleOcr('${encodeURIComponent(val)}')">[collapse]</span>`;
+    isOcrExpanded = true;
+  } else {
+    const shortVal = val.length > 350 ? val.substring(0, 350) + '...' : val;
+    ocrDiv.classList.add('ocr-min');
+    ocrDiv.innerHTML = shortVal.replace(/\n/g, "<br>") + (val.length > 350 ? `<span class="expand-btn" onclick="toggleOcr('${encodeURIComponent(val)}')">[expand]</span>` : '');
+    isOcrExpanded = false;
+  }
+}
+function decodeOcr(val) {
+  try {
+    return decodeURIComponent(val);
+  } catch {
+    return val;
+  }
+}
+
 // Ambil dan render detail sesi
 async function loadDetailSesi() {
   if (!matkulId || !sesiId) {
@@ -110,16 +134,32 @@ async function loadDetailSesi() {
         return `<a class="doc-link" href="https://ediska-backend.onrender.com/${f}" download>${judul}</a>`;
       }).join('')
     : '-';
+
+  // Soal dan Jawaban
+  let soal = sesi.pelajaran || '-';
+  let jawaban = sesi.ringkasan || '-';
+  let ocr = sesi.ringkasanOCR ? sesi.ringkasanOCR : '';
+
+  // OCR block minimize/maximize
+  let ocrHtml = '-';
+  if (ocr) {
+    const shortOcr = ocr.length > 350 ? ocr.substring(0, 350) + '...' : ocr;
+    ocrHtml = `<div id="ocr-content" class="ocr-block ocr-min">
+      ${shortOcr.replace(/\n/g,"<br>")}${ocr.length > 350 ? `<span class="expand-btn" onclick="toggleOcr('${encodeURIComponent(ocr)}')">[expand]</span>` : ''}
+    </div>`;
+  }
+
   document.getElementById('detailSesi').innerHTML = `
     <div class="sesi-detail-blok">
-      <div class="sesi-header">${sesi.pelajaran ? sesi.pelajaran : '(Tanpa Judul Sesi)'}</div>
-      <div class="detail-row"><span class="detail-label">Ringkasan:</span> ${sesi.ringkasan || '-'}</div>
-      <div class="detail-row"><span class="detail-label">Ringkasan OCR:</span> <div class="ocr-block" style="margin-top:2px;">${sesi.ringkasanOCR ? sesi.ringkasanOCR.replace(/\n/g,"<br>") : '-'}</div></div>
+      <div class="soal-blok"><span class="detail-label">Soal:</span> ${soal}</div>
+      <div class="jawaban-blok"><span class="detail-label">Jawaban:</span> ${jawaban}</div>
+      <div class="detail-row"><span class="detail-label">Ringkasan OCR:</span> ${ocrHtml}</div>
       <div class="detail-row"><span class="detail-label">Dokumen:</span> ${dokumenList}</div>
       <div class="detail-row"><span class="detail-label">Note/Link:</span> ${noteHtml}</div>
       <div class="detail-row"><span class="detail-label">Nilai:</span> ${sesi.nilai || '-'}</div>
     </div>
   `;
+  isOcrExpanded = false;
 }
 document.addEventListener('DOMContentLoaded', loadDetailSesi);
 </script>
