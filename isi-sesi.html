@@ -22,7 +22,10 @@
     .urutan-sesi { margin: 0 0 10px 0; font-weight: bold; font-size: 1.1em; color: #1565c0; }
     label { display:block; margin:12px 0 6px 0;}
     input[type=text], input[type=number], textarea { width: 100%; padding: 8px; border: 1px solid #b0bec5; border-radius: 6px; font-size: 1em; margin-bottom: 2px; font-family: inherit; }
-    textarea { min-height: 56px; resize: vertical;}
+    /* custom box besar untuk soal dan jawaban diskusi */
+    #soal_diskusi { min-height: 54px; font-size: 1.07em; }
+    #jawaban_diskusi { min-height: 90px; font-size: 1.07em; }
+    textarea { resize: vertical;}
     .pdf-item, .note-item { display: flex; gap: 7px; margin-bottom: 5px; align-items:center;}
     .pdf-item input[type="text"], .note-item input[type="text"] { flex: 1;}
     .pdf-item input[type="file"] { flex: 1.4;}
@@ -48,10 +51,10 @@
     <div id="sesi-list"></div>
     <form id="formSesi" autocomplete="off">
       <div id="urutan-sesi" class="urutan-sesi"></div>
-      <label><b>Hal apa yang dipelajari?</b></label>
-      <input type="text" id="pelajaran" placeholder="Contoh: Sesi 1 - Instalasi dan konfigurasi ..." required />
-      <label><b>Ringkasan belajar sesi ini</b></label>
-      <textarea id="ringkasan" placeholder="Tuliskan ringkasan belajar sesi ini..."></textarea>
+      <label><b>Soal Diskusi</b></label>
+      <textarea id="soal_diskusi" placeholder="Tuliskan soal diskusi sesi ini..." required></textarea>
+      <label><b>Jawaban Diskusi</b></label>
+      <textarea id="jawaban_diskusi" placeholder="Tuliskan jawaban diskusi..."></textarea>
       <label><b>Upload Dokumen (max 10)</b></label>
       <div id="pdfList"></div>
       <button type="button" onclick="tambahDokumen()" class="btn-tambah">+ Tambah Dokumen</button>
@@ -96,8 +99,8 @@ async function loadSesiList() {
     html += `
       <div class="sesi-blok">
         <div class="sesi-header">Sesi ${i+1}</div>
-        <div><b>Hal yang dipelajari:</b> ${s.pelajaran || '<span class="note-blm-lengkap">Belum Lengkap</span>'}</div>
-        <div><b>Ringkasan:</b> ${s.ringkasan || '<span class="note-blm-lengkap">Belum Lengkap</span>'}</div>
+        <div><b>Soal Diskusi:</b> ${s.pelajaran || '<span class="note-blm-lengkap">Belum Lengkap</span>'}</div>
+        <div><b>Jawaban Diskusi:</b> ${s.ringkasan || '<span class="note-blm-lengkap">Belum Lengkap</span>'}</div>
         <div><b>Ringkasan OCR:</b> ${s.ringkasanOCR ? '<pre style="white-space:pre-wrap">'+s.ringkasanOCR+'</pre>' : '<span class="note-blm-lengkap">Belum Ada</span>'}</div>
         <div><b>Dokumen:</b> ${(s.pdfJudul||[]).map((j,idx)=>j?`<a href="https://ediska-backend.onrender.com/${s.pdf[idx]}" target="_blank">${j}</a>`:`<span class="note-blm-lengkap">Belum Lengkap</span>`).join(', ')||'-'}</div>
         <div><b>Note/Link:</b> ${(s.videoJudul||[]).map((n,idx)=>n?(s.videoLink&&s.videoLink[idx]?`<a href="${s.videoLink[idx]}" target="_blank">${n}</a>`:n):'<span class="note-blm-lengkap">Belum Lengkap</span>').join(', ')||'-'}</div>
@@ -173,8 +176,8 @@ async function editSesi(sesiId) {
   const res = await fetch(`https://ediska-backend.onrender.com/api/matakuliah/sesi/${sesiId}`);
   const sesi = await res.json();
   document.getElementById('urutan-sesi').innerHTML = 'Edit Sesi';
-  document.getElementById('pelajaran').value = sesi.pelajaran || '';
-  document.getElementById('ringkasan').value = sesi.ringkasan || '';
+  document.getElementById('soal_diskusi').value = sesi.pelajaran || '';
+  document.getElementById('jawaban_diskusi').value = sesi.ringkasan || '';
   document.getElementById('ocrResult').value = sesi.ringkasanOCR || '';
   document.getElementById('nilai').value = sesi.nilai || '';
   document.getElementById('pdfList').innerHTML = '';
@@ -220,12 +223,12 @@ document.getElementById('formSesi').onsubmit = async function(e) {
   document.querySelectorAll('input[name="videoJudul[]"]').forEach(inp=>{
     if(!inp.value.trim()) adaKosong = true;
   });
-  if(!document.getElementById('pelajaran').value.trim() || !document.getElementById('ringkasan').value.trim()) adaKosong = true;
+  if(!document.getElementById('soal_diskusi').value.trim() || !document.getElementById('jawaban_diskusi').value.trim()) adaKosong = true;
 
-  // Validasi: tidak boleh double "Hal apa yang dipelajari"
-  const pelajaranVal = document.getElementById('pelajaran').value.trim().toLowerCase();
-  if (!editingSesiId && sesiData.some(s => (s.pelajaran || '').toLowerCase() === pelajaranVal)) {
-    document.getElementById('msg').innerHTML = '<div class="msg-error">Sesi dengan “Hal yang dipelajari” ini sudah ada!</div>';
+  // Validasi: tidak boleh double "Soal Diskusi"
+  const soalVal = document.getElementById('soal_diskusi').value.trim().toLowerCase();
+  if (!editingSesiId && sesiData.some(s => (s.pelajaran || '').toLowerCase() === soalVal)) {
+    document.getElementById('msg').innerHTML = '<div class="msg-error">Sesi dengan soal diskusi ini sudah ada!</div>';
     setTimeout(()=>document.getElementById('msg').innerHTML='', 1800);
     return;
   }
@@ -242,8 +245,8 @@ document.getElementById('formSesi').onsubmit = async function(e) {
 
   const formData = new FormData();
   formData.append('matkulId', matkulId);
-  formData.append('pelajaran', document.getElementById('pelajaran').value);
-  formData.append('ringkasan', document.getElementById('ringkasan').value);
+  formData.append('pelajaran', document.getElementById('soal_diskusi').value);
+  formData.append('ringkasan', document.getElementById('jawaban_diskusi').value);
   formData.append('ringkasanOCR', document.getElementById('ocrResult').value);
   formData.append('nilai', document.getElementById('nilai').value);
 
