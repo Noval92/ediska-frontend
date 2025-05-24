@@ -141,13 +141,23 @@ async function loadDetailSesi() {
   let ocr = sesi.ringkasanOCR ? sesi.ringkasanOCR : '';
 
   // OCR block minimize/maximize
-  let ocrHtml = '-';
-  if (ocr) {
-    const shortOcr = ocr.length > 350 ? ocr.substring(0, 350) + '...' : ocr;
-    ocrHtml = `<div id="ocr-content" class="ocr-block ocr-min">
-      ${shortOcr.replace(/\n/g,"<br>")}${ocr.length > 350 ? `<span class="expand-btn" onclick="toggleOcr('${encodeURIComponent(ocr)}')">[expand]</span>` : ''}
-    </div>`;
+  let isOcrExpanded = false;
+function toggleOcr(valEnc) {
+  const ocrDiv = document.getElementById('ocr-content');
+  const val = decodeURIComponent(valEnc);
+  if (!isOcrExpanded) {
+    ocrDiv.classList.remove('ocr-min');
+    ocrDiv.innerHTML = val.replace(/\n/g, "<br>") +
+      `<span class="expand-btn" onclick="toggleOcr('${encodeURIComponent(val)}')">[collapse]</span>`;
+    isOcrExpanded = true;
+  } else {
+    const shortVal = val.length > 350 ? val.substring(0, 350) + '...' : val;
+    ocrDiv.classList.add('ocr-min');
+    ocrDiv.innerHTML = shortVal.replace(/\n/g, "<br>") +
+      `<span class="expand-btn" onclick="toggleOcr('${encodeURIComponent(val)}')">[expand]</span>`;
+    isOcrExpanded = false;
   }
+}
 
   document.getElementById('detailSesi').innerHTML = `
     <div class="sesi-detail-blok">
