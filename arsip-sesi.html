@@ -17,11 +17,10 @@
     .doc-link { color: #1976d2; text-decoration: underline; margin-right: 8px; cursor: pointer;}
     .note-link { color: #1976d2; text-decoration: underline;}
     .ocr-block { background: #faf5e6; border-radius: 7px; padding: 11px; margin: 8px 0 0 0; color: #222; font-size:1em; position:relative;}
-    .ocr-min { max-height: 40px; overflow: hidden; white-space: pre-line;}
-    .expand-btn { color: #1976d2; cursor: pointer; font-size: 0.97em; margin-left: 10px;}
-    .preview-popup { display: none; position: fixed; left: 0; top: 0; width: 100vw; height: 100vh; z-index: 9999; background: rgba(0,0,0,0.44); justify-content: center; align-items: center;}
-    .preview-popup-inner { background: #fff; border-radius: 10px; max-width: 90vw; max-height: 85vh; overflow: auto; padding: 1rem; position: relative; box-shadow: 0 4px 24px rgba(0,0,0,0.16);}
-    .close-preview { position: absolute; top: 10px; right: 18px; font-size: 1.5rem; background: none; border: none; cursor: pointer; color: #d32f2f; z-index: 10;}
+    .ocr-min { max-height: 45px; overflow: hidden; white-space: pre-line;}
+    .expand-btn { color: #1976d2; cursor: pointer; font-size: 0.97em; margin-left: 12px;}
+    .expand-btn:hover { text-decoration: underline;}
+    .ocr-block-inner { display: inline; }
     @media (max-width:700px){
       .container{max-width:98vw;padding:0.3rem;}
       h2{font-size:1.05em;}
@@ -77,27 +76,38 @@ function closePreview(ev) {
   document.getElementById('popup-inner').innerHTML = '';
 }
 
-function toggleOcr(force) {
-  const ocrDiv = document.getElementById('ocr-content');
-  let isMin = ocrDiv.classList.contains('ocr-min');
-  let ocrRaw = ocrDiv.getAttribute('data-ocr');
-  if (isMin || force === 'max') {
-    ocrDiv.classList.remove('ocr-min');
-    ocrDiv.innerHTML = ocrRaw.replace(/\n/g, "<br>") +
-      `<span class="expand-btn" onclick="toggleOcr('min')">[collapse]</span>`;
+// Fungsi expand/collapse OCR (min/max)
+function renderOcr(val, expanded=false) {
+  const safeVal = (val || '').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g, '<br>');
+  if (!val || val.trim() === '') {
+    return `<div class="ocr-block ocr-min" id="ocr-content"><i>(Tidak ada Ringkasan OCR)</i></div>`;
+  }
+  if (expanded) {
+    return `<div class="ocr-block" id="ocr-content">
+      <span class="ocr-block-inner">${safeVal}</span>
+      <span class="expand-btn" onclick="toggleOcr(false)">[minimize]</span>
+    </div>`;
   } else {
-    ocrDiv.classList.add('ocr-min');
-    ocrDiv.innerHTML = ocrRaw.replace(/\n/g, "<br>") +
-      `<span class="expand-btn" onclick="toggleOcr('max')">[expand]</span>`;
+    return `<div class="ocr-block ocr-min" id="ocr-content">
+      <span class="ocr-block-inner">${safeVal}</span>
+      <span class="expand-btn" onclick="toggleOcr(true)">[expand]</span>
+    </div>`;
   }
 }
+function toggleOcr(expand) {
+  const sesiOcrVal = window._ocrValueGlobal || "";
+  const ocrDiv = document.getElementById('ocr-content');
+  if (!ocrDiv) return;
+  ocrDiv.outerHTML = renderOcr(sesiOcrVal, expand);
+}
 
+// Ambil dan render detail sesi
 async function loadDetailSesi() {
   if (!matkulId || !sesiId) {
     document.getElementById('detailSesi').innerHTML = '<div style="padding:2rem;text-align:center;">Data tidak ditemukan.</div>';
     return;
   }
-  // Info Matkul
+  // Info matkul
   const resMatkul = await fetch(`https://ediska-backend.onrender.com/api/matakuliah/${matkulId}`);
   const mk = await resMatkul.json();
   document.getElementById('infoMatkul').innerHTML = `
@@ -105,22 +115,9 @@ async function loadDetailSesi() {
       <b>${mk.nama || '-'}</b> | Kode: ${mk.kode || '-'} | SKS: ${mk.sks || '-'}
     </div>
   `;
-  // Info Sesi
-  let sesi = null;
-  try {
-    const resSesi = await fetch(`https://ediska-backend.onrender.com/api/matakuliah/sesi/${sesiId}`);
-    sesi = await resSesi.json();
-  } catch {
-    sesi = null;
-  }
-  if (!sesi || !sesi._id) {
-    document.getElementById('detailSesi').innerHTML = `
-      <div class="sesi-detail-blok">
-        <div style="text-align:center;color:#c00;padding:1.5rem;">Tidak ada data sesi!</div>
-      </div>
-    `;
-    return;
-  }
+  // Sesi
+  const resSesi = await fetch(`https://ediska-backend.onrender.com/api/matakuliah/sesi/${sesiId}`);
+  const sesi = await resSesi.json();
   let docs = Array.isArray(sesi.pdf) ? sesi.pdf : [];
   let judulDocs = Array.isArray(sesi.pdfJudul) ? sesi.pdfJudul : [];
   let noteHtml = '-';
@@ -142,21 +139,15 @@ async function loadDetailSesi() {
   // Soal dan Jawaban
   let soal = sesi.pelajaran || '-';
   let jawaban = sesi.ringkasan || '-';
-  let ocr = sesi.ringkasanOCR ? sesi.ringkasanOCR : '-';
-
-  // OCR block (selalu ada expand/collapse)
-  let ocrHtml = `
-    <div id="ocr-content" class="ocr-block ocr-min" data-ocr="${ocr.replace(/"/g, '&quot;')}">
-      ${ocr.replace(/\n/g,"<br>")}
-      <span class="expand-btn" onclick="toggleOcr('max')">[expand]</span>
-    </div>
-  `;
+  let ocr = sesi.ringkasanOCR ? sesi.ringkasanOCR : '';
+  // Global untuk tombol
+  window._ocrValueGlobal = ocr;
 
   document.getElementById('detailSesi').innerHTML = `
     <div class="sesi-detail-blok">
       <div class="soal-blok"><span class="detail-label">Soal:</span> ${soal}</div>
       <div class="jawaban-blok"><span class="detail-label">Jawaban:</span> ${jawaban}</div>
-      <div class="detail-row"><span class="detail-label">Ringkasan OCR:</span> ${ocrHtml}</div>
+      <div class="detail-row"><span class="detail-label">Ringkasan OCR:</span> ${renderOcr(ocr, false)}</div>
       <div class="detail-row"><span class="detail-label">Dokumen:</span> ${dokumenList}</div>
       <div class="detail-row"><span class="detail-label">Note/Link:</span> ${noteHtml}</div>
       <div class="detail-row"><span class="detail-label">Nilai:</span> ${sesi.nilai || '-'}</div>
