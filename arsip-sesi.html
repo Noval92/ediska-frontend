@@ -18,7 +18,7 @@
     .note-link { color: #1976d2; text-decoration: underline;}
     .ocr-block { background: #faf5e6; border-radius: 7px; padding: 11px; margin: 8px 0 0 0; color: #222; font-size:1em; position:relative; transition: max-height 0.2s;}
     .ocr-min { max-height: 40px; overflow: hidden; }
-    .ocr-action-wrap { text-align:center; margin-top:4px; }
+    .ocr-action-wrap { display: flex; justify-content: center; margin-top:4px; }
     .expand-btn { color: #1976d2; cursor: pointer; font-size: 0.97em; background: none; border: none; outline: none; margin: 0 auto; display:inline-block;}
     .expand-btn:hover { text-decoration: underline;}
     .ocr-empty { color: #888; font-style: italic;}
@@ -101,7 +101,8 @@ function renderOcr() {
 function attachOcrListener() {
   const btn = document.getElementById('toggle-ocr-btn');
   if (btn) {
-    btn.addEventListener('click', function() {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
       ocrExpanded = !ocrExpanded;
       document.getElementById('ocr-content').outerHTML = renderOcr();
       attachOcrListener(); // Attach lagi setelah replace!
