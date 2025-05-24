@@ -17,7 +17,7 @@
     .doc-link { color: #1976d2; text-decoration: underline; margin-right: 8px; cursor: pointer;}
     .note-link { color: #1976d2; text-decoration: underline;}
     .ocr-block { background: #faf5e6; border-radius: 7px; padding: 11px; margin: 8px 0 0 0; color: #222; font-size:1em; position:relative; transition: max-height 0.2s;}
-    .ocr-min { max-height: 48px; overflow: hidden; }
+    .ocr-min { max-height: 40px; overflow: hidden; }
     .ocr-action-wrap { text-align:center; margin-top:4px; }
     .expand-btn { color: #1976d2; cursor: pointer; font-size: 0.97em; background: none; border: none; outline: none; margin: 0 auto; display:inline-block;}
     .expand-btn:hover { text-decoration: underline;}
@@ -77,29 +77,36 @@ function closePreview(ev) {
   document.getElementById('popup-inner').innerHTML = '';
 }
 
-// --- OCR EXPAND/COLLAPSE
-let isOcrExpanded = false;
-function renderOcr(val) {
-  val = val || '';
-  const safeVal = val.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g, '<br>');
-  if (!val.trim()) {
+// OCR GLOBAL STATE
+let ocrExpanded = false;
+let ocrValue = '';
+
+function renderOcr() {
+  const safeVal = (ocrValue || '').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g, '<br>');
+  if (!ocrValue || ocrValue.trim() === '') {
     return `<div class="ocr-block ocr-min ocr-empty" id="ocr-content">(Tidak ada Ringkasan OCR)</div>`;
   }
   return `
-    <div class="ocr-block ${isOcrExpanded ? '' : 'ocr-min'}" id="ocr-content">
+    <div class="ocr-block ${ocrExpanded ? '' : 'ocr-min'}" id="ocr-content">
       ${safeVal}
       <div class="ocr-action-wrap">
-        <button class="expand-btn" onclick="toggleOcr()">
-          [${isOcrExpanded ? 'minimize' : 'expand'}]
+        <button class="expand-btn" id="toggle-ocr-btn">
+          [${ocrExpanded ? 'minimize' : 'expand'}]
         </button>
       </div>
     </div>
   `;
 }
-function toggleOcr() {
-  isOcrExpanded = !isOcrExpanded;
-  const ocrVal = window._ocrValueGlobal || "";
-  document.getElementById('ocr-content').outerHTML = renderOcr(ocrVal);
+
+function attachOcrListener() {
+  const btn = document.getElementById('toggle-ocr-btn');
+  if (btn) {
+    btn.addEventListener('click', function() {
+      ocrExpanded = !ocrExpanded;
+      document.getElementById('ocr-content').outerHTML = renderOcr();
+      attachOcrListener(); // Attach lagi setelah replace!
+    });
+  }
 }
 
 // --- LOAD DETAIL SESI ---
@@ -140,21 +147,22 @@ async function loadDetailSesi() {
   // Soal dan Jawaban
   let soal = sesi.pelajaran || '-';
   let jawaban = sesi.ringkasan || '-';
-  let ocr = sesi.ringkasanOCR ? sesi.ringkasanOCR : '';
-  window._ocrValueGlobal = ocr;
-  isOcrExpanded = false;
+  ocrValue = sesi.ringkasanOCR ? sesi.ringkasanOCR : '';
+  ocrExpanded = false;
 
   document.getElementById('detailSesi').innerHTML = `
     <div class="sesi-detail-blok">
       <div class="soal-blok"><span class="detail-label">Soal:</span> ${soal}</div>
       <div class="jawaban-blok"><span class="detail-label">Jawaban:</span> ${jawaban}</div>
-      <div class="detail-row"><span class="detail-label">Ringkasan OCR:</span> ${renderOcr(ocr)}</div>
+      <div class="detail-row"><span class="detail-label">Ringkasan OCR:</span> ${renderOcr()}</div>
       <div class="detail-row"><span class="detail-label">Dokumen:</span> ${dokumenList}</div>
       <div class="detail-row"><span class="detail-label">Note/Link:</span> ${noteHtml}</div>
       <div class="detail-row"><span class="detail-label">Nilai:</span> ${sesi.nilai || '-'}</div>
     </div>
   `;
+  attachOcrListener();
 }
+
 document.addEventListener('DOMContentLoaded', loadDetailSesi);
 </script>
 </body>
