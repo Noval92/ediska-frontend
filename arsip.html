@@ -197,7 +197,7 @@
 const user = JSON.parse(localStorage.getItem('user'));
 if (!user || !user._id) window.location = 'login.html';
 
- function popupPreview(filePath) {
+    function popupPreview(filePath) {
       const popup = document.getElementById('popup-preview');
       const popupInner = document.getElementById('popup-inner');
       let url = filePath;
@@ -226,9 +226,9 @@ if (!user || !user._id) window.location = 'login.html';
       document.getElementById('popup-inner').innerHTML = '';
     }
 
-function viewSesi(matkulId, sesiId) {
-  window.location.href = `arsip-sesi.html?matkul_id=${matkulId}&sesi_id=${sesiId}`;
-}
+    function viewSesi(matkulId, sesiId) {
+      window.location.href = `arsip-sesi.html?matkul_id=${matkulId}&sesi_id=${sesiId}`;
+    }
 
 async function loadArsip() {
   const resSem = await fetch(`https://ediska-backend.onrender.com/api/semester/${user._id}`);
