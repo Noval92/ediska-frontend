@@ -197,40 +197,34 @@
 const user = JSON.parse(localStorage.getItem('user'));
 if (!user || !user._id) window.location = 'login.html';
 
-function popupPreview(filePath) {
-  const popup = document.getElementById('popup-preview');
-  const popupInner = document.getElementById('popup-inner');
+ function popupPreview(filePath) {
+      const popup = document.getElementById('popup-preview');
+      const popupInner = document.getElementById('popup-inner');
+      let url = filePath;
 
-  let url = filePath;
+      if (filePath.startsWith('http') && filePath.includes('res.cloudinary.com')) {
+        if (filePath.includes('/image/upload/')) {
+          url = filePath.replace('/image/upload/', '/raw/upload/');
+        }
+      } else if (!filePath.startsWith('http')) {
+        url = `https://ediska-backend.onrender.com/${filePath}`;
+      }
 
-  // 👉 Kalau URL Cloudinary dan masih /image/upload, ubah ke /raw/upload
-  if (filePath.startsWith('http') && filePath.includes('res.cloudinary.com')) {
-    if (filePath.includes('/image/upload/')) {
-      url = filePath.replace('/image/upload/', '/raw/upload/');
+      popupInner.innerHTML = '';
+      if (/\.(jpg|jpeg|png|gif)$/i.test(url)) {
+        popupInner.innerHTML = `<img src="${url}" style="max-width:85vw;max-height:75vh;border-radius:7px;" />`;
+      } else if (url.endsWith('.pdf')) {
+        popupInner.innerHTML = `<iframe src="${url}#toolbar=0" style="width:80vw;height:70vh;" allowfullscreen></iframe>`;
+      } else {
+        popupInner.innerHTML = `<a href="${url}" target="_blank" style="font-size:1.2rem;color:#1976d2;">Download File</a>`;
+      }
+      popup.style.display = 'flex';
     }
-  } 
-  // 👉 Kalau bukan URL lengkap (hanya path lokal), tambahkan backend prefix
-  else if (!filePath.startsWith('http')) {
-    url = `https://ediska-backend.onrender.com/${filePath}`;
-  }
 
-  popupInner.innerHTML = '';
-
-  if (/\.(jpg|jpeg|png|gif)$/i.test(url)) {
-    popupInner.innerHTML = `<img src="${url}" style="max-width:85vw;max-height:75vh;border-radius:7px;" />`;
-  } else if (url.endsWith('.pdf')) {
-    popupInner.innerHTML = `<iframe src="${url}#toolbar=0" style="width:80vw;height:70vh;" allowfullscreen></iframe>`;
-  } else {
-    popupInner.innerHTML = `<a href="${url}" target="_blank" style="font-size:1.2rem;color:#1976d2;">Download File</a>`;
-  }
-
-  popup.style.display = 'flex';
-}
-
-function closePreview(ev) {
-  document.getElementById('popup-preview').style.display = 'none';
-  document.getElementById('popup-inner').innerHTML = '';
-}
+    function closePreview(ev) {
+      document.getElementById('popup-preview').style.display = 'none';
+      document.getElementById('popup-inner').innerHTML = '';
+    }
 
 function viewSesi(matkulId, sesiId) {
   window.location.href = `arsip-sesi.html?matkul_id=${matkulId}&sesi_id=${sesiId}`;
