@@ -17,10 +17,9 @@
     .doc-link { color: #1976d2; text-decoration: underline; margin-right: 8px; cursor: pointer;}
     .note-link { color: #1976d2; text-decoration: underline;}
     .ocr-block { background: #faf5e6; border-radius: 7px; padding: 11px; margin: 8px 0 0 0; color: #222; font-size:1em; position:relative;}
-    .ocr-min { max-height: 45px; overflow: hidden; white-space: pre-line;}
+    .ocr-min { max-height: 40px; overflow: hidden; text-overflow: ellipsis; white-space: pre-line;}
     .expand-btn { color: #1976d2; cursor: pointer; font-size: 0.97em; margin-left: 12px;}
     .expand-btn:hover { text-decoration: underline;}
-    .ocr-block-inner { display: inline; }
     @media (max-width:700px){
       .container{max-width:98vw;padding:0.3rem;}
       h2{font-size:1.05em;}
@@ -76,7 +75,7 @@ function closePreview(ev) {
   document.getElementById('popup-inner').innerHTML = '';
 }
 
-// Fungsi render OCR (selalu ada tombol expand/minimize walaupun 1 karakter)
+// --- RENDER OCR DENGAN EXPAND / COLLAPSE ---
 function renderOcr(val, expanded) {
   const safeVal = (val || '').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g, '<br>');
   if (!val || val.trim() === '') {
@@ -84,12 +83,12 @@ function renderOcr(val, expanded) {
   }
   if (expanded) {
     return `<div class="ocr-block" id="ocr-content">
-      <span class="ocr-block-inner">${safeVal}</span>
+      ${safeVal}
       <span class="expand-btn" onclick="toggleOcr(false)">[minimize]</span>
     </div>`;
   } else {
     return `<div class="ocr-block ocr-min" id="ocr-content">
-      <span class="ocr-block-inner">${safeVal}</span>
+      ${safeVal}
       <span class="expand-btn" onclick="toggleOcr(true)">[expand]</span>
     </div>`;
   }
@@ -101,7 +100,7 @@ function toggleOcr(expanded) {
   ocrDiv.outerHTML = renderOcr(ocrVal, expanded);
 }
 
-// Ambil dan render detail sesi
+// --- LOAD DETAIL SESI ---
 async function loadDetailSesi() {
   if (!matkulId || !sesiId) {
     document.getElementById('detailSesi').innerHTML = '<div style="padding:2rem;text-align:center;">Data tidak ditemukan.</div>';
