@@ -14,7 +14,7 @@
     .sesi-detail-blok { border: 2px solid #2196f3; background: #f2fafe; border-radius: 9px; margin: 20px 0 12px 0; padding: 1.1rem 1rem 0.7rem 1rem; }
     .soal-blok, .jawaban-blok {margin: 10px 0 15px 0;}
     .detail-label { font-weight: 600; color: #2175bb; min-width:90px; display:inline-block;}
-    .doc-link { color: #1976d2; text-decoration: underline; margin-right: 8px; cursor: pointer;}
+    .doc-link { color: #1976d2; text-decoration: underline; margin-right: 8px; cursor: pointer; background: none; border: none; padding:0; font-size: 1em;}
     .note-link { color: #1976d2; text-decoration: underline;}
     .ocr-block { background: #faf5e6; border-radius: 7px; padding: 11px 11px 6px 11px; margin: 8px 0 0 0; color: #222; font-size:1em; position:relative;}
     .ocr-text { 
@@ -22,34 +22,42 @@
       transition: max-height 0.2s; 
       overflow: hidden; 
       max-height: 40px; 
-      margin-bottom: 5px;
+      margin-bottom: 7px;
       line-height: 1.5;
     }
     .ocr-block.expanded .ocr-text {
-      max-height: 1000px; /* Besar supaya semua tampil */
+      max-height: 1000px;
       overflow: auto;
     }
     .ocr-action-wrap { 
       display: flex; 
       justify-content: center; 
-      margin-top: 4px;
+      margin-top: 7px;
     }
     .expand-btn { 
-      color: #1976d2; 
+      color: #fff; 
+      background: #1976d2; 
       cursor: pointer; 
-      font-size: 0.97em; 
-      background: none; 
+      font-size: 0.99em; 
       border: none; 
       outline: none; 
-      margin: 0 auto; 
+      border-radius: 6px;
+      padding: 2px 18px;
+      margin: 0 auto;
       display: inline-block;
+      transition: background 0.2s;
     }
-    .expand-btn:hover { text-decoration: underline;}
+    .expand-btn:hover { background: #1565c0; }
     .ocr-empty { color: #888; font-style: italic;}
+    .popup-preview { display: none; position: fixed; left: 0; top: 0; width: 100vw; height: 100vh; z-index: 9999; background: rgba(0,0,0,0.44); justify-content: center; align-items: center;}
+    .popup-preview.show { display: flex; }
+    .popup-preview-inner { background: #fff; border-radius: 10px; max-width: 95vw; max-height: 90vh; overflow: auto; padding: 1.1rem; position: relative; box-shadow: 0 4px 24px rgba(0,0,0,0.16);}
+    .close-preview { position: absolute; top: 10px; right: 18px; font-size: 1.5rem; background: none; border: none; cursor: pointer; color: #d32f2f; z-index: 10;}
     @media (max-width:700px){
       .container{max-width:98vw;padding:0.3rem;}
       h2{font-size:1.05em;}
       .info-box{font-size:0.97em;}
+      .popup-preview-inner { padding: 0.3rem;}
     }
     footer { position: fixed; bottom: 0; width: 100%; background: #fff; box-shadow: 0 -1px 6px rgba(0,0,0,0.07); display: flex; justify-content: space-around; padding: 10px 0; z-index: 100;}
     footer a { text-decoration: none; color: #3498db; font-size: 14px; text-align: center;}
@@ -62,8 +70,8 @@
     <div id="infoMatkul"></div>
     <div id="detailSesi"></div>
   </div>
-  <div id="popup-preview" class="preview-popup" onclick="closePreview(event)">
-    <div class="preview-popup-inner" onclick="event.stopPropagation()">
+  <div id="popup-preview" class="popup-preview" onclick="closePreview(event)">
+    <div class="popup-preview-inner" onclick="event.stopPropagation()">
       <button class="close-preview" onclick="closePreview(event)">×</button>
       <div id="popup-inner"></div>
     </div>
@@ -88,16 +96,16 @@ function popupPreview(filePath) {
   const url = filePath.startsWith('http') ? filePath : `https://ediska-backend.onrender.com/${filePath}`;
   popupInner.innerHTML = '';
   if (/\.(jpg|jpeg|png|gif)$/i.test(url)) {
-    popupInner.innerHTML = `<img src="${url}" style="max-width:85vw;max-height:75vh;border-radius:7px;" />`;
+    popupInner.innerHTML = `<img src="${url}" style="max-width:92vw;max-height:80vh;border-radius:7px;" />`;
   } else if (url.endsWith('.pdf')) {
-    popupInner.innerHTML = `<iframe src="${url}#toolbar=0" style="width:80vw;height:70vh;" allowfullscreen></iframe>`;
+    popupInner.innerHTML = `<iframe src="${url}#toolbar=0" style="width:82vw;height:75vh;" allowfullscreen></iframe>`;
   } else {
     popupInner.innerHTML = `<a href="${url}" target="_blank" style="font-size:1.2rem;color:#1976d2;">Download File</a>`;
   }
-  popup.style.display = 'flex';
+  popup.classList.add('show');
 }
 function closePreview(ev) {
-  document.getElementById('popup-preview').style.display = 'none';
+  document.getElementById('popup-preview').classList.remove('show');
   document.getElementById('popup-inner').innerHTML = '';
 }
 
@@ -106,16 +114,15 @@ let ocrExpanded = false;
 let ocrValue = '';
 
 function renderOcrBlock() {
-  // Handle jika kosong
   if (!ocrValue || ocrValue.trim() === '') {
     return `<div class="ocr-block ocr-empty"><i>(Tidak ada Ringkasan OCR)</i></div>`;
   }
   return `
     <div class="ocr-block${ocrExpanded ? ' expanded' : ''}" id="ocr-block">
-      <div class="ocr-text">${ocrValue.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
+      <div class="ocr-text">${ocrValue}</div>
       <div class="ocr-action-wrap">
         <button class="expand-btn" id="toggle-ocr-btn">
-          [${ocrExpanded ? 'minimize' : 'expand'}]
+          ${ocrExpanded ? 'Perkecil' : 'Perbesar'}
         </button>
       </div>
     </div>
@@ -162,16 +169,14 @@ async function loadDetailSesi() {
   let dokumenList = docs.length > 0
     ? docs.map((f, i) => {
         let judul = judulDocs[i] || `Dokumen ${i+1}`;
-        if (/\.(pdf|jpg|jpeg|png|gif)$/i.test(f))
-          return `<button class="doc-link" onclick="popupPreview('${f}')">${judul}</button>`;
-        return `<a class="doc-link" href="https://ediska-backend.onrender.com/${f}" download>${judul}</a>`;
+        return `<button class="doc-link" type="button" onclick="popupPreview('${f}')">${judul}</button>`;
       }).join('')
     : '-';
 
   // Soal dan Jawaban
   let soal = sesi.pelajaran || '-';
   let jawaban = sesi.ringkasan || '-';
-  ocrValue = sesi.ringkasanOCR ? sesi.ringkasanOCR.replace(/\n/g,'<br>') : '';
+  ocrValue = sesi.ringkasanOCR ? sesi.ringkasanOCR.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>') : '';
   ocrExpanded = false;
 
   document.getElementById('detailSesi').innerHTML = `
