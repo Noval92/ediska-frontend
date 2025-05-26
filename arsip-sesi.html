@@ -90,20 +90,27 @@ const urlParams = new URLSearchParams(window.location.search);
 const matkulId = urlParams.get('matkul_id');
 const sesiId = urlParams.get('sesi_id');
 
-function popupPreview(filePath) {
+function popupPreview(filePath, title) {
   const popup = document.getElementById('popup-preview');
   const popupInner = document.getElementById('popup-inner');
-  const url = filePath.startsWith('http') ? filePath : `https://ediska-backend.onrender.com/${filePath}`;
+  let url = filePath;
+  // Normalisasi url supaya ga double slash //
+  url = url.replace(/([^:]\/)\/+/g, "$1");
   popupInner.innerHTML = '';
+  let downloadBtn = `<div style="text-align:center;margin-top:15px;">
+    <a href="${url}" download class="btn-download" style="background:#2196f3;color:#fff;padding:10px 22px;border-radius:8px;font-size:1.05em;text-decoration:none;">
+      ⬇️ Download ${title || 'File'}
+    </a></div>`;
   if (/\.(jpg|jpeg|png|gif)$/i.test(url)) {
-    popupInner.innerHTML = `<img src="${url}" style="max-width:92vw;max-height:80vh;border-radius:7px;" />`;
+    popupInner.innerHTML = `<img src="${url}" style="max-width:92vw;max-height:80vh;border-radius:7px;" />${downloadBtn}`;
   } else if (url.endsWith('.pdf')) {
-    popupInner.innerHTML = `<iframe src="${url}#toolbar=0" style="width:82vw;height:75vh;" allowfullscreen></iframe>`;
+    popupInner.innerHTML = `<div style="font-weight:bold;font-size:1.1em;margin-bottom:7px;">Preview: ${title || ''}</div><iframe src="${url}#toolbar=0" style="width:82vw;height:75vh;" allowfullscreen></iframe>${downloadBtn}`;
   } else {
     popupInner.innerHTML = `<a href="${url}" target="_blank" style="font-size:1.2rem;color:#1976d2;">Download File</a>`;
   }
   popup.classList.add('show');
 }
+
 function closePreview(ev) {
   document.getElementById('popup-preview').classList.remove('show');
   document.getElementById('popup-inner').innerHTML = '';
@@ -166,12 +173,28 @@ async function loadDetailSesi() {
       return `<div style="white-space:nowrap;"><a href="${l}" target="_blank" class="note-link">${judul}</a></div>`;
     }).join('');
   }
-  let dokumenList = docs.length > 0
-    ? docs.map((f, i) => {
-        let judul = judulDocs[i] || `Dokumen ${i+1}`;
-        return `<button class="doc-link" type="button" onclick="popupPreview('${f}')">${judul}</button>`;
-      }).join('')
-    : '-';
+let dokumenList = docs.length > 0
+  ? docs.map((f, i) => {
+      let judul = judulDocs[i] || `Dokumen ${i+1}`;
+      let url = f;
+      if (f.startsWith('http') && f.includes('res.cloudinary.com')) {
+        if (f.includes('/image/upload/')) {
+          url = f.replace('/image/upload/', '/raw/upload/');
+        }
+      } else if (!f.startsWith('http')) {
+        url = `https://ediska-backend.onrender.com${f}`;
+      }
+      // Tombol preview + download
+      if (/\.(pdf|jpg|jpeg|png|gif)$/i.test(url)) {
+        return `
+          <button class="doc-link" type="button" onclick="popupPreview('${url}','${judul}')">${judul}</button>
+          <a class="doc-link" href="${url}" download title="Download ${judul}">⬇️</a>
+        `;
+      }
+      // Fallback (file lain)
+      return `<a class="doc-link" href="${url}" download>${judul} ⬇️</a>`;
+    }).join('')
+  : '-';
 
   // Soal dan Jawaban
   let soal = sesi.pelajaran || '-';
