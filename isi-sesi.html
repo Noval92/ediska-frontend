@@ -108,18 +108,16 @@ async function loadSesiList() {
     // Tampilkan daftar PDF sebagai tombol preview, BUKAN link download
     let dokHtml = '-';
     if (Array.isArray(s.pdfJudul) && Array.isArray(s.pdf)) {
-      dokHtml = s.pdfJudul.map((j, idx) => {
-        let fileUrl = s.pdf[idx] || '';
-        if (!j) return `<span class="note-blm-lengkap">Belum Lengkap</span>`;
-        if (!fileUrl) return `<span class="note-blm-lengkap">Belum Lengkap</span>`;
-        // Pastikan URL Cloudinary + .pdf
-        let href = fileUrl.startsWith('http')
-          ? fileUrl
-          : `https://res.cloudinary.com/dindf5yc1/raw/upload/${fileUrl.replace(/^\/+/, '')}`;
-        if (!href.endsWith('.pdf')) href += '.pdf';
-        // Tombol preview
-        return `<button type="button" onclick="previewPDF('${href.replace(/'/g, "\\'")}', '${j.replace(/'/g, "\\'")}')">${j}</button>`;
-      }).join(' ');
+dokHtml = s.pdfJudul.map((j, idx) => {
+  let fileUrl = s.pdf[idx] || '';
+  if (!j) return `<span class="note-blm-lengkap">Belum Lengkap</span>`;
+  if (!fileUrl) return `<span class="note-blm-lengkap">Belum Lengkap</span>`;
+  let href = fileUrl.startsWith('http')
+    ? fileUrl
+    : `https://ediska-backend.onrender.com${fileUrl}`;
+  // Tombol preview
+  return `<button type="button" onclick="previewPDF('${href.replace(/'/g, "\\'")}', '${j.replace(/'/g, "\\'")}')">${j}</button>`;
+}).join(' ');
     }
     html += `
       <div class="sesi-blok">
