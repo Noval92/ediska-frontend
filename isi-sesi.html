@@ -22,7 +22,6 @@
     .urutan-sesi { margin: 0 0 10px 0; font-weight: bold; font-size: 1.1em; color: #1565c0; }
     label { display:block; margin:12px 0 6px 0;}
     input[type=text], input[type=number], textarea { width: 100%; padding: 8px; border: 1px solid #b0bec5; border-radius: 6px; font-size: 1em; margin-bottom: 2px; font-family: inherit; }
-    /* custom box besar untuk soal dan jawaban diskusi */
     #soal_diskusi { min-height: 54px; font-size: 1.07em; }
     #jawaban_diskusi { min-height: 90px; font-size: 1.07em; }
     textarea { resize: vertical;}
@@ -96,13 +95,25 @@ async function loadSesiList() {
   sesiData = await res.json();
   let html = '';
   sesiData.forEach((s, i) => {
+    // Perbaikan utama: cek url PDF
+    let dokHtml = '-';
+    if (Array.isArray(s.pdfJudul) && Array.isArray(s.pdf)) {
+      dokHtml = s.pdfJudul.map((j, idx) => {
+        let fileUrl = s.pdf[idx] || '';
+        if (!j) return `<span class="note-blm-lengkap">Belum Lengkap</span>`;
+        // Jika sudah http atau https, pakai langsung. Kalau bukan, tambahkan backend url.
+        if (!fileUrl) return `<span class="note-blm-lengkap">Belum Lengkap</span>`;
+        let href = fileUrl.startsWith('http') ? fileUrl : `https://ediska-backend.onrender.com/${fileUrl}`;
+        return `<a href="${href}" target="_blank">${j}</a>`;
+      }).join(', ');
+    }
     html += `
       <div class="sesi-blok">
         <div class="sesi-header">Sesi ${i+1}</div>
         <div><b>Soal Diskusi:</b> ${s.pelajaran || '<span class="note-blm-lengkap">Belum Lengkap</span>'}</div>
         <div><b>Jawaban Diskusi:</b> ${s.ringkasan || '<span class="note-blm-lengkap">Belum Lengkap</span>'}</div>
         <div><b>Ringkasan OCR:</b> ${s.ringkasanOCR ? '<pre style="white-space:pre-wrap">'+s.ringkasanOCR+'</pre>' : '<span class="note-blm-lengkap">Belum Ada</span>'}</div>
-        <div><b>Dokumen:</b> ${(s.pdfJudul||[]).map((j,idx)=>j?`<a href="https://ediska-backend.onrender.com/${s.pdf[idx]}" target="_blank">${j}</a>`:`<span class="note-blm-lengkap">Belum Lengkap</span>`).join(', ')||'-'}</div>
+        <div><b>Dokumen:</b> ${dokHtml}</div>
         <div><b>Note/Link:</b> ${(s.videoJudul||[]).map((n,idx)=>n?(s.videoLink&&s.videoLink[idx]?`<a href="${s.videoLink[idx]}" target="_blank">${n}</a>`:n):'<span class="note-blm-lengkap">Belum Lengkap</span>').join(', ')||'-'}</div>
         <div><b>Nilai:</b> ${s.nilai || '-'}</div>
         <div class="sesi-aksi">
