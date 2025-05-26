@@ -113,8 +113,14 @@ async function loadSesiList() {
         <div><b>Soal Diskusi:</b> ${s.pelajaran || '<span class="note-blm-lengkap">Belum Lengkap</span>'}</div>
         <div><b>Jawaban Diskusi:</b> ${s.ringkasan || '<span class="note-blm-lengkap">Belum Lengkap</span>'}</div>
         <div><b>Ringkasan OCR:</b> ${s.ringkasanOCR ? '<pre style="white-space:pre-wrap">'+s.ringkasanOCR+'</pre>' : '<span class="note-blm-lengkap">Belum Ada</span>'}</div>
-        <div><b>Dokumen:</b> ${dokHtml}</div>
-        <div><b>Note/Link:</b> ${(s.videoJudul||[]).map((n,idx)=>n?(s.videoLink&&s.videoLink[idx]?`<a href="${s.videoLink[idx]}" target="_blank">${n}</a>`:n):'<span class="note-blm-lengkap">Belum Lengkap</span>').join(', ')||'-'}</div>
+        <div><b>Dokumen:</b> 
+  ${(s.pdfJudul||[]).map((j,idx)=>
+    j && s.pdf && s.pdf[idx]
+      ? `<a href="${s.pdf[idx]}" target="_blank">${j}</a>`
+      : '<span class="note-blm-lengkap">Belum Lengkap</span>'
+  ).join(', ')||'-'}
+</div>
+
         <div><b>Nilai:</b> ${s.nilai || '-'}</div>
         <div class="sesi-aksi">
           <button type="button" class="btn-edit" onclick="editSesi('${s._id}')">Edit</button>
