@@ -173,20 +173,27 @@
 const user = JSON.parse(localStorage.getItem('user'));
 if (!user || !user._id) window.location = 'login.html';
 
-function popupPreview(filePath) {
+function popupPreview(filePath, title) {
   const popup = document.getElementById('popup-preview');
   const popupInner = document.getElementById('popup-inner');
-  const url = filePath.startsWith('http') ? filePath : `https://ediska-backend.onrender.com/${filePath}`;
+  let url = filePath;
+  // Normalisasi url supaya ga double slash //
+  url = url.replace(/([^:]\/)\/+/g, "$1");
   popupInner.innerHTML = '';
+  let downloadBtn = `<div style="text-align:center;margin-top:15px;">
+    <a href="${url}" download class="btn-download" style="background:#2196f3;color:#fff;padding:10px 22px;border-radius:8px;font-size:1.05em;text-decoration:none;">
+      ⬇️ Download ${title || 'File'}
+    </a></div>`;
   if (/\.(jpg|jpeg|png|gif)$/i.test(url)) {
-    popupInner.innerHTML = `<img src="${url}" style="max-width:85vw;max-height:75vh;border-radius:7px;" />`;
+    popupInner.innerHTML = `<img src="${url}" style="max-width:92vw;max-height:80vh;border-radius:7px;" />${downloadBtn}`;
   } else if (url.endsWith('.pdf')) {
-    popupInner.innerHTML = `<iframe src="${url}#toolbar=0" style="width:80vw;height:70vh;" allowfullscreen></iframe>`;
+    popupInner.innerHTML = `<div style="font-weight:bold;font-size:1.1em;margin-bottom:7px;">Preview: ${title || ''}</div><iframe src="${url}#toolbar=0" style="width:82vw;height:75vh;" allowfullscreen></iframe>${downloadBtn}`;
   } else {
     popupInner.innerHTML = `<a href="${url}" target="_blank" style="font-size:1.2rem;color:#1976d2;">Download File</a>`;
   }
   popup.style.display = 'flex';
 }
+
 function closePreview(ev) {
   document.getElementById('popup-preview').style.display = 'none';
   document.getElementById('popup-inner').innerHTML = '';
@@ -284,19 +291,32 @@ for (const mk of mkList) {
       <td>${s.nilai || '-'}</td>
     </tr>`;
     // Expandable dokumen row (hidden by default)
-    if (docs.length > 0) {
-      output += `<tr class="dokumen-list-row" id="dokumen-row-${mk._id}_${s._id}" style="display:none;">
-        <td colspan="10" style="text-align:left">
-          <b>Daftar Dokumen:</b><br>
-          ${docs.map((f, i) => {
-            let judul = judulDocs[i] || `Dokumen ${i+1}`;
-            if (/\.(pdf|jpg|jpeg|png|gif)$/i.test(f))
-              return `<button class="dokumen-link" onclick="popupPreview('${f}')">${judul}</button>`;
-            return `<a class="dokumen-link" href="https://ediska-backend.onrender.com/${f}" download>${judul}</a>`;
-          }).join('')}
-        </td>
-      </tr>`;
-    }
+if (docs.length > 0) {
+  output += `<tr class="dokumen-list-row" id="dokumen-row-${mk._id}_${s._id}" style="display:none;">
+    <td colspan="10" style="text-align:left">
+      <b>Daftar Dokumen:</b><br>
+      ${docs.map((f, i) => {
+        let judul = judulDocs[i] || `Dokumen ${i+1}`;
+        let url = f;
+        if (f.startsWith('http') && f.includes('res.cloudinary.com')) {
+          if (f.includes('/image/upload/')) {
+            url = f.replace('/image/upload/', '/raw/upload/');
+          }
+        } else if (!f.startsWith('http')) {
+          url = `https://ediska-backend.onrender.com${f}`;
+        }
+        // Tombol preview + tombol download
+        if (/\.(pdf|jpg|jpeg|png|gif)$/i.test(url)) {
+          return `
+            <button class="dokumen-link" onclick="popupPreview('${url}','${judul}')">${judul}</button>
+            <a class="dokumen-link" href="${url}" download title="Download ${judul}">⬇️</a>
+          `;
+        }
+        // Fallback file lain
+        return `<a class="dokumen-link" href="${url}" download>${judul} ⬇️</a>`;
+      }).join('')}
+    </td>
+
   }
 }
 output += `</tbody></table>`;
