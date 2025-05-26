@@ -206,9 +206,21 @@ async function editSesi(sesiId) {
   document.getElementById('nilai').value = sesi.nilai || '';
   document.getElementById('pdfList').innerHTML = '';
   pdfIdx = 0;
-  if (sesi.pdfJudul && sesi.pdfJudul.length) {
-    sesi.pdfJudul.forEach((j, idx) => tambahDokumen(j, null, true));
-  }
+  // === RENDER DOKUMEN LAMA SAAT EDIT (SUPAYA BISA DIHAPUS SATU-SATU) ===
+if (sesi.pdf && sesi.pdf.length) {
+  sesi.pdf.forEach((fileUrl, idx) => {
+    const judul = sesi.pdfJudul && sesi.pdfJudul[idx] ? sesi.pdfJudul[idx] : `Dokumen ${idx+1}`;
+    const docDiv = document.createElement('div');
+    docDiv.className = 'pdf-item';
+    docDiv.innerHTML = `
+      <input type="text" name="pdfJudulOld[]" value="${judul.replace(/"/g, '&quot;')}" style="background:#f1f5f9;">
+      <input type="hidden" name="pdfOld[]" value="${fileUrl}">
+      <button type="button" onclick="this.parentNode.remove();">Hapus</button>
+      <button type="button" onclick="previewPDF('${fileUrl.replace(/'/g, "\\'")}', '${judul.replace(/'/g, "\\'")}')">Preview</button>
+    `;
+    document.getElementById('pdfList').appendChild(docDiv);
+  });
+}
   document.getElementById('noteList').innerHTML = '';
   noteIdx = 0;
   if (sesi.videoJudul && sesi.videoJudul.length) {
@@ -275,12 +287,18 @@ document.getElementById('formSesi').onsubmit = async function(e) {
   formData.append('ringkasanOCR', document.getElementById('ocrResult').value);
   formData.append('nilai', document.getElementById('nilai').value);
 
-  const pdfJuduls = document.getElementsByName('pdfJudul[]');
-  const pdfFiles = document.getElementsByName('pdfFile[]');
-  for (let i = 0; i < pdfJuduls.length; i++) {
-    formData.append('pdfJudul[]', pdfJuduls[i].value);
-    if (pdfFiles[i]?.files[0]) formData.append('pdfFile[]', pdfFiles[i].files[0]);
-  }
+const pdfOld = document.getElementsByName('pdfOld[]');
+const pdfJudulOld = document.getElementsByName('pdfJudulOld[]');
+for (let i = 0; i < pdfOld.length; i++) {
+  formData.append('pdfOld[]', pdfOld[i].value);
+  formData.append('pdfJudulOld[]', pdfJudulOld[i].value);
+}
+const pdfJuduls = document.getElementsByName('pdfJudul[]');
+const pdfFiles = document.getElementsByName('pdfFile[]');
+for (let i = 0; i < pdfJuduls.length; i++) {
+  formData.append('pdfJudul[]', pdfJuduls[i].value);
+  if (pdfFiles[i]?.files[0]) formData.append('pdfFile[]', pdfFiles[i].files[0]);
+}}
   const notes = document.getElementsByName('videoJudul[]');
   const links = document.getElementsByName('videoLink[]');
   for (let i = 0; i < notes.length; i++) {
