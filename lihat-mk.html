@@ -177,7 +177,7 @@ function popupPreview(filePath, title) {
   const popup = document.getElementById('popup-preview');
   const popupInner = document.getElementById('popup-inner');
   let url = filePath;
-  // Normalisasi url supaya ga double slash //
+  // Normalisasi url supaya ga double slash
   url = url.replace(/([^:]\/)\/+/g, "$1");
   popupInner.innerHTML = '';
   let downloadBtn = `<div style="text-align:center;margin-top:15px;">
@@ -199,7 +199,6 @@ function closePreview(ev) {
   document.getElementById('popup-inner').innerHTML = '';
 }
 
-// -- REKAP SEMESTER DENGAN KOLOM RINGKASAN OCR --
 async function loadRekapSemester() {
   const semesterParam = new URLSearchParams(location.search).get('semester');
   if (!semesterParam) {
@@ -214,114 +213,104 @@ async function loadRekapSemester() {
     document.getElementById('arsipContent').innerHTML = '<div style="padding:2rem;text-align:center;">Data semester tidak ditemukan.</div>';
     return;
   }
-  // Update judul
   document.getElementById('judulSemester').innerHTML =
     `📘 Rekap Semester ${sem.semester} - ${sem.tahun} (${sem.ganjilgenap == '1' ? 'Ganjil' : 'Genap'})`;
 
-  // fetch matkul per semester
   const resMk = await fetch(`https://ediska-backend.onrender.com/api/matakuliah?userId=${user._id}&semester=${sem.semester}`);
   const mkList = await resMk.json();
 
-let output = `<table>
-  <thead>
-    <tr>
-      <th>Mata Kuliah</th>
-      <th>Kode</th>
-      <th>SKS</th>
-      <th>Sesi</th>
-      <th>Soal</th>
-      <th>Jawaban</th>
-      <th>Ringkasan OCR</th>
-      <th>Dokumen</th>
-      <th>Note/Link</th>
-      <th>Nilai</th>
-    </tr>
-  </thead>
-  <tbody>`;
+  let output = `<table>
+    <thead>
+      <tr>
+        <th>Mata Kuliah</th>
+        <th>Kode</th>
+        <th>SKS</th>
+        <th>Sesi</th>
+        <th>Soal</th>
+        <th>Jawaban</th>
+        <th>Ringkasan OCR</th>
+        <th>Dokumen</th>
+        <th>Note/Link</th>
+        <th>Nilai</th>
+      </tr>
+    </thead>
+    <tbody>`;
 
-for (const mk of mkList) {
-  // fetch sesi per matkul
-  const resSesi = await fetch(`https://ediska-backend.onrender.com/api/matakuliah/${mk._id}/sesi`);
-  const sesiList = await resSesi.json();
-  if (!sesiList.length) {
-    output += `<tr>
-      <td>${mk.nama}</td>
-      <td>${mk.kode}</td>
-      <td>${mk.sks}</td>
-      <td colspan="7"><i>Belum ada sesi</i></td>
-    </tr>`;
-    continue;
-  }
-  let sesiIdx = 0;
-  for (const s of sesiList) {
-    sesiIdx++;
-    // Dokumen file array
-    let docs = Array.isArray(s.pdf) ? s.pdf : [];
-    let judulDocs = Array.isArray(s.pdfJudul) ? s.pdfJudul : [];
-    let dokumenSummary = docs.length > 0 ? `${docs.length} dokumen` : '-';
-    let expandBtn = docs.length > 0 ? `<button class="dokumen-toggle" onclick="event.stopPropagation();toggleDokumen(this, '${mk._id}_${s._id}')">[+]</button>` : '';
-    // Note/link
-    let noteHtml = '-';
-    if (s.videoLink && Array.isArray(s.videoLink) && s.videoLink.length > 0) {
-      noteHtml = s.videoLink.map((l, i) => {
-        let judul = s.videoJudul && s.videoJudul[i] ? s.videoJudul[i] : `Note/Link ${i+1}`;
-        return `<div style="white-space:nowrap;"><a href="${l}" target="_blank" style="color:#1976d2;text-decoration:underline;">${judul}</a></div>`;
-      }).join('');
+  for (const mk of mkList) {
+    const resSesi = await fetch(`https://ediska-backend.onrender.com/api/matakuliah/${mk._id}/sesi`);
+    const sesiList = await resSesi.json();
+    if (!sesiList.length) {
+      output += `<tr>
+        <td>${mk.nama}</td>
+        <td>${mk.kode}</td>
+        <td>${mk.sks}</td>
+        <td colspan="7"><i>Belum ada sesi</i></td>
+      </tr>`;
+      continue;
     }
-    // RINGKASAN OCR dengan expand/collapse
-    let ocrVal = s.ringkasanOCR ? s.ringkasanOCR : '';
-    let ocrCell = ocrVal
-      ? `<div class="truncate-ocr" id="ocr-${s._id}">${ocrVal.substring(0,350).replace(/\n/g,'<br>')}
-          ${ocrVal.length>350?`... <span class="expand-btn" onclick="expandOcr('${s._id}','${encodeURIComponent(ocrVal)}')">[expand]</span>`:''}
-         </div>`
-      : '-';
+    let sesiIdx = 0;
+    for (const s of sesiList) {
+      sesiIdx++;
+      let docs = Array.isArray(s.pdf) ? s.pdf : [];
+      let judulDocs = Array.isArray(s.pdfJudul) ? s.pdfJudul : [];
+      let dokumenSummary = docs.length > 0 ? `${docs.length} dokumen` : '-';
+      let expandBtn = docs.length > 0 ? `<button class="dokumen-toggle" onclick="event.stopPropagation();toggleDokumen(this, '${mk._id}_${s._id}')">[+]</button>` : '';
+      let noteHtml = '-';
+      if (s.videoLink && Array.isArray(s.videoLink) && s.videoLink.length > 0) {
+        noteHtml = s.videoLink.map((l, i) => {
+          let judul = s.videoJudul && s.videoJudul[i] ? s.videoJudul[i] : `Note/Link ${i+1}`;
+          return `<div style="white-space:nowrap;"><a href="${l}" target="_blank" style="color:#1976d2;text-decoration:underline;">${judul}</a></div>`;
+        }).join('');
+      }
+      let ocrVal = s.ringkasanOCR ? s.ringkasanOCR : '';
+      let ocrCell = ocrVal
+        ? `<div class="truncate-ocr" id="ocr-${s._id}">${ocrVal.substring(0,350).replace(/\n/g,'<br>')}
+            ${ocrVal.length>350?`... <span class="expand-btn" onclick="expandOcr('${s._id}','${encodeURIComponent(ocrVal)}')">[expand]</span>`:''}
+           </div>`
+        : '-';
 
-    output += `<tr>
-      <td>${mk.nama}</td>
-      <td>${mk.kode}</td>
-      <td>${mk.sks}</td>
-      <td>${sesiIdx}</td>
-      <td>${s.pelajaran || '-'}</td>
-      <td>${s.ringkasan || '-'}</td>
-      <td>${ocrCell}</td>
-      <td>
-        ${dokumenSummary} ${expandBtn}
-      </td>
-      <td>${noteHtml}</td>
-      <td>${s.nilai || '-'}</td>
-    </tr>`;
-    // Expandable dokumen row (hidden by default)
-if (docs.length > 0) {
-  output += `<tr class="dokumen-list-row" id="dokumen-row-${mk._id}_${s._id}" style="display:none;">
-    <td colspan="10" style="text-align:left">
-      <b>Daftar Dokumen:</b><br>
-      ${docs.map((f, i) => {
-        let judul = judulDocs[i] || `Dokumen ${i+1}`;
-        let url = f;
-        if (f.startsWith('http') && f.includes('res.cloudinary.com')) {
-          if (f.includes('/image/upload/')) {
-            url = f.replace('/image/upload/', '/raw/upload/');
-          }
-        } else if (!f.startsWith('http')) {
-          url = `https://ediska-backend.onrender.com${f}`;
-        }
-        // Tombol preview + tombol download
-        if (/\.(pdf|jpg|jpeg|png|gif)$/i.test(url)) {
-          return `
-            <button class="dokumen-link" onclick="popupPreview('${url}','${judul}')">${judul}</button>
-            <a class="dokumen-link" href="${url}" download title="Download ${judul}">⬇️</a>
-          `;
-        }
-        // Fallback file lain
-        return `<a class="dokumen-link" href="${url}" download>${judul} ⬇️</a>`;
-      }).join('')}
-    </td>
- </tr>`;
-
+      output += `<tr>
+        <td>${mk.nama}</td>
+        <td>${mk.kode}</td>
+        <td>${mk.sks}</td>
+        <td>${sesiIdx}</td>
+        <td>${s.pelajaran || '-'}</td>
+        <td>${s.ringkasan || '-'}</td>
+        <td>${ocrCell}</td>
+        <td>
+          ${dokumenSummary} ${expandBtn}
+        </td>
+        <td>${noteHtml}</td>
+        <td>${s.nilai || '-'}</td>
+      </tr>`;
+      // Expandable dokumen row (hidden by default)
+      if (docs.length > 0) {
+        output += `<tr class="dokumen-list-row" id="dokumen-row-${mk._id}_${s._id}" style="display:none;">
+          <td colspan="10" style="text-align:left">
+            <b>Daftar Dokumen:</b><br>
+            ${docs.map((f, i) => {
+              let judul = judulDocs[i] || `Dokumen ${i+1}`;
+              let url = f;
+              if (f.startsWith('http') && f.includes('res.cloudinary.com')) {
+                if (f.includes('/image/upload/')) {
+                  url = f.replace('/image/upload/', '/raw/upload/');
+                }
+              } else if (!f.startsWith('http')) {
+                url = `https://ediska-backend.onrender.com${f}`;
+              }
+              if (/\.(pdf|jpg|jpeg|png|gif)$/i.test(url)) {
+                return `
+                  <button class="dokumen-link" onclick="popupPreview('${url}','${judul}')">${judul}</button>
+                  <a class="dokumen-link" href="${url}" download title="Download ${judul}">⬇️</a>
+                `;
+              }
+              return `<a class="dokumen-link" href="${url}" download>${judul} ⬇️</a>`;
+            }).join('')}
+          </td>
+        </tr>`;
+      }
+    }
   }
-}
-output += `</tbody></table>`;
-document.getElementById('arsipContent').innerHTML = output;
   output += `</tbody></table>`;
   document.getElementById('arsipContent').innerHTML = output;
 }
