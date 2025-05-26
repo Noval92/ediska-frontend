@@ -38,7 +38,9 @@
     .loading { text-align:center; margin:8px 0; }
     .ocr-title { margin: 6px 0 2px 0; font-size: 1.05em; color: #216bb0; }
     .ocr-box { background: #f5f6fa; border-radius:8px; padding:10px; margin:10px 0 0 0; min-height:50px; color:#2c3e50;}
-    @media (max-width: 700px) { .container { max-width: 98vw; padding: 0.5rem; } .judul-blok { font-size: 1.05em; } .sesi-blok { padding: 0.7rem 0.4rem;} }
+    .pdf-preview-iframe { width: 100%; height: 420px; border: 1.5px solid #a1b8e6; border-radius: 12px; margin-bottom: 12px; margin-top: 10px;}
+    .pdf-preview-title { font-size: 1.07em; color: #3498db; font-weight: bold; margin: 0 0 7px 0;}
+    @media (max-width: 700px) { .container { max-width: 98vw; padding: 0.5rem; } .judul-blok { font-size: 1.05em; } .sesi-blok { padding: 0.7rem 0.4rem;} .pdf-preview-iframe{height:240px;} }
     footer { position: fixed; bottom: 0; width: 100vw; background: #fff; box-shadow: 0 -2px 16px rgba(44,62,80,0.06); display: flex; justify-content: space-around; padding: 10px 0 6px 0; z-index: 200; left: 0;}
     footer a { text-decoration: none; color: #3498db; font-size: 15px; text-align: center;}
   </style>
@@ -48,6 +50,8 @@
     <button onclick="history.back()" style="margin-bottom:12px;background:#bdbdbd;padding:7px 20px;border:none;border-radius:8px;font-size:1em;">← Kembali</button>
     <div class="judul-blok">ISI SESI MATA KULIAH</div>
     <div id="sesi-list"></div>
+    <!-- AREA PREVIEW PDF -->
+    <div id="pdfPreview" style="margin-top:15px"></div>
     <form id="formSesi" autocomplete="off">
       <div id="urutan-sesi" class="urutan-sesi"></div>
       <label><b>Soal Diskusi</b></label>
@@ -57,13 +61,11 @@
       <label><b>Upload Dokumen (max 10)</b></label>
       <div id="pdfList"></div>
       <button type="button" onclick="tambahDokumen()" class="btn-tambah">+ Tambah Dokumen</button>
-
       <!-- === UPLOAD PDF OCR === -->
       <label><b>Upload PDF OCR <span style="font-weight:normal;font-size:0.97em;color:#888;">(opsional)</span></b></label>
       <input type="file" id="ocrPdfInput" accept=".pdf" />
       <textarea id="ocrResult" class="ocr-box" placeholder="Hasil OCR akan muncul di sini dan bisa diedit..."></textarea>
       <label class="ocr-title" id="ocrStatus"></label>
-
       <label><b>Link / Note (max 10)</b></label>
       <div id="noteList"></div>
       <button type="button" onclick="tambahNote()" class="btn-tambah">+ Tambah Note</button>
@@ -89,23 +91,35 @@ const matkulId = params.get('matkul_id');
 let sesiData = [];
 let pdfIdx = 0, noteIdx = 0, editingSesiId = null;
 
+// === Fungsi untuk Preview PDF ===
+function previewPDF(link, title) {
+  document.getElementById('pdfPreview').innerHTML = `
+    <div class="pdf-preview-title">Preview: ${title || 'Dokumen PDF'}</div>
+    <iframe class="pdf-preview-iframe" src="${link}"></iframe>
+  `;
+}
+
 // === Memuat dan Merender Daftar Sesi ===
 async function loadSesiList() {
   const res = await fetch(`https://ediska-backend.onrender.com/api/matakuliah/${matkulId}/sesi`);
   sesiData = await res.json();
   let html = '';
   sesiData.forEach((s, i) => {
-    // Perbaikan utama: cek url PDF
+    // Tampilkan daftar PDF sebagai tombol preview, BUKAN link download
     let dokHtml = '-';
     if (Array.isArray(s.pdfJudul) && Array.isArray(s.pdf)) {
       dokHtml = s.pdfJudul.map((j, idx) => {
         let fileUrl = s.pdf[idx] || '';
         if (!j) return `<span class="note-blm-lengkap">Belum Lengkap</span>`;
-        // Jika sudah http atau https, pakai langsung. Kalau bukan, tambahkan backend url.
         if (!fileUrl) return `<span class="note-blm-lengkap">Belum Lengkap</span>`;
-        let href = fileUrl.startsWith('http') ? fileUrl : `https://ediska-backend.onrender.com/${fileUrl}`;
-        return `<a href="${href}" target="_blank">${j}</a>`;
-      }).join(', ');
+        // Pastikan URL Cloudinary + .pdf
+        let href = fileUrl.startsWith('http')
+          ? fileUrl
+          : `https://res.cloudinary.com/dindf5yc1/raw/upload/${fileUrl.replace(/^\/+/, '')}`;
+        if (!href.endsWith('.pdf')) href += '.pdf';
+        // Tombol preview
+        return `<button type="button" onclick="previewPDF('${href.replace(/'/g, "\\'")}', '${j.replace(/'/g, "\\'")}')">${j}</button>`;
+      }).join(' ');
     }
     html += `
       <div class="sesi-blok">
@@ -113,14 +127,7 @@ async function loadSesiList() {
         <div><b>Soal Diskusi:</b> ${s.pelajaran || '<span class="note-blm-lengkap">Belum Lengkap</span>'}</div>
         <div><b>Jawaban Diskusi:</b> ${s.ringkasan || '<span class="note-blm-lengkap">Belum Lengkap</span>'}</div>
         <div><b>Ringkasan OCR:</b> ${s.ringkasanOCR ? '<pre style="white-space:pre-wrap">'+s.ringkasanOCR+'</pre>' : '<span class="note-blm-lengkap">Belum Ada</span>'}</div>
-        <div><b>Dokumen:</b> 
-  ${(s.pdfJudul||[]).map((j,idx)=>
-    j && s.pdf && s.pdf[idx]
-      ? `<a href="${s.pdf[idx]}" target="_blank">${j}</a>`
-      : '<span class="note-blm-lengkap">Belum Lengkap</span>'
-  ).join(', ')||'-'}
-</div>
-
+        <div><b>Dokumen:</b> ${dokHtml}</div>
         <div><b>Nilai:</b> ${s.nilai || '-'}</div>
         <div class="sesi-aksi">
           <button type="button" class="btn-edit" onclick="editSesi('${s._id}')">Edit</button>
@@ -131,6 +138,8 @@ async function loadSesiList() {
   });
   document.getElementById('sesi-list').innerHTML = html;
   document.getElementById('urutan-sesi').innerHTML = `Sesi ${sesiData.length+1}`;
+  // Kosongkan preview ketika reload list
+  document.getElementById('pdfPreview').innerHTML = '';
 }
 
 // === Tambah Dokumen ===
@@ -221,6 +230,7 @@ function batalEdit() {
   pdfIdx = 0; noteIdx = 0;
   document.querySelector('.btn-batal').style.display = 'none';
   document.querySelector('.btn-submit').innerText = 'Simpan Sesi';
+  document.getElementById('pdfPreview').innerHTML = '';
 }
 async function hapusSesi(sesiId) {
   if (!confirm('Yakin hapus sesi ini?')) return;
