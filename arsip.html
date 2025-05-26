@@ -197,29 +197,38 @@
 const user = JSON.parse(localStorage.getItem('user'));
 if (!user || !user._id) window.location = 'login.html';
 
-    function popupPreview(filePath) {
-      const popup = document.getElementById('popup-preview');
-      const popupInner = document.getElementById('popup-inner');
-      let url = filePath;
+function popupPreview(filePath, title) {
+  const popup = document.getElementById('popup-preview');
+  const popupInner = document.getElementById('popup-inner');
+  let url = filePath;
+  popupInner.innerHTML = '';
+  // --- Cek ekstensi ---
+  if (/\.(jpg|jpeg|png|gif)$/i.test(url)) {
+    popupInner.innerHTML = `
+      <div style="font-weight:bold;font-size:1.1em;margin-bottom:7px;">Preview: ${title || ''}</div>
+      <img src="${url}" style="max-width:85vw;max-height:75vh;border-radius:7px;" />
+      <div style="margin-top:12px;">
+        <a href="${url}" download target="_blank" style="background:#3498db;color:#fff;padding:7px 17px;border-radius:7px;text-decoration:none;font-size:1em;">⬇ Download Gambar</a>
+      </div>
+    `;
+  } else if (url.endsWith('.pdf')) {
+    popupInner.innerHTML = `
+      <div style="font-weight:bold;font-size:1.1em;margin-bottom:7px;">Preview: ${title || ''}</div>
+      <iframe src="${url}#toolbar=0" style="width:80vw;height:70vh;" allowfullscreen></iframe>
+      <div style="margin-top:12px;">
+        <a href="${url}" download target="_blank" style="background:#3498db;color:#fff;padding:7px 17px;border-radius:7px;text-decoration:none;font-size:1em;">⬇ Download PDF</a>
+      </div>
+    `;
+  } else {
+    // selain gambar/pdf
+    popupInner.innerHTML = `
+      <a href="${url}" target="_blank" style="font-size:1.2rem;color:#1976d2;">Download File</a>
+    `;
+  }
+  popup.style.display = 'flex';
+}
 
-      if (filePath.startsWith('http') && filePath.includes('res.cloudinary.com')) {
-        if (filePath.includes('/image/upload/')) {
-          url = filePath.replace('/image/upload/', '/raw/upload/');
-        }
-      } else if (!filePath.startsWith('http')) {
-        url = `https://ediska-backend.onrender.com/${filePath}`;
-      }
 
-      popupInner.innerHTML = '';
-      if (/\.(jpg|jpeg|png|gif)$/i.test(url)) {
-        popupInner.innerHTML = `<img src="${url}" style="max-width:85vw;max-height:75vh;border-radius:7px;" />`;
-      } else if (url.endsWith('.pdf')) {
-        popupInner.innerHTML = `<iframe src="${url}#toolbar=0" style="width:80vw;height:70vh;" allowfullscreen></iframe>`;
-      } else {
-        popupInner.innerHTML = `<a href="${url}" target="_blank" style="font-size:1.2rem;color:#1976d2;">Download File</a>`;
-      }
-      popup.style.display = 'flex';
-    }
 
     function closePreview(ev) {
       document.getElementById('popup-preview').style.display = 'none';
@@ -319,28 +328,33 @@ for (const s of sesiList) {
     <td>${s.nilai || '-'}</td>
   </tr>`;
   if (docs.length > 0) {
-    output += `<tr class="dokumen-list-row" id="dokumen-row-${mk._id}_${s._id}" style="display:none;">
-      <td colspan="11" style="text-align:left">
-        <b>Daftar Dokumen:</b><br>
-${docs.map((f, i) => {
-  let judul = judulDocs[i] || `Dokumen ${i+1}`;
-  let url = f;
-  if (f.startsWith('http') && f.includes('res.cloudinary.com')) {
-    if (f.includes('/image/upload/')) {
-      url = f.replace('/image/upload/', '/raw/upload/');
-    }
-  } else if (!f.startsWith('http')) {
-    url = `https://ediska-backend.onrender.com/${f}`;
-  }
+output += `<tr class="dokumen-list-row" id="dokumen-row-${mk._id}_${s._id}" style="display:none;">
+  <td colspan="11" style="text-align:left">
+    <b>Daftar Dokumen:</b><br>
+    ${docs.map((f, i) => {
+      let judul = judulDocs[i] || `Dokumen ${i+1}`;
+      // Build url (handle cloudinary/raw & backend uploads)
+      let url = f;
+      if (f.startsWith('http') && f.includes('res.cloudinary.com')) {
+        if (f.includes('/image/upload/')) {
+          url = f.replace('/image/upload/', '/raw/upload/');
+        }
+      } else if (!f.startsWith('http')) {
+        url = `https://ediska-backend.onrender.com/${f}`;
+      }
+      // Tombol preview + tombol download di sampingnya
+      if (/\.(pdf|jpg|jpeg|png|gif)$/i.test(url)) {
+        return `
+          <button class="dokumen-link" onclick="popupPreview('${url}','${judul}')">${judul}</button>
+          <a class="dokumen-link" href="${url}" download title="Download ${judul}">⬇️</a>
+        `;
+      }
+      // Fallback (file lain)
+      return `<a class="dokumen-link" href="${url}" download>${judul} ⬇️</a>`;
+    }).join('')}
+  </td>
+</tr>`;
 
-  if (/\.(pdf|jpg|jpeg|png|gif)$/i.test(url)) {
-    return `<button class="dokumen-link" onclick="popupPreview('${url}')">${judul}</button>`;
-  }
-  return `<a class="dokumen-link" href="${url}" download>${judul}</a>`;
-}).join('')}
-
-      </td>
-    </tr>`;
   }
 }
 
